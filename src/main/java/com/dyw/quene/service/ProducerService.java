@@ -1,18 +1,21 @@
+package com.dyw.quene.service;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.MessageProperties;
 
 import java.util.logging.Logger;
 
-public class Producer {
+public class ProducerService {
 
-    private final static String QUEUE_NAME = "hello";
-    private Logger logger = Logger.getLogger(Producer.class.getName());
+    private final static String QUEUE_NAME = "dyw";
+    private Logger logger = Logger.getLogger(ProducerService.class.getName());
     private ConnectionFactory factory;
     private Connection connection;
     private Channel channel;
 
-    public Producer() throws Exception {
+    public ProducerService() throws Exception {
         factory = new ConnectionFactory();
         factory.setHost("localhost");
         connection = factory.newConnection();
@@ -20,7 +23,6 @@ public class Producer {
     }
 
     public void sendToQuene(String body) throws Exception {
-        channel.basicPublish("", QUEUE_NAME, null, body.getBytes("UTF-8"));
-
+        channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, body.getBytes("UTF-8"));
     }
 }
