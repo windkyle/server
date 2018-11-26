@@ -1,9 +1,6 @@
 package com.dyw.quene;
 
-import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
 
@@ -34,6 +31,40 @@ public interface HCNetSDK extends StdCallLibrary {
     boolean NET_DVR_GetDeviceAbility(NativeLong lUserID, int dwAbilityType, String pInBuf, int dwInLength, String pOutBuf, int dwOutLength);
 
     //HCNetSDK.dll function definition
+
+    public static class NET_DVR_FACE_PARAM_CTRL extends Structure {
+        public int dwSize;
+        public byte byMode;          //删除方式，0-按卡号方式删除，1-按读卡器删除
+        public byte[] byRes1 = new byte[3];        //保留
+        public NET_DVR_DEL_FACE_PARAM_MODE struProcessMode;  //处理方式
+        public byte[] byRes = new byte[64];          //保留
+    }
+
+    public static class NET_DVR_DEL_FACE_PARAM_MODE extends Union {
+        public byte[] uLen = new byte[588];   //联合体长度
+        public NET_DVR_FACE_PARAM_BYCARD struByCard;     //按卡号的方式删除
+        public NET_DVR_FACE_PARAM_BYREADER struByReader;   //按读卡器的方式删除
+    }
+
+    public static class NET_DVR_FACE_PARAM_BYREADER extends Structure {
+        public int dwCardReaderNo;  //按值表示，人脸读卡器编号
+        public byte byClearAllCard;  //是否删除所有卡的人脸信息，0-按卡号删除人脸信息，1-删除所有卡的人脸信息
+        public byte[] byRes1 = new byte[3];       //保留
+        public byte[] byCardNo = new byte[ACS_CARD_NO_LEN]; //人脸关联的卡号
+        public byte[] byRes = new byte[548];          //保留
+    }
+
+    public static final int MAX_FACE_NUM = 2;    //最大人脸数
+
+
+    public static class NET_DVR_FACE_PARAM_BYCARD extends Structure {
+        public byte[] byCardNo = new byte[ACS_CARD_NO_LEN]; //人脸关联的卡号
+        public byte[] byEnableCardReader = new byte[MAX_CARD_READER_NUM_512];  //人脸的读卡器信息，按数组表示
+        public byte[] byFaceID = new byte[MAX_FACE_NUM];        //需要删除的人脸编号，按数组下标，值表示0-不删除，1-删除该人脸
+        public byte[] byRes1 = new byte[42];          //保留
+    }
+
+    public static final int NET_DVR_DEL_FACE_PARAM_CFG = 2509;
 
     // function definition
     /* The SDK initialization function */
@@ -166,7 +197,7 @@ public interface HCNetSDK extends StdCallLibrary {
      * [in] lpInBuffer - a pointer to send data buffer(user manual for more details)
      * [in] dwInBufferSize- the correspond buffer size, unit:byte
      */
-    //public boolean NET_DVR_RemoteControl(int lUserID, int dwCommand, int lpInBuffer, int dwInBufferSize);
+    public boolean NET_DVR_RemoteControl(NativeLong lUserID, int dwCommand, Pointer lpInBuffer, int dwInBufferSize);
 
     /* login
      * [in] pLoginInfo - login parameters
@@ -1238,6 +1269,7 @@ public interface HCNetSDK extends StdCallLibrary {
     public static class CARDRIGHTPLAN_WORD extends Structure {
         public short[] wRightPlan = new short[MAX_CARD_RIGHT_PLAN_NUM];
     }
+
     public static class NET_DVR_CARD_CFG_V50 extends Structure {
         public int dwSize;
         public int dwModifyParamType;//需要修改的卡参数，设置卡参数时有效，按位表示，每位代表一种参数，1为需要修改，0为不修改

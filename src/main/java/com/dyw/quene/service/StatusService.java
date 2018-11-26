@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 public class StatusService extends BaseService {
     private Logger logger = Logger.getLogger(StatusService.class.getName());
     private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+    private HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50 statusV50;
+
 
     /*
      * 获取设备状态
@@ -23,7 +25,12 @@ public class StatusService extends BaseService {
             logger.info("NET_DVR_GET_ACS_WORK_STATUS_V50 failed with:" + HCNetSDK.INSTANCE.NET_DVR_GetLastError() + HCNetSDK.INSTANCE.NET_DVR_GetErrorMsg(struAcsWorkStatusCfg.getPointer()));
         } else {
             struAcsWorkStatusCfg.read();
+            statusV50 = struAcsWorkStatusCfg;
             logger.info("卡数量：" + struAcsWorkStatusCfg.dwCardNum);
         }
+    }
+
+    public HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50 getStatusV50() {
+        return statusV50;
     }
 }

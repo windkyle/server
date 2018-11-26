@@ -4,6 +4,7 @@ import com.dyw.quene.HCNetSDK;
 import com.dyw.quene.entity.FaceInfoEntity;
 import com.dyw.quene.handler.FaceSendHandler;
 import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
 
 import java.io.FileInputStream;
 import java.util.logging.Logger;
@@ -53,6 +54,33 @@ public class FaceService extends BaseService {
         boolean result = hcNetSDK.NET_DVR_SendRemoteConfig(lHandle, HCNetSDK.ENUM_ACS_INTELLIGENT_IDENTITY_DATA,
                 pSendBuf.getPointer(), pSendBuf.size());
         return true;
+    }
+
+    /*
+     * 删除人脸
+     * */
+    public String delFace(String cardNo) {
+
+        int iErr = 0;
+        //删除人脸数据
+        HCNetSDK.NET_DVR_FACE_PARAM_CTRL m_struFaceDel = new HCNetSDK.NET_DVR_FACE_PARAM_CTRL();
+        m_struFaceDel.dwSize = m_struFaceDel.size();
+        m_struFaceDel.byMode = 0; //删除方式：0- 按卡号方式删除，1- 按读卡器删除
+
+        m_struFaceDel.struProcessMode.setType(HCNetSDK.NET_DVR_FACE_PARAM_BYCARD.class);
+        m_struFaceDel.struProcessMode.struByCard.byCardNo = cardNo.getBytes();//需要删除人脸关联的卡号
+        m_struFaceDel.struProcessMode.struByCard.byEnableCardReader[0] = 1; //读卡器
+        m_struFaceDel.struProcessMode.struByCard.byFaceID[0] = 1; //人脸ID
+        m_struFaceDel.write();
+        Pointer lpInBuffer = m_struFaceDel.getPointer();
+        boolean lRemoteCtrl = HCNetSDK.INSTANCE.NET_DVR_RemoteControl(LoginService.lUserID, HCNetSDK.NET_DVR_DEL_FACE_PARAM_CFG, lpInBuffer, m_struFaceDel.size());
+        if (!lRemoteCtrl) {
+            iErr = HCNetSDK.INSTANCE.NET_DVR_GetLastError();
+            logger.info("NET_DVR_DEL_FACE_PARAM_CFG删除人脸图片失败，错误号：" + iErr);
+        } else {
+            logger.info("NET_DVR_DEL_FACE_PARAM_CFG成功!");
+        }
+        return "adfadsf";
     }
 
     /*

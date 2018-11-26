@@ -1,9 +1,8 @@
 package com.dyw.quene.controller;
 
-import com.dyw.quene.service.CustomerService;
-import com.dyw.quene.service.DatabaseService;
-import com.dyw.quene.service.LoginService;
-import com.dyw.quene.service.ProducerService;
+import com.alibaba.fastjson.JSON;
+import com.dyw.quene.HCNetSDK;
+import com.dyw.quene.service.*;
 import com.dyw.quene.entity.StaffEntity;
 import net.iharder.Base64;
 
@@ -13,6 +12,9 @@ import java.net.Socket;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Egci {
@@ -22,6 +24,8 @@ public class Egci {
         LoginService loginService = new LoginService();
         //初始化人员实体
         StaffEntity staff = new StaffEntity();
+        //初始化设备状态
+        StatusService statusService = new StatusService();
         //ip列表
         String[] deviceIps = {"#192.168.40.25"};
         //连接数据库
@@ -40,13 +44,13 @@ public class Egci {
             logger.info("客户端:" + socketInfo.getInetAddress().getHostAddress() + "已连接到服务器");
             //读取客户端发送来的信息
             BufferedReader br = new BufferedReader(new InputStreamReader(socketInfo.getInputStream()));
-            String meseng = br.readLine();
+            String mess = br.readLine();
             String staffInfo = "";//结构体信息
-            String operationCode = meseng.substring(0, 1);
+            String operationCode = mess.substring(0, 1);
             //读取数据库信息
             if (operationCode.equals("1")) {
                 Statement stmt = dbConn.createStatement();
-                ResultSet rs = stmt.executeQuery("select CardNumber,Name,Photo from Staff WHERE CardNumber = " + meseng.substring(2));
+                ResultSet rs = stmt.executeQuery("select CardNumber,Name,Photo from Staff WHERE CardNumber = " + mess.substring(2));
                 while (rs.next()) {//如果对象中有数据，就会循环打印出来
                     staff.setName(rs.getString("name"));
                     staff.setCardNumber(rs.getString("cardNumber"));
@@ -54,22 +58,55 @@ public class Egci {
                 }
                 //重新组织人员信息:操作码+卡号+名称+图片
                 staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
-            } else {
+                //发送消息到队列中
+                for (String deviceIp : deviceIps) {
+                    producerService.sendToQuene(staffInfo.concat(deviceIp));
+                }
+                //返回消息给客户端
+                OutputStream os = socketInfo.getOutputStream();
+                os.write("success".getBytes());
+                os.flush();
+                br.close();
+                os.close();
+                socketInfo.close();
+            }
+            if (operationCode.equals("2")) {
                 staffInfo = "2#" + staff.getCardNumber() + "#test#none";
+                //发送消息到队列中
+                for (String deviceIp : deviceIps) {
+                    producerService.sendToQuene(staffInfo.concat(deviceIp));
+                }
+                //返回消息给客户端
+                OutputStream os = socketInfo.getOutputStream();
+                os.write("success".getBytes());
+                os.flush();
+                br.close();
+                os.close();
+                socketInfo.close();
             }
-            //发送消息到队列中
-            for (String deviceIp : deviceIps) {
-                producerService.sendToQuene(staffInfo.concat(deviceIp));
+            if (operationCode.equals("3")) {
+                List<String> deviceInfos = new ArrayList();
+                for (String deviceIp : deviceIps) {
+                    //判断是否在线
+                    loginService.login(deviceIp.substring(1), (short) 8000, "admin", "hik12345");
+                    if (LoginService.lUserID.longValue() > -1) {
+                        deviceInfos.add("1");
+                    } else {
+                        deviceInfos.add("0");
+                    }
+                    statusService.getWorkStatus(LoginService.lUserID);
+                    HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50 statusV50 = statusService.getStatusV50();
+                    System.out.println(Arrays.toString(statusV50.byCardReaderVerifyMode));
+                }
+                //返回消息给客户端
+                OutputStream os = socketInfo.getOutputStream();
+                os.write(JSON.toJSONString(deviceInfos).getBytes());
+                os.flush();
+                br.close();
+                os.close();
+                socketInfo.close();
             }
-            //返回消息给客户端
-            OutputStream ops = socketInfo.getOutputStream();
-            OutputStreamWriter opsw = new OutputStreamWriter(ops);
-            BufferedWriter bw = new BufferedWriter(opsw);
-            bw.write("succeseng\r\n\r\n");
-            bw.flush();
-            br.close();
-            bw.close();
-            socketInfo.close();
+
         }
     }
 }

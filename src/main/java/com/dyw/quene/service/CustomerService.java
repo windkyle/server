@@ -38,8 +38,9 @@ public class CustomerService extends BaseService {
                     //判断卡号是否存在，存在卡号则先删除
                     try {
                         if (cardService.getCardInfo(cardNo)) {
-                            logger.info("卡号已存在，先删除卡号");
+                            logger.info("卡号已存在，先删除卡号和人脸");
                             cardService.delCardInfo(cardNo);
+                            faceService.delFace(cardNo);
                         }
                     } catch (Exception e) {
                         logger.info("删除卡号失败:");
