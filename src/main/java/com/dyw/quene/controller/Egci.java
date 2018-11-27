@@ -26,11 +26,17 @@ public class Egci {
         StaffEntity staff = new StaffEntity();
         //初始化设备状态
         StatusService statusService = new StatusService();
-        //ip列表
-        String[] deviceIps = {"#192.168.40.25"};
         //连接数据库
         DatabaseService databaseService = new DatabaseService();
         Connection dbConn = databaseService.connection();
+        Statement stmt = dbConn.createStatement();
+        //获取设备ip列表
+        ResultSet resultSet = stmt.executeQuery("select IP from Equipment");
+        List<String> deviceIps = new ArrayList<String>();
+        while (resultSet.next()) {//如果对象中有数据，就会循环打印出来
+            deviceIps.add("#" + resultSet.getString("IP"));
+        }
+        System.out.println(deviceIps);
         //初始化下发队列
         ProducerService producerService = new ProducerService();
         CustomerService customerService = new CustomerService();
@@ -47,9 +53,9 @@ public class Egci {
             String mess = br.readLine();
             String staffInfo = "";//结构体信息
             String operationCode = mess.substring(0, 1);
-            //读取数据库信息
+            //下发卡号人脸
             if (operationCode.equals("1")) {
-                Statement stmt = dbConn.createStatement();
+                //读取数据库获取人员信息
                 ResultSet rs = stmt.executeQuery("select CardNumber,Name,Photo from Staff WHERE CardNumber = " + mess.substring(2));
                 while (rs.next()) {//如果对象中有数据，就会循环打印出来
                     staff.setName(rs.getString("name"));
@@ -64,12 +70,13 @@ public class Egci {
                 }
                 //返回消息给客户端
                 OutputStream os = socketInfo.getOutputStream();
-                os.write("success".getBytes());
+                os.write("success\n".getBytes());
                 os.flush();
                 br.close();
                 os.close();
                 socketInfo.close();
             }
+            //删除卡号和人脸
             if (operationCode.equals("2")) {
                 staffInfo = "2#" + staff.getCardNumber() + "#test#none";
                 //发送消息到队列中
@@ -84,6 +91,7 @@ public class Egci {
                 os.close();
                 socketInfo.close();
             }
+            //获取设备状态
             if (operationCode.equals("3")) {
                 List<String> deviceInfos = new ArrayList();
                 for (String deviceIp : deviceIps) {
@@ -106,7 +114,14 @@ public class Egci {
                 os.close();
                 socketInfo.close();
             }
+            //设置设备的通行模式
+            if (operationCode.equals("4")) {
 
+            }
+            //设置切换器模式:0是关闭人脸识别，1是开启人脸识别
+            if (operationCode.equals("5")) {
+
+            }
         }
     }
 }
