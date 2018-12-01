@@ -19,45 +19,38 @@ public class Test {
         System.out.println(System.getProperty("user.dir"));
         LoginService loginService = new LoginService();
         loginService.login("192.168.1.148", (short) 8000, "admin", "hik12345");
-        //测试更改通行模式
+        System.out.println(LoginService.lUserID);
+        //更改认证方式
+        Test_EzvizWeekPlanCfg(LoginService.lUserID);
+    }
+
+    public static void Test_EzvizWeekPlanCfg(NativeLong iUserID) {
         HCNetSDK.NET_DVR_WEEK_PLAN_CFG struWeekPlan = new HCNetSDK.NET_DVR_WEEK_PLAN_CFG();
         struWeekPlan.dwSize = struWeekPlan.size();
-        struWeekPlan.byEnable = 1;
-        HCNetSDK.NET_DVR_SINGLE_PLAN_SEGMENT struSinglePlanSegment = new HCNetSDK.NET_DVR_SINGLE_PLAN_SEGMENT();
-        struWeekPlan.struPlanCfg = struSinglePlanSegment;
-
-        struWeekPlan.struPlanCfg.byEnable = 1;
-        struWeekPlan.struPlanCfg.byDoorStatus = 0;
-        struWeekPlan.struPlanCfg.byVerifyMode = 8; //8-ָ��+ˢ��
-        struWeekPlan.struPlanCfg.struTimeSegment.struBeginTime.byHour = 0x08; //8
-        struWeekPlan.struPlanCfg.struTimeSegment.struEndTime.byHour = 0x0e;   //14
+        IntByReference pInt = new IntByReference(0);
         struWeekPlan.write();
 
-        if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRConfig(LoginService.lUserID, 2101, new NativeLong(1), struWeekPlan.getPointer(), struWeekPlan.size())) {
-            System.out.println("HOLIDAY_PLAN_CFG2 failed with:" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+        if (!HCNetSDK.INSTANCE.NET_DVR_GetDVRConfig(iUserID, HCNetSDK.NET_DVR_GET_VERIFY_WEEK_PLAN, new NativeLong(1), struWeekPlan.getPointer(), struWeekPlan.size(), pInt)) {
+            System.out.println("获取周计划信息失败:" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
         } else {
-            System.out.println("HOLIDAY_PLAN_CFG2 succ");
+            System.out.println("获取周计划信息成功");
         }
-//            List<Map<String, String>> lists = new ArrayList<Map<String, String>>();
-//            for (int i = 0; i < 3; i++) {
-//                Map<String, String> map = new HashMap<String, String>();
-//                map.put("ip", "192.168.40." + i);
-//                map.put("is_online", "0：表示离线/1：表示在线");
-//                map.put("pass_mode", "0：表示卡+人脸/1：表示卡+人脸+密码");
-//                lists.add(map);
-//            }
-//            System.out.println(JSON.toJSONString(lists));
-//            ServerSocket ss = new ServerSocket(12345);
-//            System.out.println("启动服务器....");
-//            Socket s = ss.accept();
-//            System.out.println("客户端:" + s.getInetAddress().getLocalHost() + "已连接到服务器");
-//
-//            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-//            //读取客户端发送来的消息
-//            String mess = br.readLine();
-//            System.out.println("客户端：" + mess);
-//            OutputStream os = s.getOutputStream();
-//            os.write((JSON.toJSONString(lists) + "\n").getBytes());
-//            os.flush();
+        struWeekPlan.byEnable = 1;
+        for (int i = 0; i < 7; i++) {
+            struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].byEnable = 1;
+            struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].byVerifyMode = 13;//14是人脸；13是卡加人脸
+            struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].struTimeSegment.struBeginTime.byHour = 0; //时
+            struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].struTimeSegment.struBeginTime.byMinute = 0; //分
+            struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].struTimeSegment.struBeginTime.bySecond = 0; //秒
+            struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].struTimeSegment.struEndTime.byHour = 23;   //时
+            struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].struTimeSegment.struEndTime.byMinute = 59;   //分
+            struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].struTimeSegment.struEndTime.bySecond = 59;   //秒
+        }
+        struWeekPlan.write();
+        if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRConfig(iUserID, HCNetSDK.NET_DVR_SET_VERIFY_WEEK_PLAN, new NativeLong(1), struWeekPlan.getPointer(), struWeekPlan.size())) {
+            System.out.println("WEEK_PLAN_CFG2 failed with:" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+        } else {
+            System.out.println("读卡器通行方式更新成功");
+        }
     }
 }

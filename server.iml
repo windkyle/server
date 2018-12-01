@@ -43,5 +43,6 @@
     <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-compiler-manager:2.7" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.plexus:plexus-compiler-javac:2.7" level="project" />
     <orderEntry type="library" name="amqp-client-5.5.0" level="project" />
+    <orderEntry type="library" name="jna64" level="project" />
   </component>
 </module>

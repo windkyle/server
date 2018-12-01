@@ -1665,25 +1665,29 @@ public interface HCNetSDK extends StdCallLibrary {
         }
     }
 
-    public static class NET_DVR_WEEK_PLAN_CFG extends Structure {
-        public int dwSize;
-        public byte byEnable;  //whether to enable, 1-enable, 0-disable
-        public byte[] byRes1 = new byte[3];
-        public NET_DVR_SINGLE_PLAN_SEGMENT struPlanCfg; //week plan parameter
-        public byte[] byRes2 = new byte[16];
-
-//        public void Init() {
-//            struPlanCfg = new NET_DVR_SINGLE_PLAN_SEGMENT[MAX_DAYS * MAX_TIMESEGMENT_V30];
-//            NET_DVR_SINGLE_PLAN_SEGMENT singlStruPlanCfg;
-//            /*foreach (singlStruPlanCfg : struPlanCfg)
-//            {
-//                singlStruPlanCfg.Init();
-//            }*/
-//        }
+    //2-dimen array
+    public static class arrayStruPlanCfg extends Structure {
+        public NET_DVR_SINGLE_PLAN_SEGMENT[] struDaysPlanCfg = (NET_DVR_SINGLE_PLAN_SEGMENT[]) new NET_DVR_SINGLE_PLAN_SEGMENT().toArray(MAX_TIMESEGMENT_V30);
 
         @Override
-        protected List getFieldOrder() {
-            return Arrays.asList(new String[]{"dwSize", "byEnable", "byRes1", "struPlanCfg", "byRes2"});
+        protected List<String> getFieldOrder() {
+            // TODO Auto-generated method stub
+            return Arrays.asList("struDaysPlanCfg");
+        }
+    }
+
+    public static class NET_DVR_WEEK_PLAN_CFG extends Structure {
+        public int dwSize;
+        public byte byEnable;  //0-no,1-enabled
+        public byte[] byRes1 = new byte[3];
+        public arrayStruPlanCfg[] struPlanCfg = (arrayStruPlanCfg[]) new arrayStruPlanCfg().toArray(MAX_DAYS);
+        public byte[] byRes2 = new byte[16];
+
+        @Override
+        protected List<String> getFieldOrder() {
+            // TODO Auto-generated method stub
+            return Arrays.asList("dwSize", "byEnable", "byRes1", "struPlanCfg",
+                    "byRes2");
         }
     }
 

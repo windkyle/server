@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jna64">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/lib/jna64.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
