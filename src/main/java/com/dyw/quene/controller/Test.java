@@ -18,7 +18,7 @@ public class Test {
     public static void main(String[] args) {
         System.out.println(System.getProperty("user.dir"));
         LoginService loginService = new LoginService();
-        loginService.login("192.168.40.25", (short) 8000, "admin", "hik12345");
+        loginService.login("192.168.1.148", (short) 8000, "admin", "hik12345");
         //测试更改通行模式
         HCNetSDK.NET_DVR_WEEK_PLAN_CFG struWeekPlan = new HCNetSDK.NET_DVR_WEEK_PLAN_CFG();
         struWeekPlan.dwSize = struWeekPlan.size();
