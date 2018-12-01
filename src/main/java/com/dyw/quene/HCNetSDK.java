@@ -118,7 +118,7 @@ public interface HCNetSDK extends StdCallLibrary {
      * [in] dwInBufferSize- the send data buffer size, unit:byte
      */
     //public boolean NET_DVR_SetDVRConfig(int lUserID, int dwCommand, int lChannel, int lpInBuffer, int dwInBufferSize);
-    public boolean NET_DVR_SetDVRConfig(NativeLong lUserID, int dwCommand, NativeLong lChannel, int lpInBuffer, int dwInBufferSize);
+    public boolean NET_DVR_SetDVRConfig(NativeLong lUserID, int dwCommand, NativeLong lChannel, Pointer lpInBuffer, int dwInBufferSize);
 
     /* Long connection call back function
      * [out] dwType - refer enum NET_SDK_CALLBACK_TYPE
@@ -258,13 +258,14 @@ public interface HCNetSDK extends StdCallLibrary {
     /* Get version number of the SDK and build information*/
     //public int NET_DVR_GetSDKBuildVersion(); //convert return type int to int
 
-    /** remote control gateway
+    /**
+     * remote control gateway
      * [in] lUserID - NET_DVR_Login_V40 return value
      * [in] lGatewayIndex - 1-begin 0xffffffff-all
      * [in] dwStaic - : 0-close，1-open，2-always open，3-always close
      */
     //public boolean NET_DVR_ControlGateway(int lUserID, int lGatewayIndex, int dwStaic);
-    //public boolean NET_DVR_STDXMLConfig(int lUserID, int lpInputParam, int lpOutputParam);
+    public boolean NET_DVR_STDXMLConfig(int lUserID, int lpInputParam, int lpOutputParam);
 
     //HCNetSDK.dll macro definition
     //macro definition
@@ -1668,17 +1669,17 @@ public interface HCNetSDK extends StdCallLibrary {
         public int dwSize;
         public byte byEnable;  //whether to enable, 1-enable, 0-disable
         public byte[] byRes1 = new byte[3];
-        public NET_DVR_SINGLE_PLAN_SEGMENT[] struPlanCfg; //week plan parameter
+        public NET_DVR_SINGLE_PLAN_SEGMENT struPlanCfg; //week plan parameter
         public byte[] byRes2 = new byte[16];
 
-        public void Init() {
-            struPlanCfg = new NET_DVR_SINGLE_PLAN_SEGMENT[MAX_DAYS * MAX_TIMESEGMENT_V30];
-            NET_DVR_SINGLE_PLAN_SEGMENT singlStruPlanCfg;
-            /*foreach (singlStruPlanCfg : struPlanCfg)
-            {
-                singlStruPlanCfg.Init();
-            }*/
-        }
+//        public void Init() {
+//            struPlanCfg = new NET_DVR_SINGLE_PLAN_SEGMENT[MAX_DAYS * MAX_TIMESEGMENT_V30];
+//            NET_DVR_SINGLE_PLAN_SEGMENT singlStruPlanCfg;
+//            /*foreach (singlStruPlanCfg : struPlanCfg)
+//            {
+//                singlStruPlanCfg.Init();
+//            }*/
+//        }
 
         @Override
         protected List getFieldOrder() {

@@ -30,6 +30,13 @@ public class StatusService extends BaseService {
         }
     }
 
+    /*
+     * 设置设备状态
+     * */
+    public void setWorkStatus(NativeLong iUserID) {
+
+    }
+
     public HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50 getStatusV50() {
         return statusV50;
     }
