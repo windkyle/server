@@ -233,7 +233,7 @@ public interface HCNetSDK extends StdCallLibrary {
      * [out] pUser - user data
      */
     //public delegate void MSGCallBack(int lCommand, ref NET_DVR_ALARMER pAlarmer, int pAlarmInfo, int dwBufLen, int pUser);
-    //public delegate boolean MSGCallBack_V31(int lCommand, ref NET_DVR_ALARMER pAlarmer, int pAlarmInfo, int dwBufLen, int pUser);
+//    public delegate boolean MSGCallBack_V31(int lCommand, ref NET_DVR_ALARMER pAlarmer, int pAlarmInfo, int dwBufLen, int pUser);
 
     /* Alarm information registered callback function
      * [in] iIndex - iIndex, scope:[0,15]
@@ -242,7 +242,7 @@ public interface HCNetSDK extends StdCallLibrary {
      */
     //public boolean NET_DVR_SetDVRMessageCallBack_V50(int iIndex, MSGCallBack fMessageCallBack, int pUser);
 
-    //public boolean NET_DVR_SetDVRMessageCallBack_V31(MSGCallBack_V31 fMessageCallBack, int pUser);
+//    public boolean NET_DVR_SetDVRMessageCallBack_V31(MSGCallBack_V31 fMessageCallBack, int pUser);
 
     /* NET_DVR_GetDeviceAbility get device ability
      * [in] lUserID - NET_DVR_Login_V40 return value

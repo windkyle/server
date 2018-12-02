@@ -20,12 +20,18 @@ import java.util.logging.Logger;
 public class Egci {
     public static void main(String[] args) throws Exception {
         Logger logger = Logger.getLogger(Egci.class.getName());
+        //静态常量
+        short port = 8000;//端口
+        String name = "admin";//账户
+        String pass = "hik12345";//密码
         //初始化登陆对象
         LoginService loginService = new LoginService();
         //初始化人员实体
         StaffEntity staff = new StaffEntity();
         //初始化设备状态
         StatusService statusService = new StatusService();
+        //更改设备模式
+        ModeService modeService = new ModeService();
         //连接数据库
         DatabaseService databaseService = new DatabaseService();
         Connection dbConn = databaseService.connection();
@@ -96,7 +102,7 @@ public class Egci {
                 List<String> deviceInfos = new ArrayList();
                 for (String deviceIp : deviceIps) {
                     //判断是否在线
-                    loginService.login(deviceIp.substring(1), (short) 8000, "admin", "hik12345");
+                    loginService.login(deviceIp.substring(1), port, name, pass);
                     if (LoginService.lUserID.longValue() > -1) {
                         deviceInfos.add("1");
                     } else {
@@ -114,13 +120,35 @@ public class Egci {
                 os.close();
                 socketInfo.close();
             }
-            //设置设备的通行模式
+            //设置一体机的通行模式
             if (operationCode.equals("4")) {
-
+                String[] info = mess.split("#");
+                loginService.login(info[1], port, name, pass);
+                //卡+人脸+密码
+                if (info[2].equals("0")) {
+                    modeService.changeMode(LoginService.lUserID, (byte) 13);
+                }
+                //卡+人脸
+                if (info[2].equals("1")) {
+                    modeService.changeMode(LoginService.lUserID, (byte) 14);
+                }
             }
             //设置切换器模式:0是关闭人脸识别，1是开启人脸识别
             if (operationCode.equals("5")) {
 
+            }
+            //设置采集采集人脸方式：0是身份证+人脸，1是不刷身份证
+            if (operationCode.equals("6")) {
+                String[] info = mess.split("#");
+                loginService.login(info[1], port, name, pass);
+                //身份证+人脸
+                if (info[2].equals("0")) {
+                    modeService.changeMode(LoginService.lUserID, (byte) 13);
+                }
+                //人脸
+                if (info[2].equals("1")) {
+                    modeService.changeMode(LoginService.lUserID, (byte) 14);
+                }
             }
         }
     }

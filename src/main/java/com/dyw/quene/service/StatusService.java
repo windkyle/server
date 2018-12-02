@@ -4,6 +4,7 @@ import com.dyw.quene.HCNetSDK;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class StatusService extends BaseService {
@@ -26,7 +27,7 @@ public class StatusService extends BaseService {
         } else {
             struAcsWorkStatusCfg.read();
             statusV50 = struAcsWorkStatusCfg;
-            logger.info("卡数量：" + struAcsWorkStatusCfg.dwCardNum);
+            logger.info("卡数量：" + struAcsWorkStatusCfg.dwCardNum + "通行模式：" + struAcsWorkStatusCfg.byCardReaderVerifyMode[0]);
         }
     }
 
