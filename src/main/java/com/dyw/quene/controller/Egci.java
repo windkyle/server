@@ -124,11 +124,11 @@ public class Egci {
             if (operationCode.equals("4")) {
                 String[] info = mess.split("#");
                 loginService.login(info[1], port, name, pass);
-                //卡+人脸+密码
+                //卡+人脸
                 if (info[2].equals("0")) {
                     modeService.changeMode(LoginService.lUserID, (byte) 13);
                 }
-                //卡+人脸
+                //人脸
                 if (info[2].equals("1")) {
                     modeService.changeMode(LoginService.lUserID, (byte) 14);
                 }
