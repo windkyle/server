@@ -1,6 +1,7 @@
 package com.dyw.quene.service;
 
 import com.dyw.quene.HCNetSDK;
+import com.dyw.quene.entity.StatusEntity;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
 
@@ -16,19 +17,29 @@ public class StatusService extends BaseService {
     /*
      * 获取设备状态
      * */
-    public void getWorkStatus(NativeLong iUserID) {
+    public StatusEntity getWorkStatus(NativeLong iUserID) {
         HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50 struAcsWorkStatusCfg = new HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50();
         struAcsWorkStatusCfg.dwSize = struAcsWorkStatusCfg.size();
         IntByReference pInt = new IntByReference(struAcsWorkStatusCfg.size());
         NativeLong iChannel = new NativeLong(0xFFFFFFFF);
         struAcsWorkStatusCfg.write();
+        StatusEntity statusEntity = new StatusEntity();
         if (!HCNetSDK.INSTANCE.NET_DVR_GetDVRConfig(iUserID, HCNetSDK.NET_DVR_GET_ACS_WORK_STATUS_V50, iChannel, struAcsWorkStatusCfg.getPointer(), struAcsWorkStatusCfg.size(), pInt)) {
             logger.info("NET_DVR_GET_ACS_WORK_STATUS_V50 failed with:" + HCNetSDK.INSTANCE.NET_DVR_GetLastError() + HCNetSDK.INSTANCE.NET_DVR_GetErrorMsg(struAcsWorkStatusCfg.getPointer()));
+            statusEntity.setPassMode("-1");
+            statusEntity.setCardNumber("-1");
         } else {
             struAcsWorkStatusCfg.read();
             statusV50 = struAcsWorkStatusCfg;
+            statusEntity.setCardNumber(struAcsWorkStatusCfg.dwCardNum + "");
+            if (String.valueOf(struAcsWorkStatusCfg.byCardReaderVerifyMode[0]).equals("13")) {
+                statusEntity.setPassMode("0");
+            } else {
+                statusEntity.setPassMode("1");
+            }
             logger.info("卡数量：" + struAcsWorkStatusCfg.dwCardNum + "通行模式：" + struAcsWorkStatusCfg.byCardReaderVerifyMode[0]);
         }
+        return statusEntity;
     }
 
     /*
@@ -36,9 +47,5 @@ public class StatusService extends BaseService {
      * */
     public void setWorkStatus(NativeLong iUserID) {
 
-    }
-
-    public HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50 getStatusV50() {
-        return statusV50;
     }
 }

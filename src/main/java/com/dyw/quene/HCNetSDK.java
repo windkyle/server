@@ -2603,6 +2603,11 @@ public interface HCNetSDK extends StdCallLibrary {
         }
     }
 
+    //升级
+    NativeLong NET_DVR_Upgrade(NativeLong lUserID, String sFileName);
+
+    int NET_DVR_GetUpgradeProgress(NativeLong lUpgradeHandle);
+
     public static class NET_DVR_ACS_WORK_STATUS_V50 extends Structure {
         public int dwSize;
         public byte[] byDoorLockStatus = new byte[MAX_DOOR_NUM_256];//door lock status(relay status), 0 normally closed,1 normally open, 2 damage short - circuit alarm, 3 damage breaking alarm, 4 abnormal alarm

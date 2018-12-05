@@ -2,6 +2,7 @@ package com.dyw.quene.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.dyw.quene.HCNetSDK;
+import com.dyw.quene.entity.StatusEntity;
 import com.dyw.quene.service.*;
 import com.dyw.quene.entity.StaffEntity;
 import net.iharder.Base64;
@@ -18,45 +19,95 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Egci {
-    public static void main(String[] args) throws Exception {
-        Logger logger = Logger.getLogger(Egci.class.getName());
-        //静态常量
-        short port = 8000;//端口
-        String name = "admin";//账户
-        String pass = "hik12345";//密码
+    //静态常量
+    private static final short PORT = 8000;
+    private static final String NAME = "admin";
+    private static final String PASS = "hik12345";
+    //全局变量
+    private Logger logger;
+    private LoginService loginService;
+    private StaffEntity staff;
+    private StatusService statusService;
+    private ModeService modeService;
+    private DatabaseService databaseService;
+    private Statement stmt;
+    private List<String> deviceIps;
+    private ProducerService producerService;
+    private CustomerService customerService;
+    private List<StatusEntity> deviceStatus;
+
+    /*
+     * 构造函数
+     * */
+    public Egci() throws Exception {
+        logger = Logger.getLogger(Egci.class.getName());
         //初始化登陆对象
-        LoginService loginService = new LoginService();
+        loginService = new LoginService();
         //初始化人员实体
-        StaffEntity staff = new StaffEntity();
+        staff = new StaffEntity();
         //初始化设备状态
-        StatusService statusService = new StatusService();
+        statusService = new StatusService();
+        //初始化设备状态信息
+        deviceStatus = new ArrayList<StatusEntity>();
         //更改设备模式
-        ModeService modeService = new ModeService();
+        modeService = new ModeService();
         //连接数据库
-        DatabaseService databaseService = new DatabaseService();
-        Connection dbConn = databaseService.connection();
-        Statement stmt = dbConn.createStatement();
+        databaseService = new DatabaseService();
+        stmt = databaseService.connection().createStatement();
         //获取设备ip列表
         ResultSet resultSet = stmt.executeQuery("select IP from Equipment");
-        List<String> deviceIps = new ArrayList<String>();
+        deviceIps = new ArrayList<String>();
         while (resultSet.next()) {//如果对象中有数据，就会循环打印出来
             deviceIps.add("#" + resultSet.getString("IP"));
         }
-        System.out.println(deviceIps);
+//        deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
+        logger.info(String.valueOf(deviceIps));
         //初始化下发队列
-        ProducerService producerService = new ProducerService();
-        CustomerService customerService = new CustomerService();
+        producerService = new ProducerService();
+        customerService = new CustomerService();
         customerService.customer();
-        //开启socket服务
-        ServerSocket socket = new ServerSocket(12345);
-        logger.info("启动服务器....");
-        //保持监听
-        while (true) {
-            Socket socketInfo = socket.accept();
+    }
+
+    /*
+     * socket服务初始化
+     * */
+    public void initServer() throws Exception {
+        try {
+            ServerSocket serverSocket = new ServerSocket(12345);
+            serverSocket.setSoTimeout(0);
+            serverSocket.setReuseAddress(true);
+            logger.info("等待客户端连接......");
+            while (true) {
+                Socket socket = serverSocket.accept();
+                socket.setReuseAddress(true);
+                ClientServer clientServer = new ClientServer(socket);
+                clientServer.opration();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+     * 数据处理类
+     * */
+    class ClientServer {
+        Socket socketInfo;
+
+        public ClientServer(Socket socket) throws IOException, Exception {
+            this.socketInfo = socket;
+        }
+
+        /*
+         * 数据处理
+         * */
+        public void opration() throws Exception {
+            //查看客户端
             logger.info("客户端:" + socketInfo.getInetAddress().getHostAddress() + "已连接到服务器");
             //读取客户端发送来的信息
             BufferedReader br = new BufferedReader(new InputStreamReader(socketInfo.getInputStream()));
             String mess = br.readLine();
+            logger.info("客户端发来的消息：" + mess);
             String staffInfo = "";//结构体信息
             String operationCode = mess.substring(0, 1);
             //下发卡号人脸
@@ -76,7 +127,7 @@ public class Egci {
                 }
                 //返回消息给客户端
                 OutputStream os = socketInfo.getOutputStream();
-                os.write("success\n".getBytes());
+                os.write("success".getBytes());
                 os.flush();
                 br.close();
                 os.close();
@@ -99,22 +150,25 @@ public class Egci {
             }
             //获取设备状态
             if (operationCode.equals("3")) {
-                List<String> deviceInfos = new ArrayList();
                 for (String deviceIp : deviceIps) {
+                    StatusEntity statusEntity = new StatusEntity();
                     //判断是否在线
-                    loginService.login(deviceIp.substring(1), port, name, pass);
+                    loginService.login(deviceIp.substring(1), PORT, NAME, PASS);
                     if (LoginService.lUserID.longValue() > -1) {
-                        deviceInfos.add("1");
+                        statusEntity = statusService.getWorkStatus(LoginService.lUserID);
+                        statusEntity.setIsLogin("1");
+                        statusEntity.setDeviceIp(deviceIp.substring(1));
                     } else {
-                        deviceInfos.add("0");
+                        statusEntity.setIsLogin("0");
+                        statusEntity.setDeviceIp(deviceIp.substring(1));
+                        statusEntity.setCardNumber("-1");
+                        statusEntity.setPassMode("-1");
                     }
-                    statusService.getWorkStatus(LoginService.lUserID);
-                    HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50 statusV50 = statusService.getStatusV50();
-                    System.out.println(Arrays.toString(statusV50.byCardReaderVerifyMode));
+                    deviceStatus.add(statusEntity);
                 }
                 //返回消息给客户端
                 OutputStream os = socketInfo.getOutputStream();
-                os.write(JSON.toJSONString(deviceInfos).getBytes());
+                os.write(JSON.toJSONString(deviceStatus).getBytes());
                 os.flush();
                 br.close();
                 os.close();
@@ -123,7 +177,7 @@ public class Egci {
             //设置一体机的通行模式
             if (operationCode.equals("4")) {
                 String[] info = mess.split("#");
-                loginService.login(info[1], port, name, pass);
+                loginService.login(info[1], PORT, NAME, PASS);
                 //卡+人脸
                 if (info[2].equals("0")) {
                     modeService.changeMode(LoginService.lUserID, (byte) 13);
@@ -140,7 +194,7 @@ public class Egci {
             //设置采集采集人脸方式：0是身份证+人脸，1是不刷身份证
             if (operationCode.equals("6")) {
                 String[] info = mess.split("#");
-                loginService.login(info[1], port, name, pass);
+                loginService.login(info[1], PORT, NAME, PASS);
                 //身份证+人脸
                 if (info[2].equals("0")) {
                     modeService.changeMode(LoginService.lUserID, (byte) 13);
@@ -149,7 +203,20 @@ public class Egci {
                 if (info[2].equals("1")) {
                     modeService.changeMode(LoginService.lUserID, (byte) 14);
                 }
+                //返回消息给客户端
+                OutputStream os = socketInfo.getOutputStream();
+                os.write("success".getBytes());
+                os.flush();
+                br.close();
+                os.close();
+                socketInfo.close();
             }
         }
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        Egci egci = new Egci();
+        egci.initServer();
     }
 }
