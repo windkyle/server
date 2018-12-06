@@ -35,6 +35,7 @@ public class Egci {
     private ProducerService producerService;
     private CustomerService customerService;
     private List<StatusEntity> deviceStatus;
+    private String queneIp;
 
     /*
      * 构造函数
@@ -63,9 +64,9 @@ public class Egci {
 //        deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
         logger.info(String.valueOf(deviceIps));
         //初始化下发队列
-        producerService = new ProducerService();
-        customerService = new CustomerService();
-        customerService.customer();
+        queneIp = "127.0.0.1";
+        producerService = new ProducerService(queneIp);
+        customerService = new CustomerService(queneIp);
     }
 
     /*
@@ -81,7 +82,7 @@ public class Egci {
                 Socket socket = serverSocket.accept();
                 socket.setReuseAddress(true);
                 ClientServer clientServer = new ClientServer(socket);
-                clientServer.opration();
+                clientServer.operation();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,7 +102,7 @@ public class Egci {
         /*
          * 数据处理
          * */
-        public void opration() throws Exception {
+        public void operation() throws Exception {
             //查看客户端
             logger.info("客户端:" + socketInfo.getInetAddress().getHostAddress() + "已连接到服务器");
             //读取客户端发送来的信息
@@ -213,7 +214,6 @@ public class Egci {
             }
         }
     }
-
 
     public static void main(String[] args) throws Exception {
         Egci egci = new Egci();

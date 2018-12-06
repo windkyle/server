@@ -15,9 +15,9 @@ public class ProducerService {
     private Connection connection;
     private Channel channel;
 
-    public ProducerService() throws Exception {
+    public ProducerService(String queneIp) throws Exception {
         factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(queneIp);
         connection = factory.newConnection();
         channel = connection.createChannel();
     }

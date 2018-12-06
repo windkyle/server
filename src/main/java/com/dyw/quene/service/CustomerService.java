@@ -15,9 +15,9 @@ public class CustomerService extends BaseService {
     private CardService cardService = new CardService();
     private FaceService faceService = new FaceService();
 
-    public void customer() throws Exception {
+    public CustomerService(String queneIp) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(queneIp);
         Connection connection = factory.newConnection();
         final Channel channel = connection.createChannel();
         channel.queueDeclare(QUEUE_NAME, true, false, false, null);

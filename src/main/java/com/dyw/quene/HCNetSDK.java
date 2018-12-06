@@ -2608,6 +2608,20 @@ public interface HCNetSDK extends StdCallLibrary {
 
     int NET_DVR_GetUpgradeProgress(NativeLong lUpgradeHandle);
 
+    NativeLong NET_DVR_Upgrade_V40(NativeLong lUserID, ENUM_UPGRADE_TYPE dwUpgradeType, String sFileName, Pointer lpInBufer, int dwBufferSize);
+
+    //升级类型
+    enum ENUM_UPGRADE_TYPE
+    {
+        ENUM_UPGRADE_DVR, // 普通设备升级
+        ENUM_UPGRADE_ADAPTER, // DVR适配器升级
+        ENUM_UPGRADE_VCALIB, // 智能库升级
+        ENUM_UPGRADE_OPTICAL, // 光端机升级
+        ENUM_UPGRADE_ACS, // 门禁系统升级
+        ENUM_UPGRADE_AUXILIARY_DEV, // 辅助设备升级
+        ENUM_UPGRADE_LED //LED发送卡和接收卡升级
+    };
+
     public static class NET_DVR_ACS_WORK_STATUS_V50 extends Structure {
         public int dwSize;
         public byte[] byDoorLockStatus = new byte[MAX_DOOR_NUM_256];//door lock status(relay status), 0 normally closed,1 normally open, 2 damage short - circuit alarm, 3 damage breaking alarm, 4 abnormal alarm
