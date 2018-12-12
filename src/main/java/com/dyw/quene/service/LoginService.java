@@ -7,10 +7,10 @@ import java.util.logging.Logger;
 
 public class LoginService extends BaseService {
     private Logger logger = Logger.getLogger(LoginService.class.getName());
-    public static NativeLong lUserID = new NativeLong(-1);
+    private NativeLong lUserID = new NativeLong(-1);
     private static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
-    public boolean login(String ip, short port, String name, String pass) {
+    public NativeLong login(String ip, short port, String name, String pass) {
         //注册之前先注销已注册的用户,预览情况下不可注销
         if (lUserID.longValue() > -1) {
             //先注销
@@ -20,10 +20,16 @@ public class LoginService extends BaseService {
         HCNetSDK.NET_DVR_DEVICEINFO_V30 m_strDeviceInfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
         lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port, name, pass, m_strDeviceInfo);
         if (lUserID.longValue() < 0) {
-            logger.info("登陆错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            logger.info("设备登陆错误码：" + hcNetSDK.NET_DVR_GetLastError());
+        } else {
+            logger.info("设备登陆成功");
+
         }
-        long userID = lUserID.longValue();
-        return userID != -1;
+        return lUserID;
+    }
+
+    public NativeLong getlUserID() {
+        return lUserID;
     }
 
     public boolean logout() {

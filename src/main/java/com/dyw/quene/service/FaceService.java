@@ -11,14 +11,13 @@ import java.util.logging.Logger;
 
 public class FaceService extends BaseService {
     private Logger logger = Logger.getLogger(FaceService.class.getName());
-
     private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
     private FaceSendHandler faceSendHandler = new FaceSendHandler();
 
     /*
      * 人脸下发
      * */
-    public Boolean setFaceInfo(String cardNo, byte[] byteFace) {
+    public Boolean setFaceInfo(String cardNo, byte[] byteFace, NativeLong lUserID) {
         HCNetSDK.NET_DVR_FACE_PARAM_COND lpInBuffer = new HCNetSDK.NET_DVR_FACE_PARAM_COND();
         for (int i = 0; i < cardNo.length(); i++) {
             lpInBuffer.byCardNo[i] = (byte) cardNo.charAt(i);
@@ -30,9 +29,9 @@ public class FaceService extends BaseService {
         lpInBuffer.dwSize = lpInBuffer.size();
         lpInBuffer.write();
         // 启动远程配置。
-        NativeLong lHandle = hcNetSDK.NET_DVR_StartRemoteConfig(LoginService.lUserID, HCNetSDK.NET_DVR_SET_FACE_PARAM_CFG,
+        NativeLong lHandle = hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_FACE_PARAM_CFG,
                 lpInBuffer.getPointer(), lpInBuffer.size(), faceSendHandler, null);
-        logger.info("人脸下发错误码：" + hcNetSDK.NET_DVR_GetLastError());
+        logger.info("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
         lpInBuffer.read();
         // 发送长连接数据
         HCNetSDK.NET_DVR_FACE_PARAM_CFG pSendBuf = new HCNetSDK.NET_DVR_FACE_PARAM_CFG();
@@ -53,15 +52,37 @@ public class FaceService extends BaseService {
         pSendBuf.write();
         boolean result = hcNetSDK.NET_DVR_SendRemoteConfig(lHandle, HCNetSDK.ENUM_ACS_INTELLIGENT_IDENTITY_DATA,
                 pSendBuf.getPointer(), pSendBuf.size());
-        return true;
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!result) {
+            logger.info("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            stopRemoteConfig(lHandle);
+//            try {
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            return false;
+        } else {
+            logger.info("人脸下发成功");
+            stopRemoteConfig(lHandle);
+//            try {
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            return true;
+        }
     }
 
     /*
      * 删除人脸
      * */
-    public String delFace(String cardNo) {
+    public Boolean delFace(String cardNo, NativeLong lUserID) throws InterruptedException {
 
-        int iErr = 0;
         //删除人脸数据
         HCNetSDK.NET_DVR_FACE_PARAM_CTRL m_struFaceDel = new HCNetSDK.NET_DVR_FACE_PARAM_CTRL();
         m_struFaceDel.dwSize = m_struFaceDel.size();
@@ -73,14 +94,14 @@ public class FaceService extends BaseService {
         m_struFaceDel.struProcessMode.struByCard.byFaceID[0] = 1; //人脸ID
         m_struFaceDel.write();
         Pointer lpInBuffer = m_struFaceDel.getPointer();
-        boolean lRemoteCtrl = HCNetSDK.INSTANCE.NET_DVR_RemoteControl(LoginService.lUserID, HCNetSDK.NET_DVR_DEL_FACE_PARAM_CFG, lpInBuffer, m_struFaceDel.size());
+        boolean lRemoteCtrl = HCNetSDK.INSTANCE.NET_DVR_RemoteControl(lUserID, HCNetSDK.NET_DVR_DEL_FACE_PARAM_CFG, lpInBuffer, m_struFaceDel.size());
         if (!lRemoteCtrl) {
-            iErr = HCNetSDK.INSTANCE.NET_DVR_GetLastError();
-            logger.info("NET_DVR_DEL_FACE_PARAM_CFG删除人脸图片失败，错误号：" + iErr);
+            logger.info("删除人脸图片失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            return false;
         } else {
-            logger.info("NET_DVR_DEL_FACE_PARAM_CFG成功!");
+            logger.info("删除人脸图片成功!");
+            return true;
         }
-        return "adfadsf";
     }
 
     /*
@@ -100,5 +121,19 @@ public class FaceService extends BaseService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /*
+     *
+     * 断开长连接
+     * */
+    public Boolean stopRemoteConfig(NativeLong conFlag) {
+        if (!HCNetSDK.INSTANCE.NET_DVR_StopRemoteConfig(conFlag)) {
+            logger.info("人脸图片断开长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            return false;
+        } else {
+            logger.info("人脸图片长连接断开成功！");
+            return true;
+        }
     }
 }

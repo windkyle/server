@@ -1,6 +1,5 @@
 package com.dyw.quene.service;
 
-import com.dyw.quene.HCNetSDK;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
@@ -11,7 +10,6 @@ import net.iharder.Base64;
 public class CustomerService extends BaseService {
     private Logger logger = Logger.getLogger(CustomerService.class.getName());
     private final static String QUEUE_NAME = "dyw";
-    private LoginService loginService = new LoginService();
     private CardService cardService = new CardService();
     private FaceService faceService = new FaceService();
 
@@ -30,29 +28,30 @@ public class CustomerService extends BaseService {
                 String cardNo = personInfo[1];//卡号
                 String cardName = personInfo[2];//姓名
                 String picInfo = personInfo[3];//人脸信息
-                String ip = personInfo[4];//ip
-                logger.info("正在执行的IP:" + ip);
+                String ip = personInfo[4];//ip地址
+                logger.info("正在执行操作的IP:" + ip + ",卡号：" + cardNo);
+
                 //登陆
-                Boolean loginStatus = loginService.login(ip, (short) 8000, "admin", "hik12345");
-                if (loginStatus) {
-                    //判断卡号是否存在，存在卡号则先删除
+                LoginService loginService = new LoginService();
+                loginService.login(ip, (short) 8000, "admin", "hik12345");
+                if (loginService.getlUserID().longValue() > -1) {
+                    //判断卡号是否存在，存在卡号则先删除和人脸/如果命令是2，则正好只执行删除操作
                     try {
-                        if (cardService.getCardInfo(cardNo)) {
+                        if (cardService.getCardInfo(cardNo, loginService.getlUserID())) {
                             logger.info("卡号已存在，先删除卡号和人脸");
-                            cardService.delCardInfo(cardNo);
-                            faceService.delFace(cardNo);
+                            cardService.delCardInfo(cardNo, loginService.getlUserID());
+                            faceService.delFace(cardNo, loginService.getlUserID());
                         }
-                    } catch (Exception e) {
-                        logger.info("删除卡号失败:");
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     //判断操作码
                     if (operationCode.equals("1")) {
-                        //卡号下发
-                        Boolean cardStatus = cardService.setCardInfo(cardNo, cardName, "666666");
+                        //卡号姓名下发
+                        Boolean cardStatus = cardService.setCardInfo(loginService.getlUserID(), cardNo, cardName, "666666");
                         if (cardStatus) {
-                            //图片下发
-                            Boolean faceStatus = faceService.setFaceInfo(cardNo, Base64.decode(picInfo));
+                            //人脸图片下发
+                            Boolean faceStatus = faceService.setFaceInfo(cardNo, Base64.decode(picInfo), loginService.getlUserID());
                             if (faceStatus) {
                                 channel.basicAck(envelope.getDeliveryTag(), false);
                             } else {

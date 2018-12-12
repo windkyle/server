@@ -1,43 +1,73 @@
 package com.dyw.quene.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.dyw.quene.HCNetSDK;
-import com.dyw.quene.entity.StaffEntity;
-import com.dyw.quene.entity.StatusEntity;
-import com.dyw.quene.service.ModeService;
-import com.dyw.quene.service.LoginService;
-import com.dyw.quene.service.StatusService;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-
-import java.io.BufferedReader;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.dyw.quene.HCNetSDK.ENUM_UPGRADE_TYPE.ENUM_UPGRADE_ACS;
-import static com.dyw.quene.HCNetSDK.ENUM_UPGRADE_TYPE.ENUM_UPGRADE_DVR;
 
 public class Test {
-    public static void main(String[] args) {
-        LoginService loginService = new LoginService();
-        loginService.login("192.168.1.148", (short) 8000, "admin", "hik12345");
 
-        IntByReference intRef = new IntByReference(4);
-        Pointer lpPointer = intRef.getPointer();
-        System.out.println(HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+    public static void main(String[] args) throws IOException {
+        File dir = new File("E:\\picture");
+        /*
+         * 列出目录中的图片，得到数组
+         * */
+        File[] files = dir.listFiles();
+        /*
+         * 遍历数组
+         * */
+        for (int x = 0; x < files.length; x++) {
+            /*
+             * 定义一个数组，存放RGB值
+             * */
+            int[] rgb = new int[3];
+            /*
+             * byte转换BuffereImage
+             * */
+            BufferedImage bImage = null;
+            bImage = ImageIO.read(files[x]);
 
-        NativeLong jindu = HCNetSDK.INSTANCE.NET_DVR_Upgrade_V40(LoginService.lUserID, HCNetSDK.ENUM_UPGRADE_TYPE.ENUM_UPGRADE_ACS,
-                "D:\\digicap.dav", lpPointer, 4);
-        System.out.println(HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            int width = bImage.getWidth();
+            int height = bImage.getHeight();
+            int minx = bImage.getMinTileX();
+            int miny = bImage.getMinTileY();
+            System.out.println("正在处理..." + files[x].getName());
 
-        while (true) {
-            System.out.println(HCNetSDK.INSTANCE.NET_DVR_GetUpgradeProgress(jindu));
+            /*
+             * 遍历像素点，判断是否更换颜色
+             * */
+            for (int i = minx; i < width; i++) {
+                for (int j = miny; j < height; j++) {
+                    /*
+                     * 换色
+                     * */
+                    int pixel = bImage.getRGB(i, j);
+                    rgb[0] = (pixel & 0xff0000) >> 16;
+                    rgb[1] = (pixel & 0xff00) >> 8;
+                    rgb[2] = (pixel & 0xff);
+
+                    if (rgb[0] < 230 && rgb[0] > 100 && rgb[1] < 230 && rgb[1] > 100 && rgb[2] < 230 && rgb[2] > 100) {
+                        bImage.setRGB(i, j, 0xffffff);
+                    }
+                }
+            }
+            System.out.println("\t处理完毕：" + files[x].getName());
+            System.out.println();
+            /*
+             * 输出
+             * */
+            FileOutputStream ops;
+            try {
+                ops = new FileOutputStream(new File("E:\\picturedone\\" + x + ".jpg"));
+                ImageIO.write(bImage, "jpg", ops);
+                ops.flush();
+                ops.close();
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
     }

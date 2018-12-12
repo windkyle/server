@@ -1,7 +1,6 @@
 package com.dyw.quene.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.dyw.quene.HCNetSDK;
 import com.dyw.quene.entity.StatusEntity;
 import com.dyw.quene.service.*;
 import com.dyw.quene.entity.StaffEntity;
@@ -10,11 +9,9 @@ import net.iharder.Base64;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -25,7 +22,6 @@ public class Egci {
     private static final String PASS = "hik12345";
     //全局变量
     private Logger logger;
-    private LoginService loginService;
     private StaffEntity staff;
     private StatusService statusService;
     private ModeService modeService;
@@ -42,8 +38,6 @@ public class Egci {
      * */
     public Egci() throws Exception {
         logger = Logger.getLogger(Egci.class.getName());
-        //初始化登陆对象
-        loginService = new LoginService();
         //初始化人员实体
         staff = new StaffEntity();
         //初始化设备状态
@@ -116,8 +110,8 @@ public class Egci {
                 //读取数据库获取人员信息
                 ResultSet rs = stmt.executeQuery("select CardNumber,Name,Photo from Staff WHERE CardNumber = " + mess.substring(2));
                 while (rs.next()) {//如果对象中有数据，就会循环打印出来
-                    staff.setName(rs.getString("name"));
-                    staff.setCardNumber(rs.getString("cardNumber"));
+                    staff.setName(rs.getString("Name"));
+                    staff.setCardNumber(rs.getString("CardNumber"));
                     staff.setPhoto(rs.getBytes("Photo"));
                 }
                 //重新组织人员信息:操作码+卡号+名称+图片
@@ -136,7 +130,7 @@ public class Egci {
             }
             //删除卡号和人脸
             if (operationCode.equals("2")) {
-                staffInfo = "2#" + staff.getCardNumber() + "#test#none";
+                staffInfo = "2#" + mess.substring(2) + "#test#none";
                 //发送消息到队列中
                 for (String deviceIp : deviceIps) {
                     producerService.sendToQuene(staffInfo.concat(deviceIp));
@@ -151,12 +145,13 @@ public class Egci {
             }
             //获取设备状态
             if (operationCode.equals("3")) {
+                LoginService loginService = new LoginService();
                 for (String deviceIp : deviceIps) {
                     StatusEntity statusEntity = new StatusEntity();
                     //判断是否在线
                     loginService.login(deviceIp.substring(1), PORT, NAME, PASS);
-                    if (LoginService.lUserID.longValue() > -1) {
-                        statusEntity = statusService.getWorkStatus(LoginService.lUserID);
+                    if (loginService.getlUserID().longValue() > -1) {
+                        statusEntity = statusService.getWorkStatus(loginService.getlUserID());
                         statusEntity.setIsLogin("1");
                         statusEntity.setDeviceIp(deviceIp.substring(1));
                     } else {
@@ -177,15 +172,30 @@ public class Egci {
             }
             //设置一体机的通行模式
             if (operationCode.equals("4")) {
+                LoginService loginService = new LoginService();
                 String[] info = mess.split("#");
                 loginService.login(info[1], PORT, NAME, PASS);
                 //卡+人脸
                 if (info[2].equals("0")) {
-                    modeService.changeMode(LoginService.lUserID, (byte) 13);
+                    modeService.changeMode(loginService.getlUserID(), (byte) 13);
+                    //返回消息给客户端
+                    OutputStream os = socketInfo.getOutputStream();
+                    os.write("success".getBytes());
+                    os.flush();
+                    br.close();
+                    os.close();
+                    socketInfo.close();
                 }
                 //人脸
                 if (info[2].equals("1")) {
-                    modeService.changeMode(LoginService.lUserID, (byte) 14);
+                    modeService.changeMode(loginService.getlUserID(), (byte) 14);
+                    //返回消息给客户端
+                    OutputStream os = socketInfo.getOutputStream();
+                    os.write("success".getBytes());
+                    os.flush();
+                    br.close();
+                    os.close();
+                    socketInfo.close();
                 }
             }
             //设置切换器模式:0是关闭人脸识别，1是开启人脸识别
@@ -194,15 +204,17 @@ public class Egci {
             }
             //设置采集采集人脸方式：0是身份证+人脸，1是不刷身份证
             if (operationCode.equals("6")) {
+                LoginService loginService = new LoginService();
+
                 String[] info = mess.split("#");
                 loginService.login(info[1], PORT, NAME, PASS);
                 //身份证+人脸
                 if (info[2].equals("0")) {
-                    modeService.changeMode(LoginService.lUserID, (byte) 13);
+                    modeService.changeMode(loginService.getlUserID(), (byte) 13);
                 }
                 //人脸
                 if (info[2].equals("1")) {
-                    modeService.changeMode(LoginService.lUserID, (byte) 14);
+                    modeService.changeMode(loginService.getlUserID(), (byte) 14);
                 }
                 //返回消息给客户端
                 OutputStream os = socketInfo.getOutputStream();
@@ -215,8 +227,14 @@ public class Egci {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        Egci egci = new Egci();
-        egci.initServer();
+    public static void main(String[] args) {
+        try {
+            Egci egci = new Egci();
+            egci.initServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            System.out.println("出现异常");
+        }
     }
 }
