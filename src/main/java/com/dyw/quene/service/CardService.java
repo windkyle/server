@@ -32,9 +32,6 @@ public class CardService extends BaseService {
         struCardInfo.dwModifyParamType = 0x00000001 + 0x00000002 + 0x00000004 + 0x00000008 +
                 0x00000010 + 0x00000020 + 0x00000080 + 0x00000100 + 0x00000200 + 0x00000400 + 0x00000800;
 
-        for (int i = 0; i < HCNetSDK.ACS_CARD_NO_LEN; i++) {
-            struCardInfo.byCardNo[i] = 0;
-        }
         struCardInfo.byCardValid = 1;
         struCardInfo.wRoomNumber = 302;
         struCardInfo.byCardType = 1;
@@ -48,6 +45,9 @@ public class CardService extends BaseService {
         struCardInfo.byCardPassword = password.getBytes();//密码；固定
         //设置卡号
         try {
+            for (int i = 0; i < HCNetSDK.ACS_CARD_NO_LEN; i++) {
+                struCardInfo.byCardNo[i] = 0;
+            }
             byte[] cardNoBytes = cardNo.getBytes(); //卡号
             System.arraycopy(cardNoBytes, 0, struCardInfo.byCardNo, 0, cardNoBytes.length);
         } catch (Exception e) {
@@ -55,6 +55,9 @@ public class CardService extends BaseService {
         }
         // 设置卡片名称
         try {
+            for (int i = 0; i < HCNetSDK.NAME_LEN; i++) {
+                struCardInfo.byName[i] = 0;
+            }
             byte[] nameBytes = cardName.getBytes("GBK");
             System.arraycopy(nameBytes, 0, struCardInfo.byName, 0, nameBytes.length);
         } catch (UnsupportedEncodingException e) {

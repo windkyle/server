@@ -1,9 +1,11 @@
 package com.dyw.quene.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.dyw.quene.entity.ConfigEntity;
 import com.dyw.quene.entity.StatusEntity;
 import com.dyw.quene.service.*;
 import com.dyw.quene.entity.StaffEntity;
+import com.dyw.quene.tool.Tool;
 import net.iharder.Base64;
 
 import java.io.*;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Egci {
+    //读取配置文件
+    private static ConfigEntity configEntity;
     //静态常量
     private static final short PORT = 8000;
     private static final String NAME = "admin";
@@ -28,15 +32,19 @@ public class Egci {
     private DatabaseService databaseService;
     private Statement stmt;
     private List<String> deviceIps;
-    private ProducerService producerService;
-    private CustomerService customerService;
     private List<StatusEntity> deviceStatus;
     private String queneIp;
+    //初始化生产者数组
+    private List<ProducerService> producerServiceList;
 
     /*
      * 构造函数
      * */
     public Egci() throws Exception {
+        //获取配置文件
+        configEntity = Tool.getConfig();
+        System.out.println(configEntity.getDataBaseLib());
+
         logger = Logger.getLogger(Egci.class.getName());
         //初始化人员实体
         staff = new StaffEntity();
@@ -58,9 +66,14 @@ public class Egci {
 //        deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
         logger.info(String.valueOf(deviceIps));
         //初始化下发队列
+        producerServiceList = new ArrayList<ProducerService>();
         queneIp = "127.0.0.1";
-        producerService = new ProducerService(queneIp);
-        customerService = new CustomerService(queneIp);
+        for (int i = 0; i < 52; i++) {
+            ProducerService producerService = new ProducerService(i + "", queneIp);
+            producerServiceList.add(producerService);
+            CustomerService customerService = new CustomerService(i + "", queneIp);
+            customerService.start();
+        }
     }
 
     /*
@@ -108,7 +121,9 @@ public class Egci {
             //下发卡号人脸
             if (operationCode.equals("1")) {
                 //读取数据库获取人员信息
-                ResultSet rs = stmt.executeQuery("select CardNumber,Name,Photo from Staff WHERE CardNumber = " + mess.substring(2));
+                String sql = "select CardNumber,Name,Photo from Staff WHERE CardNumber = '" + mess.substring(2) + "'";
+                ResultSet rs = stmt.executeQuery(sql);
+                //"delete from Users where UserID='"+UserID+"'"
                 while (rs.next()) {//如果对象中有数据，就会循环打印出来
                     staff.setName(rs.getString("Name"));
                     staff.setCardNumber(rs.getString("CardNumber"));
@@ -117,8 +132,8 @@ public class Egci {
                 //重新组织人员信息:操作码+卡号+名称+图片
                 staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
                 //发送消息到队列中
-                for (String deviceIp : deviceIps) {
-                    producerService.sendToQuene(staffInfo.concat(deviceIp));
+                for (int i = 0; i < deviceIps.size(); i++) {
+                    producerServiceList.get(i).sendToQuene(staffInfo.concat(deviceIps.get(i)));
                 }
                 //返回消息给客户端
                 OutputStream os = socketInfo.getOutputStream();
@@ -132,8 +147,8 @@ public class Egci {
             if (operationCode.equals("2")) {
                 staffInfo = "2#" + mess.substring(2) + "#test#none";
                 //发送消息到队列中
-                for (String deviceIp : deviceIps) {
-                    producerService.sendToQuene(staffInfo.concat(deviceIp));
+                for (int i = 0; i < deviceIps.size(); i++) {
+                    producerServiceList.get(i).sendToQuene(staffInfo.concat(deviceIps.get(i)));
                 }
                 //返回消息给客户端
                 OutputStream os = socketInfo.getOutputStream();

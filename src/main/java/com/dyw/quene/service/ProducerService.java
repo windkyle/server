@@ -9,13 +9,14 @@ import java.util.logging.Logger;
 
 public class ProducerService {
 
-    private final static String QUEUE_NAME = "dyw";
+    private String queueName;
     private Logger logger = Logger.getLogger(ProducerService.class.getName());
     private ConnectionFactory factory;
     private Connection connection;
     private Channel channel;
 
-    public ProducerService(String queneIp) throws Exception {
+    public ProducerService(String queueName, String queneIp) throws Exception {
+        this.queueName = queueName;
         factory = new ConnectionFactory();
         factory.setHost(queneIp);
         connection = factory.newConnection();
@@ -23,6 +24,6 @@ public class ProducerService {
     }
 
     public void sendToQuene(String body) throws Exception {
-        channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, body.getBytes("UTF-8"));
+        channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, body.getBytes("UTF-8"));
     }
 }
