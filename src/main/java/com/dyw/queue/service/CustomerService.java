@@ -1,4 +1,4 @@
-package com.dyw.quene.service;
+package com.dyw.queue.service;
 
 import com.rabbitmq.client.*;
 
@@ -11,21 +11,21 @@ import net.iharder.Base64;
 public class CustomerService extends BaseService implements Runnable {
     private Logger logger = Logger.getLogger(CustomerService.class.getName());
     private String queueName;
-    private String queneIp;
+    private String queueIp;
     private CardService cardService = new CardService();
     private FaceService faceService = new FaceService();
     private Thread t;
 
-    public CustomerService(String queueName, String queneIp) {
+    public CustomerService(String queueName, String queueIp) {
         this.queueName = queueName;
-        this.queneIp = queneIp;
+        this.queueIp = queueIp;
     }
 
     @Override
     public void run() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(queneIp);
+            factory.setHost(queueIp);
             Connection connection = factory.newConnection();
             final Channel channel = connection.createChannel();
             try {

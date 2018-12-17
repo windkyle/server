@@ -1,6 +1,6 @@
-package com.dyw.quene.service;
+package com.dyw.queue.service;
 
-import com.dyw.quene.HCNetSDK;
+import com.dyw.queue.HCNetSDK;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
 

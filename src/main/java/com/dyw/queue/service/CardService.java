@@ -1,8 +1,8 @@
-package com.dyw.quene.service;
+package com.dyw.queue.service;
 
-import com.dyw.quene.HCNetSDK;
-import com.dyw.quene.handler.CardGetHandler;
-import com.dyw.quene.handler.CardSendHandler;
+import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.handler.CardGetHandler;
+import com.dyw.queue.handler.CardSendHandler;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 

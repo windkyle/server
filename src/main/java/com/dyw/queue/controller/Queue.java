@@ -1,7 +1,7 @@
 //package com.dyw.quene.controller;
 //
-//import com.dyw.quene.service.CustomerService;
-//import com.dyw.quene.service.ProducerService;
+//import com.dyw.queue.service.CustomerService;
+//import com.dyw.queue.service.ProducerService;
 //
 //public class Queue implements Runnable {
 //    private String queueName;

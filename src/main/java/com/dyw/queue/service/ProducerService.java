@@ -1,4 +1,4 @@
-package com.dyw.quene.service;
+package com.dyw.queue.service;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -23,7 +23,7 @@ public class ProducerService {
         channel = connection.createChannel();
     }
 
-    public void sendToQuene(String body) throws Exception {
+    public void sendToQueue(String body) throws Exception {
         channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, body.getBytes("UTF-8"));
     }
 }

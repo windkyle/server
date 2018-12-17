@@ -1,8 +1,8 @@
-package com.dyw.quene.service;
+package com.dyw.queue.service;
 
-import com.dyw.quene.HCNetSDK;
-import com.dyw.quene.entity.FaceInfoEntity;
-import com.dyw.quene.handler.FaceSendHandler;
+import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.entity.FaceInfoEntity;
+import com.dyw.queue.handler.FaceSendHandler;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 

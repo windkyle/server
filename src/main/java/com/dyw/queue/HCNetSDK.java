@@ -1,4 +1,4 @@
-package com.dyw.quene;
+package com.dyw.queue;
 
 import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;

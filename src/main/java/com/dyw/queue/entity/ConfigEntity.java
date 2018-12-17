@@ -1,8 +1,7 @@
-package com.dyw.quene.entity;
+package com.dyw.queue.entity;
 
 public class ConfigEntity {
-    //一体机配置
-    private String deviceIp;//设备ip
+    //一体机通用配置
     private short devicePort;//设备端口
     private String deviceName;//设备账号
     private String devicePass;//设备密码
@@ -16,14 +15,6 @@ public class ConfigEntity {
     private String queueIp;//队列ip
     //socket配置
     private short socketPort;//socket端口
-
-    public String getDeviceIp() {
-        return deviceIp;
-    }
-
-    public void setDeviceIp(String deviceIp) {
-        this.deviceIp = deviceIp;
-    }
 
     public short getDevicePort() {
         return devicePort;

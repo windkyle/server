@@ -1,11 +1,11 @@
-package com.dyw.quene.controller;
+package com.dyw.queue.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.dyw.quene.entity.ConfigEntity;
-import com.dyw.quene.entity.StatusEntity;
-import com.dyw.quene.service.*;
-import com.dyw.quene.entity.StaffEntity;
-import com.dyw.quene.tool.Tool;
+import com.dyw.queue.entity.ConfigEntity;
+import com.dyw.queue.entity.StatusEntity;
+import com.dyw.queue.service.*;
+import com.dyw.queue.entity.StaffEntity;
+import com.dyw.queue.tool.Tool;
 import net.iharder.Base64;
 
 import java.io.*;
@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Egci {
-    //读取配置文件
+    //配置文件
     private static ConfigEntity configEntity;
-    //静态常量
-    private static final short PORT = 8000;
-    private static final String NAME = "admin";
-    private static final String PASS = "hik12345";
+    //一体机变量
+    private short devicePort;
+    private String deviceName;
+    private String devicePass;
     //全局变量
     private Logger logger;
     private StaffEntity staff;
@@ -33,7 +33,7 @@ public class Egci {
     private Statement stmt;
     private List<String> deviceIps;
     private List<StatusEntity> deviceStatus;
-    private String queneIp;
+    private String queueIp;
     //初始化生产者数组
     private List<ProducerService> producerServiceList;
 
@@ -41,10 +41,14 @@ public class Egci {
      * 构造函数
      * */
     public Egci() throws Exception {
-        //获取配置文件
+        //读取配置文件
         configEntity = Tool.getConfig();
         System.out.println(configEntity.getDataBaseLib());
 
+        //一体机参数配置
+        devicePort = configEntity.getDevicePort();
+        deviceName = configEntity.getDeviceName();
+        devicePass = configEntity.getDevicePass();
         logger = Logger.getLogger(Egci.class.getName());
         //初始化人员实体
         staff = new StaffEntity();
@@ -55,7 +59,7 @@ public class Egci {
         //更改设备模式
         modeService = new ModeService();
         //连接数据库
-        databaseService = new DatabaseService();
+        databaseService = new DatabaseService(configEntity.getDataBaseIp(), configEntity.getDataBasePort(), configEntity.getDataBaseName(), configEntity.getDataBasePass(), configEntity.getDataBaseLib());
         stmt = databaseService.connection().createStatement();
         //获取设备ip列表
         ResultSet resultSet = stmt.executeQuery("select IP from Equipment");
@@ -63,15 +67,15 @@ public class Egci {
         while (resultSet.next()) {//如果对象中有数据，就会循环打印出来
             deviceIps.add("#" + resultSet.getString("IP"));
         }
-//        deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
+        //deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
         logger.info(String.valueOf(deviceIps));
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
-        queneIp = "127.0.0.1";
-        for (int i = 0; i < 52; i++) {
-            ProducerService producerService = new ProducerService(i + "", queneIp);
+        queueIp = configEntity.getQueueIp();//获取队列ip
+        for (int i = 0; i < deviceIps.size(); i++) {
+            ProducerService producerService = new ProducerService(i + "：" + deviceIps.get(i), queueIp);
             producerServiceList.add(producerService);
-            CustomerService customerService = new CustomerService(i + "", queneIp);
+            CustomerService customerService = new CustomerService(i + "：" + deviceIps.get(i), queueIp);
             customerService.start();
         }
     }
@@ -81,7 +85,7 @@ public class Egci {
      * */
     public void initServer() throws Exception {
         try {
-            ServerSocket serverSocket = new ServerSocket(12345);
+            ServerSocket serverSocket = new ServerSocket(configEntity.getSocketPort());
             serverSocket.setSoTimeout(0);
             serverSocket.setReuseAddress(true);
             logger.info("等待客户端连接......");
@@ -102,7 +106,7 @@ public class Egci {
     class ClientServer {
         Socket socketInfo;
 
-        public ClientServer(Socket socket) throws IOException, Exception {
+        public ClientServer(Socket socket) {
             this.socketInfo = socket;
         }
 
@@ -133,7 +137,7 @@ public class Egci {
                 staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
                 //发送消息到队列中
                 for (int i = 0; i < deviceIps.size(); i++) {
-                    producerServiceList.get(i).sendToQuene(staffInfo.concat(deviceIps.get(i)));
+                    producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
                 }
                 //返回消息给客户端
                 OutputStream os = socketInfo.getOutputStream();
@@ -148,7 +152,7 @@ public class Egci {
                 staffInfo = "2#" + mess.substring(2) + "#test#none";
                 //发送消息到队列中
                 for (int i = 0; i < deviceIps.size(); i++) {
-                    producerServiceList.get(i).sendToQuene(staffInfo.concat(deviceIps.get(i)));
+                    producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
                 }
                 //返回消息给客户端
                 OutputStream os = socketInfo.getOutputStream();
@@ -164,7 +168,7 @@ public class Egci {
                 for (String deviceIp : deviceIps) {
                     StatusEntity statusEntity = new StatusEntity();
                     //判断是否在线
-                    loginService.login(deviceIp.substring(1), PORT, NAME, PASS);
+                    loginService.login(deviceIp.substring(1), devicePort, deviceName, devicePass);
                     if (loginService.getlUserID().longValue() > -1) {
                         statusEntity = statusService.getWorkStatus(loginService.getlUserID());
                         statusEntity.setIsLogin("1");
@@ -189,7 +193,7 @@ public class Egci {
             if (operationCode.equals("4")) {
                 LoginService loginService = new LoginService();
                 String[] info = mess.split("#");
-                loginService.login(info[1], PORT, NAME, PASS);
+                loginService.login(info[1], devicePort, deviceName, devicePass);
                 //卡+人脸
                 if (info[2].equals("0")) {
                     modeService.changeMode(loginService.getlUserID(), (byte) 13);
@@ -222,7 +226,7 @@ public class Egci {
                 LoginService loginService = new LoginService();
 
                 String[] info = mess.split("#");
-                loginService.login(info[1], PORT, NAME, PASS);
+                loginService.login(info[1], devicePort, deviceName, devicePass);
                 //身份证+人脸
                 if (info[2].equals("0")) {
                     modeService.changeMode(loginService.getlUserID(), (byte) 13);

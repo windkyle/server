@@ -1,6 +1,6 @@
-package com.dyw.quene.handler;
+package com.dyw.queue.handler;
 
-import com.dyw.quene.HCNetSDK;
+import com.dyw.queue.HCNetSDK;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 

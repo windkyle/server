@@ -1,4 +1,4 @@
-package com.dyw.quene.entity;
+package com.dyw.queue.entity;
 
 public class StaffEntity {
     private String cardNumber;

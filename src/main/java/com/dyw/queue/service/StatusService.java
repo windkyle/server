@@ -1,7 +1,7 @@
-package com.dyw.quene.service;
+package com.dyw.queue.service;
 
-import com.dyw.quene.HCNetSDK;
-import com.dyw.quene.entity.StatusEntity;
+import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.entity.StatusEntity;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
 

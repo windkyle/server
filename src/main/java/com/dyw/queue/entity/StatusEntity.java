@@ -1,4 +1,4 @@
-package com.dyw.quene.entity;
+package com.dyw.queue.entity;
 
 public class StatusEntity {
     private String deviceIp;
