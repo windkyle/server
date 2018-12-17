@@ -101,7 +101,7 @@ public class Egci {
                 clientServer.operation();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Elogger.error("开启socket服务失败：", e);
         }
     }
 
@@ -250,7 +250,14 @@ public class Egci {
         } catch (Exception e) {
             Elogger.error("错误：", e);
         } finally {
-            Elogger.error("出现异常");
+            Elogger.error("人脸通行服务程序出现严重错误,需要被关闭");
+            System.out.print("人脸通行服务程序出现严重错误,需要被关闭,请按任意键关闭程序后重新打开...");
+            char i = 0;
+            try {
+                i = (char) System.in.read();
+            } catch (IOException e) {
+                Elogger.error("程序异常退出：", e);
+            }
         }
     }
 }
