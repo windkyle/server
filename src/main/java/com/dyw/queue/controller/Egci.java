@@ -60,15 +60,20 @@ public class Egci {
         modeService = new ModeService();
         //连接数据库
         databaseService = new DatabaseService(configEntity.getDataBaseIp(), configEntity.getDataBasePort(), configEntity.getDataBaseName(), configEntity.getDataBasePass(), configEntity.getDataBaseLib());
-        stmt = databaseService.connection().createStatement();
-        //获取设备ip列表
-        ResultSet resultSet = stmt.executeQuery("select IP from Equipment");
-        deviceIps = new ArrayList<String>();
-        while (resultSet.next()) {//如果对象中有数据，就会循环打印出来
-            deviceIps.add("#" + resultSet.getString("IP"));
+        try {
+            stmt = databaseService.connection().createStatement();
+            //获取设备ip列表
+            ResultSet resultSet = stmt.executeQuery("select IP from Equipment");
+            deviceIps = new ArrayList<String>();
+            while (resultSet.next()) {
+                //如果对象中有数据，就会循环打印出来
+                deviceIps.add("#" + resultSet.getString("IP"));
+            }
+            //deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
+            Elogger.info("所有设备ip：" + String.valueOf(deviceIps));
+        } catch (Exception e) {
+            Elogger.error("连接数据库和获取全部设备IP失败：", e);
         }
-        //deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
-        Elogger.info("所有设备ip：" + String.valueOf(deviceIps));
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip
@@ -122,142 +127,121 @@ public class Egci {
             Elogger.info("客户端发来的消息：" + mess);
             String staffInfo = "";//结构体信息
             String operationCode = mess.substring(0, 1);
-            //下发卡号人脸
-            if (operationCode.equals("1")) {
-                //读取数据库获取人员信息
-                String sql = "select CardNumber,Name,Photo from Staff WHERE CardNumber = '" + mess.substring(2) + "'";
-                ResultSet rs = stmt.executeQuery(sql);
-                //"delete from Users where UserID='"+UserID+"'"
-                while (rs.next()) {//如果对象中有数据，就会循环打印出来
-                    staff.setName(rs.getString("Name"));
-                    staff.setCardNumber(rs.getString("CardNumber"));
-                    staff.setPhoto(rs.getBytes("Photo"));
-                }
-                //重新组织人员信息:操作码+卡号+名称+图片
-                try {
-                    staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
-                } catch (Exception e) {
-                    //返回错误消息给客户端
-                    OutputStream os = socketInfo.getOutputStream();
-                    os.write("error".getBytes());
-                    os.flush();
-                    br.close();
-                    os.close();
-                    socketInfo.close();
-                }
-                //发送消息到队列中
-                for (int i = 0; i < deviceIps.size(); i++) {
-                    producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
-                }
-                //返回消息给客户端
-                OutputStream os = socketInfo.getOutputStream();
-                os.write("success".getBytes());
-                os.flush();
-                br.close();
-                os.close();
-                socketInfo.close();
-            }
-            //删除卡号和人脸
-            if (operationCode.equals("2")) {
-                staffInfo = "2#" + mess.substring(2) + "#test#none";
-                //发送消息到队列中
-                for (int i = 0; i < deviceIps.size(); i++) {
-                    producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
-                }
-                //返回消息给客户端
-                OutputStream os = socketInfo.getOutputStream();
-                os.write("success".getBytes());
-                os.flush();
-                br.close();
-                os.close();
-                socketInfo.close();
-            }
-            //获取设备状态
-            if (operationCode.equals("3")) {
-                LoginService loginService = new LoginService();
-                for (String deviceIp : deviceIps) {
-                    StatusEntity statusEntity = new StatusEntity();
-                    //判断是否在线
-                    loginService.login(deviceIp.substring(1), devicePort, deviceName, devicePass);
-                    if (loginService.getlUserID().longValue() > -1) {
-                        statusEntity = statusService.getWorkStatus(loginService.getlUserID());
-                        statusEntity.setIsLogin("1");
-                        statusEntity.setDeviceIp(deviceIp.substring(1));
-                    } else {
-                        statusEntity.setIsLogin("0");
-                        statusEntity.setDeviceIp(deviceIp.substring(1));
-                        statusEntity.setCardNumber("-1");
-                        statusEntity.setPassMode("-1");
+            try {
+                //下发卡号人脸
+                if (operationCode.equals("1")) {
+                    //读取数据库获取人员信息
+                    String sql = "select CardNumber,Name,Photo from Staff WHERE CardNumber = '" + mess.substring(2) + "'";
+                    ResultSet rs = stmt.executeQuery(sql);
+                    //"delete from Users where UserID='"+UserID+"'"
+                    while (rs.next()) {//如果对象中有数据，就会循环打印出来
+                        staff.setName(rs.getString("Name"));
+                        staff.setCardNumber(rs.getString("CardNumber"));
+                        staff.setPhoto(rs.getBytes("Photo"));
                     }
-                    deviceStatus.add(statusEntity);
+                    //重新组织人员信息:操作码+卡号+名称+图片
+                    staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
+                    //发送消息到队列中
+                    for (int i = 0; i < deviceIps.size(); i++) {
+                        producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
+                    }
+                    //返回正确消息给客户端
+                    sendToClient(socketInfo, br, "success");
                 }
-                //返回消息给客户端
-                OutputStream os = socketInfo.getOutputStream();
-                os.write(JSON.toJSONString(deviceStatus).getBytes());
-                os.flush();
-                br.close();
-                os.close();
-                socketInfo.close();
-            }
-            //设置一体机的通行模式
-            if (operationCode.equals("4")) {
-                LoginService loginService = new LoginService();
-                String[] info = mess.split("#");
-                loginService.login(info[1], devicePort, deviceName, devicePass);
-                //卡+人脸
-                if (info[2].equals("0")) {
-                    modeService.changeMode(loginService.getlUserID(), (byte) 13);
+                //删除卡号和人脸
+                if (operationCode.equals("2")) {
+                    staffInfo = "2#" + mess.substring(2) + "#test#none";
+                    //发送消息到队列中
+                    for (int i = 0; i < deviceIps.size(); i++) {
+                        producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
+                    }
                     //返回消息给客户端
-                    OutputStream os = socketInfo.getOutputStream();
-                    os.write("success".getBytes());
-                    os.flush();
-                    br.close();
-                    os.close();
-                    socketInfo.close();
+                    sendToClient(socketInfo, br, "success");
                 }
-                //人脸
-                if (info[2].equals("1")) {
-                    modeService.changeMode(loginService.getlUserID(), (byte) 14);
+                //获取设备状态
+                if (operationCode.equals("3")) {
+                    LoginService loginService = new LoginService();
+                    for (String deviceIp : deviceIps) {
+                        StatusEntity statusEntity = new StatusEntity();
+                        //判断是否在线
+                        loginService.login(deviceIp.substring(1), devicePort, deviceName, devicePass);
+                        if (loginService.getlUserID().longValue() > -1) {
+                            statusEntity = statusService.getWorkStatus(loginService.getlUserID());
+                            statusEntity.setIsLogin("1");
+                            statusEntity.setDeviceIp(deviceIp.substring(1));
+                        } else {
+                            statusEntity.setIsLogin("0");
+                            statusEntity.setDeviceIp(deviceIp.substring(1));
+                            statusEntity.setCardNumber("-1");
+                            statusEntity.setPassMode("-1");
+                        }
+                        deviceStatus.add(statusEntity);
+                    }
                     //返回消息给客户端
-                    OutputStream os = socketInfo.getOutputStream();
-                    os.write("success".getBytes());
-                    os.flush();
-                    br.close();
-                    os.close();
-                    socketInfo.close();
+                    sendToClient(socketInfo, br, JSON.toJSONString(deviceStatus));
                 }
-            }
-            //设置切换器模式:0是关闭人脸识别，1是开启人脸识别
-            if (operationCode.equals("5")) {
+                //设置一体机的通行模式
+                if (operationCode.equals("4")) {
+                    LoginService loginService = new LoginService();
+                    String[] info = mess.split("#");
+                    loginService.login(info[1], devicePort, deviceName, devicePass);
+                    //卡+人脸
+                    if (info[2].equals("0")) {
+                        modeService.changeMode(loginService.getlUserID(), (byte) 13);
+                        //返回消息给客户端
+                        sendToClient(socketInfo, br, "success");
+                    }
+                    //人脸
+                    if (info[2].equals("1")) {
+                        modeService.changeMode(loginService.getlUserID(), (byte) 14);
+                        //返回消息给客户端
+                        sendToClient(socketInfo, br, "success");
+                    }
+                }
+                //设置切换器模式:0是关闭人脸识别，1是开启人脸识别
+                if (operationCode.equals("5")) {
 
-            }
-            //设置采集采集人脸方式：0是身份证+人脸，1是不刷身份证
-            if (operationCode.equals("6")) {
-                LoginService loginService = new LoginService();
-
-                String[] info = mess.split("#");
-                loginService.login(info[1], devicePort, deviceName, devicePass);
-                //身份证+人脸
-                if (info[2].equals("0")) {
-                    modeService.changeMode(loginService.getlUserID(), (byte) 13);
                 }
-                //人脸
-                if (info[2].equals("1")) {
-                    modeService.changeMode(loginService.getlUserID(), (byte) 14);
+                //设置采集采集人脸方式：0是身份证+人脸，1是不刷身份证
+                if (operationCode.equals("6")) {
+                    LoginService loginService = new LoginService();
+                    String[] info = mess.split("#");
+                    loginService.login(info[1], devicePort, deviceName, devicePass);
+                    //身份证+人脸
+                    if (info[2].equals("0")) {
+                        modeService.changeMode(loginService.getlUserID(), (byte) 13);
+                    }
+                    //人脸
+                    if (info[2].equals("1")) {
+                        modeService.changeMode(loginService.getlUserID(), (byte) 14);
+                    }
+                    //返回消息给客户端
+                    sendToClient(socketInfo, br, "success");
                 }
-                //返回消息给客户端
-                OutputStream os = socketInfo.getOutputStream();
-                os.write("success".getBytes());
-                os.flush();
-                br.close();
-                os.close();
-                socketInfo.close();
+            } catch (Exception e) {
+                Elogger.error("socket通信出错：", e);
+                sendToClient(socketInfo, br, "error");
             }
         }
     }
+
     /*
-    *
-    * */
+     *返回消息到客户端
+     * */
+    public void sendToClient(Socket socket, BufferedReader br, String message) {
+        try {
+            OutputStream os = socket.getOutputStream();
+            os.write(message.getBytes());
+            os.flush();
+            br.close();
+            os.close();
+            socket.close();
+        } catch (IOException e) {
+            Elogger.error("返回消息到客户端出错：" + e);
+        } finally {
+
+        }
+    }
 
     public static void main(String[] args) {
         try {
@@ -265,7 +249,6 @@ public class Egci {
             egci.initServer();
         } catch (Exception e) {
             Elogger.error("错误：", e);
-//            e.printStackTrace();
         } finally {
             Elogger.error("出现异常");
         }
