@@ -5,12 +5,13 @@ import com.dyw.queue.entity.FaceInfoEntity;
 import com.dyw.queue.handler.FaceSendHandler;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
-import java.util.logging.Logger;
 
 public class FaceService extends BaseService {
-    private Logger logger = Logger.getLogger(FaceService.class.getName());
+    private Logger logger = LoggerFactory.getLogger(FaceService.class);
     private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
     private FaceSendHandler faceSendHandler = new FaceSendHandler();
 
@@ -31,7 +32,7 @@ public class FaceService extends BaseService {
         // 启动远程配置。
         NativeLong lHandle = hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_FACE_PARAM_CFG,
                 lpInBuffer.getPointer(), lpInBuffer.size(), faceSendHandler, null);
-        logger.info("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+        logger.error("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
         lpInBuffer.read();
         // 发送长连接数据
         HCNetSDK.NET_DVR_FACE_PARAM_CFG pSendBuf = new HCNetSDK.NET_DVR_FACE_PARAM_CFG();
@@ -58,7 +59,7 @@ public class FaceService extends BaseService {
             e.printStackTrace();
         }
         if (!result) {
-            logger.info("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            logger.error("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
             stopRemoteConfig(lHandle);
 //            try {
 //                Thread.sleep(500);
@@ -96,7 +97,7 @@ public class FaceService extends BaseService {
         Pointer lpInBuffer = m_struFaceDel.getPointer();
         boolean lRemoteCtrl = HCNetSDK.INSTANCE.NET_DVR_RemoteControl(lUserID, HCNetSDK.NET_DVR_DEL_FACE_PARAM_CFG, lpInBuffer, m_struFaceDel.size());
         if (!lRemoteCtrl) {
-            logger.info("删除人脸图片失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.error("删除人脸图片失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             return false;
         } else {
             logger.info("删除人脸图片成功!");
@@ -129,7 +130,7 @@ public class FaceService extends BaseService {
      * */
     public Boolean stopRemoteConfig(NativeLong conFlag) {
         if (!HCNetSDK.INSTANCE.NET_DVR_StopRemoteConfig(conFlag)) {
-            logger.info("人脸图片断开长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.error("人脸图片断开长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             return false;
         } else {
             logger.info("人脸图片长连接断开成功！");

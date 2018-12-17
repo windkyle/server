@@ -4,13 +4,13 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProducerService {
 
     private String queueName;
-    private Logger logger = Logger.getLogger(ProducerService.class.getName());
+    private Logger logger = LoggerFactory.getLogger(ProducerService.class);
     private ConnectionFactory factory;
     private Connection connection;
     private Channel channel;

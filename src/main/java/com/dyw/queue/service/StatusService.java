@@ -4,12 +4,13 @@ import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.entity.StatusEntity;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 public class StatusService extends BaseService {
-    private Logger logger = Logger.getLogger(StatusService.class.getName());
+    private Logger logger = LoggerFactory.getLogger(StatusService.class);
     private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
     private HCNetSDK.NET_DVR_ACS_WORK_STATUS_V50 statusV50;
 

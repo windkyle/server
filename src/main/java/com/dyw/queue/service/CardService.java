@@ -5,12 +5,13 @@ import com.dyw.queue.handler.CardGetHandler;
 import com.dyw.queue.handler.CardSendHandler;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Logger;
 
 public class CardService extends BaseService {
-    private Logger logger = Logger.getLogger(CardService.class.getName());
+    private Logger logger = LoggerFactory.getLogger(CardService.class);
     private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
     private CardSendHandler cardSendHandler = new CardSendHandler();
     private CardGetHandler cardGetHandler = new CardGetHandler();
@@ -21,7 +22,7 @@ public class CardService extends BaseService {
     public Boolean setCardInfo(NativeLong lUserID, String cardNo, String cardName, String password) {
         NativeLong cardSendFtpFlag = buildSendCardTcpCon(HCNetSDK.INSTANCE, lUserID);
         if (cardSendFtpFlag.intValue() < 0) {
-            logger.info("建立设置卡号数据长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.error("建立设置卡号数据长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             return false;
         }
         logger.info("建立设置卡号数据长连接成功");
@@ -61,13 +62,13 @@ public class CardService extends BaseService {
             byte[] nameBytes = cardName.getBytes("GBK");
             System.arraycopy(nameBytes, 0, struCardInfo.byName, 0, nameBytes.length);
         } catch (UnsupportedEncodingException e) {
-            logger.info("设置卡片名称出错 :" + e);
+            logger.error("设置卡片名称出错 :" + e);
         }
         struCardInfo.write();
         Pointer pSendBufSet = struCardInfo.getPointer();
         // 发送卡信息
         if (!hcNetSDK.NET_DVR_SendRemoteConfig(cardSendFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
-            logger.info("卡号下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            logger.error("卡号下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
             stopRemoteConfig(cardSendFtpFlag);
             try {
                 Thread.sleep(500);
@@ -141,12 +142,12 @@ public class CardService extends BaseService {
                             int iByte = struCardStatus.byErrorCode[i] & 0xff;
                             iErrorCode = iErrorCode + (iByte << ioffset);
                         }
-                        System.out.println("下发卡参数失败, dwStatus: " + iStatus + " 错误号: " + hcNetSDK.NET_DVR_GetLastError());
+                        logger.error("下发卡参数失败, dwStatus: " + iStatus + " 错误号: " + hcNetSDK.NET_DVR_GetLastError());
                         break;
                 }
                 break;
             default:
-                System.out.println("go card send default process ");
+                logger.info("go card send default process");
                 break;
         }
     }
@@ -162,7 +163,7 @@ public class CardService extends BaseService {
         NativeLong cardGetFtpFlag = buildGetCardTcpCon(HCNetSDK.INSTANCE, lUserID);
         System.out.println(cardGetFtpFlag.longValue());
         if (cardGetFtpFlag.intValue() < 0) {
-            logger.info("建立获取卡号数据长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.error("建立获取卡号数据长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             return false;
         }
         logger.info("建立获取卡号数据长连接成功!");
@@ -176,7 +177,7 @@ public class CardService extends BaseService {
         m_struCardSendInputParam.write();
         Thread.sleep(1000);
         if (!HCNetSDK.INSTANCE.NET_DVR_SendRemoteConfig(cardGetFtpFlag, 0x3, pSendBuf, m_struCardSendInputParam.size())) {
-            logger.info("查询卡号失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.error("查询卡号失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             stopRemoteConfig(cardGetFtpFlag);
             return false;
         } else {
@@ -220,7 +221,7 @@ public class CardService extends BaseService {
 
         NativeLong cardSendFtpFlag = buildSendCardTcpCon(HCNetSDK.INSTANCE, lUserID);
         if (cardSendFtpFlag.intValue() < 0) {
-            logger.info("建立删除卡号的长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.error("建立删除卡号的长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
         }
         logger.info("建立删除卡号的长连接建立成功！");
         // 设置卡参数
@@ -234,7 +235,7 @@ public class CardService extends BaseService {
         Pointer pSendBufSet = struCardInfo.getPointer();
         // 发送卡信息
         if (!HCNetSDK.INSTANCE.NET_DVR_SendRemoteConfig(cardSendFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
-            logger.info("号信息删除请求下发失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.error("号信息删除请求下发失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             Thread.sleep(500);
             stopRemoteConfig(cardSendFtpFlag);
             return false;

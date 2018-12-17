@@ -2,13 +2,14 @@ package com.dyw.queue.handler;
 
 import com.dyw.queue.HCNetSDK;
 import com.sun.jna.Pointer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 
 public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
-    private Logger logger = Logger.getLogger(CardGetHandler.class.getName());
+    private Logger logger = LoggerFactory.getLogger(CardGetHandler.class);
     private static String cardNumber = "none";
 
     public static String getCardNumber() {
@@ -49,7 +50,7 @@ public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
                             int iByte = struCfgStatus.byErrorCode[i] & 0xff;
                             iErrorCode = iErrorCode + (iByte << ioffset);
                         }
-                        logger.info("查询卡号失败，错误码：" + iErrorCode);
+                        logger.error("查询卡号失败，错误码：" + iErrorCode);
                         cardNumber = "none";
                         break;
                 }

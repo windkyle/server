@@ -1,7 +1,6 @@
 <component name="libraryTable">
   <library name="amqp-client-5.5.0">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/src/lib/amqp-client-5.5.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/src/lib/base64-2.3.8.jar!/" />
       <root url="jar://$PROJECT_DIR$/src/lib/examples.jar!/" />
       <root url="jar://$PROJECT_DIR$/src/lib/fastjson-1.2.2.jar!/" />

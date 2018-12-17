@@ -1,11 +1,13 @@
 package com.dyw.queue.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.logging.Logger;
 
 public class DatabaseService {
-    private Logger logger = Logger.getLogger(DatabaseService.class.getName());
+    private Logger logger = LoggerFactory.getLogger(DatabaseService.class);
     //连接数据库
     private String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     //    String dbURL = "jdbc:sqlserver://localhost:1433;DatabaseName=EntranceGuard";
@@ -29,7 +31,7 @@ public class DatabaseService {
             logger.info("连接数据库成功");
             return dbConn;
         } catch (Exception e) {
-            logger.info("连接数据库失败" + e.getMessage());
+            logger.error("连接数据库失败：" + e);
             return dbConn;
         }
     }

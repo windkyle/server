@@ -4,12 +4,13 @@ import com.rabbitmq.client.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 
 import net.iharder.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustomerService extends BaseService implements Runnable {
-    private Logger logger = Logger.getLogger(CustomerService.class.getName());
+    private Logger logger = LoggerFactory.getLogger(CustomerService.class);
     private String queueName;
     private String queueIp;
     private CardService cardService = new CardService();

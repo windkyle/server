@@ -2,11 +2,11 @@ package com.dyw.queue.service;
 
 import com.dyw.queue.HCNetSDK;
 import com.sun.jna.NativeLong;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoginService extends BaseService {
-    private Logger logger = Logger.getLogger(LoginService.class.getName());
+    private Logger logger = LoggerFactory.getLogger(LoginService.class);
     private NativeLong lUserID = new NativeLong(-1);
     private static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
@@ -20,7 +20,7 @@ public class LoginService extends BaseService {
         HCNetSDK.NET_DVR_DEVICEINFO_V30 m_strDeviceInfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
         lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port, name, pass, m_strDeviceInfo);
         if (lUserID.longValue() < 0) {
-            logger.info("设备登陆错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            logger.error("设备登陆错误码：" + hcNetSDK.NET_DVR_GetLastError());
         } else {
             logger.info("设备登陆成功");
 

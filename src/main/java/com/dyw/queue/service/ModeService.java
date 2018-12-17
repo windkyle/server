@@ -3,11 +3,11 @@ package com.dyw.queue.service;
 import com.dyw.queue.HCNetSDK;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ModeService {
-    private Logger logger = Logger.getLogger(ModeService.class.getName());
+    private Logger logger = LoggerFactory.getLogger(ModeService.class);
 
     public Boolean changeMode(NativeLong iUserID, byte mode) {
         HCNetSDK.NET_DVR_WEEK_PLAN_CFG struWeekPlan = new HCNetSDK.NET_DVR_WEEK_PLAN_CFG();

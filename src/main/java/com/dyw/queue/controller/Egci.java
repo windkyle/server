@@ -7,6 +7,8 @@ import com.dyw.queue.service.*;
 import com.dyw.queue.entity.StaffEntity;
 import com.dyw.queue.tool.Tool;
 import net.iharder.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -15,7 +17,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Egci {
     //配置文件
@@ -25,7 +26,7 @@ public class Egci {
     private String deviceName;
     private String devicePass;
     //全局变量
-    private Logger logger;
+    private static Logger Elogger = LoggerFactory.getLogger(Egci.class);
     private StaffEntity staff;
     private StatusService statusService;
     private ModeService modeService;
@@ -49,7 +50,6 @@ public class Egci {
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();
         devicePass = configEntity.getDevicePass();
-        logger = Logger.getLogger(Egci.class.getName());
         //初始化人员实体
         staff = new StaffEntity();
         //初始化设备状态
@@ -68,7 +68,7 @@ public class Egci {
             deviceIps.add("#" + resultSet.getString("IP"));
         }
         //deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
-        logger.info(String.valueOf(deviceIps));
+        Elogger.info("所有设备ip：" + String.valueOf(deviceIps));
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip
@@ -88,7 +88,7 @@ public class Egci {
             ServerSocket serverSocket = new ServerSocket(configEntity.getSocketPort());
             serverSocket.setSoTimeout(0);
             serverSocket.setReuseAddress(true);
-            logger.info("等待客户端连接......");
+            Elogger.info("等待客户端连接......");
             while (true) {
                 Socket socket = serverSocket.accept();
                 socket.setReuseAddress(true);
@@ -115,11 +115,11 @@ public class Egci {
          * */
         public void operation() throws Exception {
             //查看客户端
-            logger.info("客户端:" + socketInfo.getInetAddress().getHostAddress() + "已连接到服务器");
+            Elogger.info("客户端:" + socketInfo.getInetAddress().getHostAddress() + "已连接到服务器");
             //读取客户端发送来的信息
             BufferedReader br = new BufferedReader(new InputStreamReader(socketInfo.getInputStream()));
             String mess = br.readLine();
-            logger.info("客户端发来的消息：" + mess);
+            Elogger.info("客户端发来的消息：" + mess);
             String staffInfo = "";//结构体信息
             String operationCode = mess.substring(0, 1);
             //下发卡号人脸
@@ -134,7 +134,17 @@ public class Egci {
                     staff.setPhoto(rs.getBytes("Photo"));
                 }
                 //重新组织人员信息:操作码+卡号+名称+图片
-                staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
+                try {
+                    staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
+                } catch (Exception e) {
+                    //返回错误消息给客户端
+                    OutputStream os = socketInfo.getOutputStream();
+                    os.write("error".getBytes());
+                    os.flush();
+                    br.close();
+                    os.close();
+                    socketInfo.close();
+                }
                 //发送消息到队列中
                 for (int i = 0; i < deviceIps.size(); i++) {
                     producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
@@ -245,15 +255,19 @@ public class Egci {
             }
         }
     }
+    /*
+    *
+    * */
 
     public static void main(String[] args) {
         try {
             Egci egci = new Egci();
             egci.initServer();
         } catch (Exception e) {
-            e.printStackTrace();
+            Elogger.error("错误：", e);
+//            e.printStackTrace();
         } finally {
-            System.out.println("出现异常");
+            Elogger.error("出现异常");
         }
     }
 }
