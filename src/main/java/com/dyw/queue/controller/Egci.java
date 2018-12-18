@@ -219,7 +219,7 @@ public class Egci {
                     sendToClient(socketInfo, br, "success");
                 }
             } catch (Exception e) {
-                Elogger.error("socket通信出错：", e);
+                Elogger.error("socket数据处理出错：", e);
                 sendToClient(socketInfo, br, "error");
             }
         }

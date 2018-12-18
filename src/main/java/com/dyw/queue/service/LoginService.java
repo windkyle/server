@@ -20,7 +20,7 @@ public class LoginService extends BaseService {
         HCNetSDK.NET_DVR_DEVICEINFO_V30 m_strDeviceInfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
         lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port, name, pass, m_strDeviceInfo);
         if (lUserID.longValue() < 0) {
-            logger.error("设备登陆错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            logger.info("设备登陆错误码：" + hcNetSDK.NET_DVR_GetLastError());
         } else {
             logger.info("设备登陆成功");
 
