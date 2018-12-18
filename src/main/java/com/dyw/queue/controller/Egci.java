@@ -27,7 +27,6 @@ public class Egci {
     private String devicePass;
     //全局变量
     private static Logger Elogger = LoggerFactory.getLogger(Egci.class);
-    private StaffEntity staff;
     private StatusService statusService;
     private ModeService modeService;
     private DatabaseService databaseService;
@@ -50,8 +49,6 @@ public class Egci {
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();
         devicePass = configEntity.getDevicePass();
-        //初始化人员实体
-        staff = new StaffEntity();
         //初始化设备状态
         statusService = new StatusService();
         //初始化设备状态信息
@@ -119,6 +116,8 @@ public class Egci {
          * 数据处理
          * */
         public void operation() throws Exception {
+            //初始化人员信息
+            StaffEntity staff = new StaffEntity();
             //查看客户端
             Elogger.info("客户端:" + socketInfo.getInetAddress().getHostAddress() + "已连接到服务器");
             //读取客户端发送来的信息
@@ -141,6 +140,7 @@ public class Egci {
                     }
                     //重新组织人员信息:操作码+卡号+名称+图片
                     staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
+                    System.out.println("here:" + staffInfo);
                     //发送消息到队列中
                     for (int i = 0; i < deviceIps.size(); i++) {
                         producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
