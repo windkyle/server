@@ -251,7 +251,7 @@ public class Egci {
             Elogger.error("错误：", e);
         } finally {
             Elogger.error("人脸通行服务程序出现严重错误,需要被关闭");
-            System.out.print("人脸通行服务程序出现严重错误,需要被关闭,请按任意键关闭程序后重新打开...");
+            System.out.print("人脸通行服务程序出现严重错误,需要被关闭,请重新打开程序！\n按任意键关闭...");
             char i = 0;
             try {
                 i = (char) System.in.read();
