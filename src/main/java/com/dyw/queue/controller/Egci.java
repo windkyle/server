@@ -31,8 +31,10 @@ public class Egci {
     private ModeService modeService;
     private DatabaseService databaseService;
     private Statement stmt;
-    private List<String> deviceIps;
-    private List<StatusEntity> deviceStatus;
+    private List<String> deviceIps0;
+    private List<String> deviceIps1;
+    private List<String> deviceIps2;
+    private List<String> deviceIps3;
     private String queueIp;
     //初始化生产者数组
     private List<ProducerService> producerServiceList;
@@ -51,8 +53,6 @@ public class Egci {
         devicePass = configEntity.getDevicePass();
         //初始化设备状态
         statusService = new StatusService();
-        //初始化设备状态信息
-        deviceStatus = new ArrayList<StatusEntity>();
         //更改设备模式
         modeService = new ModeService();
         //连接数据库
@@ -60,24 +60,37 @@ public class Egci {
         try {
             stmt = databaseService.connection().createStatement();
             //获取设备ip列表
-            ResultSet resultSet = stmt.executeQuery("select IP from Equipment");
-            deviceIps = new ArrayList<String>();
+            ResultSet resultSet = stmt.executeQuery("select GroupId,IP from Equipment");
+            deviceIps0 = new ArrayList<String>();
+            deviceIps1 = new ArrayList<String>();
+            deviceIps2 = new ArrayList<String>();
+            deviceIps3 = new ArrayList<String>();
             while (resultSet.next()) {
-                //如果对象中有数据，就会循环打印出来
-                deviceIps.add("#" + resultSet.getString("IP"));
+                //如果对象中有数据，就会循环打印出来，
+                deviceIps0.add("#" + resultSet.getString("IP"));
+                if (resultSet.getInt("GroupId") == 2) {
+                    deviceIps1.add("#" + resultSet.getString("IP"));
+                } else if (resultSet.getInt("GroupId") == 3) {
+                    deviceIps2.add("#" + resultSet.getString("IP"));
+                } else if (resultSet.getInt("GroupId") == 4) {
+                    deviceIps3.add("#" + resultSet.getString("IP"));
+                }
             }
             //deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
-            Elogger.info("所有设备ip：" + String.valueOf(deviceIps));
+            Elogger.info("所有设备ip：" + String.valueOf(deviceIps0));
+            Elogger.info("一核设备ip：" + String.valueOf(deviceIps1));
+            Elogger.info("二核设备ip：" + String.valueOf(deviceIps2));
+            Elogger.info("三核设备ip：" + String.valueOf(deviceIps3));
         } catch (Exception e) {
             Elogger.error("连接数据库和获取全部设备IP失败：", e);
         }
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip
-        for (int i = 0; i < deviceIps.size(); i++) {
-            ProducerService producerService = new ProducerService(i + "：" + deviceIps.get(i), queueIp);
+        for (int i = 0; i < deviceIps0.size(); i++) {
+            ProducerService producerService = new ProducerService(i + "：" + deviceIps0.get(i), queueIp);
             producerServiceList.add(producerService);
-            CustomerService customerService = new CustomerService(i + "：" + deviceIps.get(i), queueIp);
+            CustomerService customerService = new CustomerService(i + "：" + deviceIps0.get(i), queueIp);
             customerService.start();
         }
     }
@@ -95,7 +108,8 @@ public class Egci {
                 Socket socket = serverSocket.accept();
                 socket.setReuseAddress(true);
                 ClientServer clientServer = new ClientServer(socket);
-                clientServer.operation();
+                clientServer.start();
+                Thread.sleep(1000);
             }
         } catch (IOException e) {
             Elogger.error("开启socket服务失败：", e);
@@ -105,7 +119,7 @@ public class Egci {
     /*
      * 数据处理类
      * */
-    class ClientServer {
+    class ClientServer extends Thread {
         Socket socketInfo;
 
         public ClientServer(Socket socket) {
@@ -115,18 +129,24 @@ public class Egci {
         /*
          * 数据处理
          * */
-        public void operation() throws Exception {
+        @Override
+        public void run() {
             //初始化人员信息
             StaffEntity staff = new StaffEntity();
             //查看客户端
             Elogger.info("客户端:" + socketInfo.getInetAddress().getHostAddress() + "已连接到服务器");
             //读取客户端发送来的信息
-            BufferedReader br = new BufferedReader(new InputStreamReader(socketInfo.getInputStream()));
-            String mess = br.readLine();
-            Elogger.info("客户端发来的消息：" + mess);
-            String staffInfo = "";//结构体信息
-            String operationCode = mess.substring(0, 1);
+            BufferedReader br = null;
             try {
+                br = new BufferedReader(new InputStreamReader(socketInfo.getInputStream()));
+            } catch (IOException e) {
+                Elogger.error("获取客户端消息失败：", e);
+            }
+            try {
+                String mess = br.readLine();
+                Elogger.info("客户端发来的消息：" + mess);
+                String staffInfo = "";//结构体信息
+                String operationCode = mess.substring(0, 1);
                 //下发卡号人脸
                 if (operationCode.equals("1")) {
                     //读取数据库获取人员信息
@@ -142,8 +162,8 @@ public class Egci {
                     staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
                     System.out.println("here:" + staffInfo);
                     //发送消息到队列中
-                    for (int i = 0; i < deviceIps.size(); i++) {
-                        producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
+                    for (int i = 0; i < deviceIps0.size(); i++) {
+                        producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps0.get(i)));
                     }
                     //返回正确消息给客户端
                     sendToClient(socketInfo, br, "success");
@@ -152,30 +172,23 @@ public class Egci {
                 if (operationCode.equals("2")) {
                     staffInfo = "2#" + mess.substring(2) + "#test#none";
                     //发送消息到队列中
-                    for (int i = 0; i < deviceIps.size(); i++) {
-                        producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps.get(i)));
+                    for (int i = 0; i < deviceIps0.size(); i++) {
+                        producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps0.get(i)));
                     }
                     //返回消息给客户端
                     sendToClient(socketInfo, br, "success");
                 }
                 //获取设备状态
                 if (operationCode.equals("3")) {
-                    LoginService loginService = new LoginService();
-                    for (String deviceIp : deviceIps) {
-                        StatusEntity statusEntity = new StatusEntity();
-                        //判断是否在线
-                        loginService.login(deviceIp.substring(1), devicePort, deviceName, devicePass);
-                        if (loginService.getlUserID().longValue() > -1) {
-                            statusEntity = statusService.getWorkStatus(loginService.getlUserID());
-                            statusEntity.setIsLogin("1");
-                            statusEntity.setDeviceIp(deviceIp.substring(1));
-                        } else {
-                            statusEntity.setIsLogin("0");
-                            statusEntity.setDeviceIp(deviceIp.substring(1));
-                            statusEntity.setCardNumber("-1");
-                            statusEntity.setPassMode("-1");
-                        }
-                        deviceStatus.add(statusEntity);
+                    List<StatusEntity> deviceStatus = new ArrayList<StatusEntity>();
+                    if (mess.substring(2).equals("0")) {
+                        deviceStatus = getStatus(deviceIps0);
+                    } else if (mess.substring(2).equals("1")) {
+                        deviceStatus = getStatus(deviceIps1);
+                    } else if (mess.substring(2).equals("2")) {
+                        deviceStatus = getStatus(deviceIps2);
+                    } else if (mess.substring(2).equals("3")) {
+                        deviceStatus = getStatus(deviceIps3);
                     }
                     //返回消息给客户端
                     sendToClient(socketInfo, br, JSON.toJSONString(deviceStatus));
@@ -200,7 +213,7 @@ public class Egci {
                 }
                 //设置切换器模式:0是关闭人脸识别，1是开启人脸识别
                 if (operationCode.equals("5")) {
-
+                    sendToClient(socketInfo, br, "error");
                 }
                 //设置采集采集人脸方式：0是身份证+人脸，1是不刷身份证
                 if (operationCode.equals("6")) {
@@ -223,6 +236,31 @@ public class Egci {
                 sendToClient(socketInfo, br, "error");
             }
         }
+    }
+
+    /*
+     * 获取设备状态
+     * */
+    public List<StatusEntity> getStatus(List<String> deviceIps) {
+        List<StatusEntity> deviceStatus = new ArrayList<StatusEntity>();
+        LoginService loginService = new LoginService();
+        for (String deviceIp : deviceIps) {
+            StatusEntity statusEntity = new StatusEntity();
+            //判断是否在线
+            loginService.login(deviceIp.substring(1), devicePort, deviceName, devicePass);
+            if (loginService.getlUserID().longValue() > -1) {
+                statusEntity = statusService.getWorkStatus(loginService.getlUserID());
+                statusEntity.setIsLogin("1");
+                statusEntity.setDeviceIp(deviceIp.substring(1));
+            } else {
+                statusEntity.setIsLogin("0");
+                statusEntity.setDeviceIp(deviceIp.substring(1));
+                statusEntity.setCardNumber("-1");
+                statusEntity.setPassMode("-1");
+            }
+            deviceStatus.add(statusEntity);
+        }
+        return deviceStatus;
     }
 
     /*
