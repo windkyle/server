@@ -6,23 +6,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
-    private Logger logger = LoggerFactory.getLogger(CardGetHandler.class);
-    private String cardNumber = "none";
+public class SynchronizationHandler implements HCNetSDK.FRemoteConfigCallback {
+    private Logger logger = LoggerFactory.getLogger(SynchronizationHandler.class);
+    private List<String> cards = new ArrayList<String>();
 
-    public String getCardNumber() {
-        return cardNumber;
-    }
-
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
+    public List<String> getCards() {
+        return cards;
     }
 
     @Override
     public void invoke(int dwType, Pointer lpBuffer, int dwBufLen, Pointer pUserData) {
-        logger.info("长连接回调获取卡号数据:" + dwType);
         switch (dwType) {
             case 0: //NET_SDK_CALLBACK_TYPE_STATUS
                 HCNetSDK.REMOTECONFIGSTATUS_CARD struCfgStatus = new HCNetSDK.REMOTECONFIGSTATUS_CARD();
@@ -51,7 +48,6 @@ public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
                             iErrorCode = iErrorCode + (iByte << ioffset);
                         }
                         logger.error("查询卡号失败，错误码：" + iErrorCode);
-                        cardNumber = "none";
                         break;
                 }
                 break;
@@ -65,7 +61,7 @@ public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
                 try {
                     String srtName = new String(m_struCardInfo.byName, "GBK").trim(); //姓名
                     logger.info("查询到的卡号: {} ,姓名: {}" + str + srtName);
-                    cardNumber = str;
+                    cards.add(str);
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     logger.info("未查到卡号信息" + e);

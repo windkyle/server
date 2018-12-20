@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Egci {
     //配置文件
-    private static ConfigEntity configEntity;
+    public static ConfigEntity configEntity;
     //一体机变量
     private short devicePort;
     private String deviceName;
@@ -31,10 +31,11 @@ public class Egci {
     private ModeService modeService;
     private DatabaseService databaseService;
     private Statement stmt;
-    private List<String> deviceIps0;
-    private List<String> deviceIps1;
-    private List<String> deviceIps2;
-    private List<String> deviceIps3;
+    public static List<String> deviceIps;//所有设备，不带“#”，给同步功能用的
+    private List<String> deviceIps0;//所有设备
+    private List<String> deviceIps1;//一核设备
+    private List<String> deviceIps2;//二核设备
+    private List<String> deviceIps3;//三核设备
     private String queueIp;
     //初始化生产者数组
     private List<ProducerService> producerServiceList;
@@ -44,9 +45,7 @@ public class Egci {
      * */
     public Egci() throws Exception {
         //读取配置文件
-        configEntity = Tool.getConfig();
-        System.out.println(configEntity.getDataBaseLib());
-
+        configEntity = Tool.getConfig("C:\\software\\server\\config\\config.xml");
         //一体机参数配置
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();
@@ -61,12 +60,14 @@ public class Egci {
             stmt = databaseService.connection().createStatement();
             //获取设备ip列表
             ResultSet resultSet = stmt.executeQuery("select GroupId,IP from Equipment");
+            deviceIps = new ArrayList<String>();
             deviceIps0 = new ArrayList<String>();
             deviceIps1 = new ArrayList<String>();
             deviceIps2 = new ArrayList<String>();
             deviceIps3 = new ArrayList<String>();
             while (resultSet.next()) {
-                //如果对象中有数据，就会循环打印出来，
+                //如果对象中有数据，就会循环打印出来
+                deviceIps.add(resultSet.getString("IP"));
                 deviceIps0.add("#" + resultSet.getString("IP"));
                 if (resultSet.getInt("GroupId") == 2) {
                     deviceIps1.add("#" + resultSet.getString("IP"));
@@ -92,6 +93,13 @@ public class Egci {
             producerServiceList.add(producerService);
             CustomerService customerService = new CustomerService(i + "：" + deviceIps0.get(i), queueIp);
             customerService.start();
+        }
+        //启动同步操作
+        if (configEntity.getSynchronization().equals("1")) {
+            TimerManager timerManager = new TimerManager();
+            Elogger.info("开启自动同步功能");
+        } else {
+            Elogger.info("关闭自动同步功能");
         }
     }
 
@@ -160,7 +168,6 @@ public class Egci {
                     }
                     //重新组织人员信息:操作码+卡号+名称+图片
                     staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
-                    System.out.println("here:" + staffInfo);
                     //发送消息到队列中
                     for (int i = 0; i < deviceIps0.size(); i++) {
                         producerServiceList.get(i).sendToQueue(staffInfo.concat(deviceIps0.get(i)));
@@ -289,13 +296,6 @@ public class Egci {
             Elogger.error("错误：", e);
         } finally {
             Elogger.error("人脸通行服务程序出现严重错误,需要被关闭");
-            System.out.print("人脸通行服务程序出现严重错误,需要被关闭,请重新打开程序！\n按任意键关闭...");
-            char i = 0;
-            try {
-                i = (char) System.in.read();
-            } catch (IOException e) {
-                Elogger.error("程序异常退出：", e);
-            }
         }
     }
 }

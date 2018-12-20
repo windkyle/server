@@ -102,7 +102,7 @@ public class CardService extends BaseService {
         Pointer pUserData = null;
 //        AlarmJavaDemoApp.CardSendHandler cardSendHandler = new AlarmJavaDemoApp.CardSendHandler();
         NativeLong conFlag = hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_CARD_CFG_V50, lpInBuffer, m_struCardInputParamSet.size(), cardSendHandler, pUserData);
-        logger.info("这里有错误：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+        logger.info("卡号下发：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
         logger.info("conFlag的值：" + conFlag.longValue());
         return conFlag;
     }
@@ -129,11 +129,11 @@ public class CardService extends BaseService {
                 String cardNoStr = new String(struCardStatus.byCardNum).trim();
                 switch (iStatus) {
                     case 1000:// NET_SDK_CALLBACK_STATUS_SUCCESS
-                        System.out.println("下发卡参数成功" + iStatus);
+                        logger.info("下发卡参数成功" + iStatus);
                         break;
                     case 1001:
-                        System.out.println("正在下发卡参数中,dwStatus:" + iStatus);
-                        System.out.println("byCardNum : {}" + cardNoStr);
+                        logger.info("正在下发卡参数中,dwStatus:" + iStatus);
+                        logger.info("byCardNum : {}" + cardNoStr);
                         break;
                     case 1002:
                         int iErrorCode = 0;
@@ -159,9 +159,8 @@ public class CardService extends BaseService {
      * @return
      */
     public Boolean getCardInfo(String cardNo, NativeLong lUserID) throws InterruptedException {
-        logger.info("看看卡号是多少：" + cardNo);
         NativeLong cardGetFtpFlag = buildGetCardTcpCon(HCNetSDK.INSTANCE, lUserID);
-        System.out.println(cardGetFtpFlag.longValue());
+        logger.info(cardGetFtpFlag.longValue() + "");
         if (cardGetFtpFlag.intValue() < 0) {
             logger.error("建立获取卡号数据长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             return false;
@@ -182,12 +181,12 @@ public class CardService extends BaseService {
             return false;
         } else {
             Thread.sleep(1000);
-            if (CardGetHandler.getCardNumber().equals("none")) {
+            if (cardGetHandler.getCardNumber().equals("none")) {
                 logger.info("卡号不存在");
                 stopRemoteConfig(cardGetFtpFlag);
                 return false;
             } else {
-                logger.info("查询卡号成功，卡号为:" + CardGetHandler.getCardNumber());
+                logger.info("查询卡号成功，卡号为:" + cardGetHandler.getCardNumber());
                 stopRemoteConfig(cardGetFtpFlag);
                 return true;
             }

@@ -33,16 +33,16 @@
             则只保存最近6个月的文件，删除之前的旧文件。注意，删除旧文件是，那些为了归档而创建的目录也会被删除-->
             <maxHistory>${maxHistory}</maxHistory>
         </rollingPolicy>
-        <!-- 按照固定窗口模式生成日志文件，当文件大于20MB时，生成新的日志文件。窗口大小是1到3，当保存了3个归档文件后，将覆盖最早的日志。
+        <!-- 按照固定窗口模式生成日志文件，当文件大于20MB时，生成新的日志文件。窗口大小是1到3，当保存了3个归档文件后，将覆盖最早的日志。 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-          <fileNamePattern>${logPath}/%d{yyyy-MM-dd}/.log.zip</fileNamePattern>
-          <minIndex>1</minIndex>
-          <maxIndex>3</maxIndex>
-        </rollingPolicy>   -->
-        <!-- 查看当前活动文件的大小，如果超过指定大小会告知RollingFileAppender 触发当前活动文件滚动
+            <fileNamePattern>${logPath}/%d{yyyy-MM-dd}/.log.zip</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>3</maxIndex>
+        </rollingPolicy>
+        <!-- 查看当前活动文件的大小，如果超过指定大小会告知RollingFileAppender 触发当前活动文件滚动 -->
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <maxFileSize>5MB</maxFileSize>
-        </triggeringPolicy>   -->
+        </triggeringPolicy>
     </appender>
     <!-- 特殊记录Error日志 -->
     <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">

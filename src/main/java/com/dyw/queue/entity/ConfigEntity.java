@@ -11,10 +11,17 @@ public class ConfigEntity {
     private String dataBaseName;//数据库账号
     private String dataBasePass;//数据库密码
     private String dataBaseLib;//数据库名称
+    private long dataBaseTime;//数据库查询间隔，避免同时大量查询
     //队列配置
     private String queueIp;//队列ip
     //socket配置
     private short socketPort;//socket端口
+    //同步配置
+    private String synchronization;//0：不开启，1：开启
+    private long synchronizationTime;
+    //测试字段
+    private String testIp;
+    private long testTime;
 
     public short getDevicePort() {
         return devicePort;
@@ -94,5 +101,45 @@ public class ConfigEntity {
 
     public void setQueueIp(String queueIp) {
         this.queueIp = queueIp;
+    }
+
+    public String getSynchronization() {
+        return synchronization;
+    }
+
+    public void setSynchronization(String synchronization) {
+        this.synchronization = synchronization;
+    }
+
+    public String getTestIp() {
+        return testIp;
+    }
+
+    public long getSynchronizationTime() {
+        return synchronizationTime;
+    }
+
+    public void setSynchronizationTime(long synchronizationTime) {
+        this.synchronizationTime = synchronizationTime;
+    }
+
+    public void setTestIp(String testIp) {
+        this.testIp = testIp;
+    }
+
+    public long getTestTime() {
+        return testTime;
+    }
+
+    public void setTestTime(long testTime) {
+        this.testTime = testTime;
+    }
+
+    public long getDataBaseTime() {
+        return dataBaseTime;
+    }
+
+    public void setDataBaseTime(long dataBaseTime) {
+        this.dataBaseTime = dataBaseTime;
     }
 }

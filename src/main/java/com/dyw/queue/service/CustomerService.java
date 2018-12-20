@@ -93,7 +93,7 @@ public class CustomerService extends BaseService implements Runnable {
     }
 
     public void start() {
-        System.out.println("Starting " + queueName);
+        logger.info("Starting: " + queueName);
         if (t == null) {
             t = new Thread(this, queueName);
             t.start();
