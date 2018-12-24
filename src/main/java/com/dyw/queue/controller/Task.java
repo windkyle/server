@@ -33,7 +33,7 @@ public class Task extends TimerTask {
         }
         for (String deviceIp : Egci.deviceIps) {
             LoginService loginService = new LoginService();
-            loginService.login(deviceIp, (short) 8000, "admin", "hik12345");
+            loginService.login(deviceIp, configEntity.getDevicePort(), configEntity.getDeviceName(), configEntity.getDevicePass());
             if (loginService.getlUserID().longValue() > -1) {
                 SynchronizationService synchronizationService = new SynchronizationService(deviceIp, loginService.getlUserID(), Egci.configEntity, cards);
                 synchronizationService.start();

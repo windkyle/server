@@ -36,7 +36,7 @@ public class Egci {
     private List<String> deviceIps1;//一核设备
     private List<String> deviceIps2;//二核设备
     private List<String> deviceIps3;//三核设备
-    private String queueIp;
+    private String queueIp;//队列的ip
     //初始化生产者数组
     private List<ProducerService> producerServiceList;
 

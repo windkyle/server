@@ -160,7 +160,6 @@ public class Tool {
                 }
             }
         }
-
         String[] result = {};
         return list.toArray(result);
     }
