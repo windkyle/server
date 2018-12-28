@@ -17,11 +17,13 @@ public class ConfigEntity {
     //socket配置
     private short socketPort;//socket端口
     //同步配置
-    private String synchronization;//0：不开启，1：开启
-    private long synchronizationTime;
-    //测试字段
+    private String synchronization;//0：不开启，1：开启单台，2：代表全部开启
+    private int synchronizationHour;//几点同步
+    private int synchronizationMinute;//几分同步
+    private int synchronizationSecond;//几秒同步
+    private long synchronizationTime;//查找全部卡号时，线程暂停时间
+    //测试单台同步
     private String testIp;
-    private long testTime;
 
     public short getDevicePort() {
         return devicePort;
@@ -127,19 +129,35 @@ public class ConfigEntity {
         this.testIp = testIp;
     }
 
-    public long getTestTime() {
-        return testTime;
-    }
-
-    public void setTestTime(long testTime) {
-        this.testTime = testTime;
-    }
-
     public long getDataBaseTime() {
         return dataBaseTime;
     }
 
     public void setDataBaseTime(long dataBaseTime) {
         this.dataBaseTime = dataBaseTime;
+    }
+
+    public int getSynchronizationHour() {
+        return synchronizationHour;
+    }
+
+    public void setSynchronizationHour(int synchronizationHour) {
+        this.synchronizationHour = synchronizationHour;
+    }
+
+    public int getSynchronizationMinute() {
+        return synchronizationMinute;
+    }
+
+    public void setSynchronizationMinute(int synchronizationMinute) {
+        this.synchronizationMinute = synchronizationMinute;
+    }
+
+    public int getSynchronizationSecond() {
+        return synchronizationSecond;
+    }
+
+    public void setSynchronizationSecond(int synchronizationSecond) {
+        this.synchronizationSecond = synchronizationSecond;
     }
 }

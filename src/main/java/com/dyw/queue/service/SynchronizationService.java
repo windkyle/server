@@ -82,7 +82,7 @@ public class SynchronizationService implements Runnable {
         m_struCardSendInputParam.byRes = "0".getBytes();
         Pointer pSendBuf = m_struCardSendInputParam.getPointer();
         m_struCardSendInputParam.write();
-        Thread.sleep(configEntity.getSynchronizationTime());
+        Thread.sleep(configEntity.getSynchronizationTime());//查找全部卡号时，线程暂停时间
         if (!HCNetSDK.INSTANCE.NET_DVR_SendRemoteConfig(cardGetFtpFlag, 0x3, pSendBuf, m_struCardSendInputParam.size())) {
             logger.error("查询卡号失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             stopRemoteConfig(cardGetFtpFlag);
@@ -141,9 +141,9 @@ public class SynchronizationService implements Runnable {
                 struCardInfo.byCardNo[i] = 0;
             }
             byte[] cardNoBytes = cardNo.getBytes(); //卡号
-            System.arraycopy(cardNoBytes, 0, struCardInfo.byCardNo, 0, cardNoBytes.length);
+            System.arraycopy(cardNoBytes, 0, struCardInfo.byCardNo, 0, cardNo.length());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("设置卡号失败：", e);
         }
         // 设置卡片名称
         try {
@@ -164,7 +164,7 @@ public class SynchronizationService implements Runnable {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("error", e);
             }
             return false;
         } else {
@@ -173,7 +173,7 @@ public class SynchronizationService implements Runnable {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("error", e);
             }
             return true;
         }
@@ -249,7 +249,11 @@ public class SynchronizationService implements Runnable {
         // 启动远程配置。
         NativeLong lHandle = hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_FACE_PARAM_CFG,
                 lpInBuffer.getPointer(), lpInBuffer.size(), faceSendHandler, null);
-        logger.error("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+        if (lHandle.longValue() > -1) {
+            logger.info("人脸下发连接开启成功");
+        } else {
+            logger.error("人脸下发连接开启失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+        }
         lpInBuffer.read();
         // 发送长连接数据
         HCNetSDK.NET_DVR_FACE_PARAM_CFG pSendBuf = new HCNetSDK.NET_DVR_FACE_PARAM_CFG();
@@ -257,7 +261,6 @@ public class SynchronizationService implements Runnable {
             pSendBuf.byCardNo[i] = (byte) cardNo.charAt(i);
         }
         FaceInfoEntity faceInfo = new FaceInfoEntity();
-//        byte[] byteFace1 = readPic7();
         faceInfo.byFaceInfo = byteFace;
         faceInfo.write();
         pSendBuf.pFaceBuffer = faceInfo.getPointer();
@@ -273,25 +276,15 @@ public class SynchronizationService implements Runnable {
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("人脸下发延迟出错", e);
         }
         if (!result) {
             logger.error("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
             stopRemoteConfig(lHandle);
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             return false;
         } else {
             logger.info("人脸下发成功");
             stopRemoteConfig(lHandle);
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             return true;
         }
     }
@@ -299,13 +292,11 @@ public class SynchronizationService implements Runnable {
     /*
      * 删除人脸
      * */
-    public Boolean delFace(String cardNo, NativeLong lUserID) throws InterruptedException {
-
+    public Boolean delFace(String cardNo, NativeLong lUserID) {
         //删除人脸数据
         HCNetSDK.NET_DVR_FACE_PARAM_CTRL m_struFaceDel = new HCNetSDK.NET_DVR_FACE_PARAM_CTRL();
         m_struFaceDel.dwSize = m_struFaceDel.size();
         m_struFaceDel.byMode = 0; //删除方式：0- 按卡号方式删除，1- 按读卡器删除
-
         m_struFaceDel.struProcessMode.setType(HCNetSDK.NET_DVR_FACE_PARAM_BYCARD.class);
         m_struFaceDel.struProcessMode.struByCard.byCardNo = cardNo.getBytes();//需要删除人脸关联的卡号
         m_struFaceDel.struProcessMode.struByCard.byEnableCardReader[0] = 1; //读卡器
@@ -313,6 +304,11 @@ public class SynchronizationService implements Runnable {
         m_struFaceDel.write();
         Pointer lpInBuffer = m_struFaceDel.getPointer();
         boolean lRemoteCtrl = HCNetSDK.INSTANCE.NET_DVR_RemoteControl(lUserID, HCNetSDK.NET_DVR_DEL_FACE_PARAM_CFG, lpInBuffer, m_struFaceDel.size());
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            logger.error("人脸下发延迟出错", e);
+        }
         if (!lRemoteCtrl) {
             logger.error("删除人脸图片失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             return false;
@@ -326,12 +322,11 @@ public class SynchronizationService implements Runnable {
     public void run() {
         try {
             getCardInfo("0", lUserID);//获取一体机全部卡信息
-            System.out.println("一体机全部卡号：" + synchronizationHandler.getCards());
+//            System.out.println("一体机全部卡号：" + synchronizationHandler.getCards());
             List<String> adds;//要下发的卡号合集
             List<String> deletes;//要删除的卡号合集
             List<String> cards = new ArrayList<String>();
-//            Thread.sleep(configEntity.getTestTime());
-            System.out.println("数据库人员数量" + cards.size());
+            logger.info("数据库人员数量" + cards.size());
             //测试union String[] toBeStored = list.toArray(new String[list.size()]);
             String[] deviceNumbers = synchronizationHandler.getCards().toArray(new String[synchronizationHandler.getCards().size()]);//一体机人员信息
             String[] dataBaseNumbers = dataBaseCards.toArray(new String[dataBaseCards.size()]);//数据库人员信息
@@ -369,7 +364,7 @@ public class SynchronizationService implements Runnable {
                 delFace(delCard, lUserID);
             }
             for (StaffEntity staffEntity : staffEntities) {
-                System.out.println("下发的卡号和名称：" + staffEntity.getCardNumber() + "; " + staffEntity.getName());
+//                System.out.println("下发的卡号和名称：" + staffEntity.getCardNumber() + "; " + staffEntity.getName());
                 setCardInfo(lUserID, staffEntity.getCardNumber(), staffEntity.getName(), "666666");
                 setFaceInfo(staffEntity.getCardNumber(), staffEntity.getPhoto(), lUserID);
             }

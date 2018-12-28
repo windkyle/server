@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class Egci {
         try {
             stmt = databaseService.connection().createStatement();
             //获取设备ip列表
-            ResultSet resultSet = stmt.executeQuery("select GroupId,IP from Equipment");
+            ResultSet resultSet = stmt.executeQuery("select Name,GroupId,IP from Equipment");
             deviceIps = new ArrayList<String>();
             deviceIps0 = new ArrayList<String>();
             deviceIps1 = new ArrayList<String>();
@@ -107,6 +108,12 @@ public class Egci {
      * socket服务初始化
      * */
     public void initServer() throws Exception {
+        //获取系统默认编码
+        Elogger.info("系统默认编码：" + System.getProperty("file.encoding")); //查询结果GBK
+        //系统默认字符编码
+        Elogger.info("系统默认字符编码：" + Charset.defaultCharset()); //查询结果GBK
+        //操作系统用户使用的语言
+        Elogger.info("系统默认语言：" + System.getProperty("user.language")); //查询结果zh
         try {
             ServerSocket serverSocket = new ServerSocket(configEntity.getSocketPort());
             serverSocket.setSoTimeout(0);

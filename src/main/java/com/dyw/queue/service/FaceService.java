@@ -8,8 +8,6 @@ import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-
 public class FaceService extends BaseService {
     private Logger logger = LoggerFactory.getLogger(FaceService.class);
     private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
@@ -32,7 +30,11 @@ public class FaceService extends BaseService {
         // 启动远程配置。
         NativeLong lHandle = hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_FACE_PARAM_CFG,
                 lpInBuffer.getPointer(), lpInBuffer.size(), faceSendHandler, null);
-        logger.error("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+        if (lHandle.longValue() > -1) {
+            logger.info("人脸下发连接开启成功");
+        } else {
+            logger.error("人脸下发连接开启失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+        }
         lpInBuffer.read();
         // 发送长连接数据
         HCNetSDK.NET_DVR_FACE_PARAM_CFG pSendBuf = new HCNetSDK.NET_DVR_FACE_PARAM_CFG();
@@ -40,7 +42,6 @@ public class FaceService extends BaseService {
             pSendBuf.byCardNo[i] = (byte) cardNo.charAt(i);
         }
         FaceInfoEntity faceInfo = new FaceInfoEntity();
-//        byte[] byteFace1 = readPic7();
         faceInfo.byFaceInfo = byteFace;
         faceInfo.write();
         pSendBuf.pFaceBuffer = faceInfo.getPointer();
@@ -56,7 +57,7 @@ public class FaceService extends BaseService {
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("人脸下发延迟出错", e);
         }
         if (!result) {
             logger.error("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
@@ -82,13 +83,11 @@ public class FaceService extends BaseService {
     /*
      * 删除人脸
      * */
-    public Boolean delFace(String cardNo, NativeLong lUserID) throws InterruptedException {
-
+    public Boolean delFace(String cardNo, NativeLong lUserID) {
         //删除人脸数据
         HCNetSDK.NET_DVR_FACE_PARAM_CTRL m_struFaceDel = new HCNetSDK.NET_DVR_FACE_PARAM_CTRL();
         m_struFaceDel.dwSize = m_struFaceDel.size();
         m_struFaceDel.byMode = 0; //删除方式：0- 按卡号方式删除，1- 按读卡器删除
-
         m_struFaceDel.struProcessMode.setType(HCNetSDK.NET_DVR_FACE_PARAM_BYCARD.class);
         m_struFaceDel.struProcessMode.struByCard.byCardNo = cardNo.getBytes();//需要删除人脸关联的卡号
         m_struFaceDel.struProcessMode.struByCard.byEnableCardReader[0] = 1; //读卡器
@@ -96,6 +95,11 @@ public class FaceService extends BaseService {
         m_struFaceDel.write();
         Pointer lpInBuffer = m_struFaceDel.getPointer();
         boolean lRemoteCtrl = HCNetSDK.INSTANCE.NET_DVR_RemoteControl(lUserID, HCNetSDK.NET_DVR_DEL_FACE_PARAM_CFG, lpInBuffer, m_struFaceDel.size());
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            logger.error("人脸下发延迟出错", e);
+        }
         if (!lRemoteCtrl) {
             logger.error("删除人脸图片失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             return false;
@@ -103,25 +107,6 @@ public class FaceService extends BaseService {
             logger.info("删除人脸图片成功!");
             return true;
         }
-    }
-
-    /*
-     * 获取本地图片
-     * */
-    public static byte[] readPic7() {
-        try {
-            FileInputStream inputStream = new FileInputStream("C:/EntranceGuard/test.jpg");
-            int i = inputStream.available();
-            // byte数组用于存放图片字节数据
-            byte[] buff = new byte[i];
-            inputStream.read(buff);
-            // 关闭输入流
-            inputStream.close();
-            return buff;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /*

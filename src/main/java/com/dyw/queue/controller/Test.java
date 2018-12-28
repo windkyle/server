@@ -6,31 +6,40 @@ import com.dyw.queue.service.LoginService;
 import com.dyw.queue.service.SynchronizationService;
 import com.dyw.queue.tool.Tool;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class Test {
-    public static void main(String[] args) {
-        ConfigEntity configEntity = Tool.getConfig("C:\\software\\server\\config\\test.xml");
-        List<String> cards = new ArrayList<String>();
-        //连接数据库
-        DatabaseService databaseService = new DatabaseService(configEntity.getDataBaseIp(), configEntity.getDataBasePort(), configEntity.getDataBaseName(), configEntity.getDataBasePass(), configEntity.getDataBaseLib());
-        try {
-            Statement stmt = databaseService.connection().createStatement();
-            //获取设备ip列表
-            ResultSet resultSet = stmt.executeQuery("select CardNumber from Staff");
-            while (resultSet.next()) {
-                cards.add(resultSet.getString("CardNumber"));
-            }
-            System.out.println("数据库人员数量" + cards.size());
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static void demo(String str) throws Exception {
+
+        byte[] utfByte = str.getBytes("UTF-8");
+        System.out.print("utf Byte：");
+        printHex(utfByte);
+        String gbk = new String(utfByte, "GBK");//这里实际上把数据破坏了
+        System.out.println("to GBK：" + gbk);
+
+        byte[] gbkByte = gbk.getBytes("GBK");
+        String utf = new String(gbkByte, "UTF-8");
+        System.out.print("gbk Byte：");
+        printHex(gbkByte);
+        System.out.println("revert UTF8：" + utf);
+        System.out.println("===");
+//      如果gbk变成iso-8859-1就没问题
+    }
+
+    public static void printHex(byte[] byteArray) {
+        StringBuffer sb = new StringBuffer();
+        for (byte b : byteArray) {
+            sb.append(Integer.toHexString((b >> 4) & 0xF));
+            sb.append(Integer.toHexString(b & 0xF));
+            sb.append(" ");
         }
-        LoginService loginService = new LoginService();
-        loginService.login(configEntity.getTestIp(), (short) 8000, "admin", "hik12345");
-        SynchronizationService synchronizationService = new SynchronizationService(configEntity.getTestIp(), loginService.getlUserID(), configEntity, cards);
-        synchronizationService.start();
+        System.out.println(sb.toString());
+    }
+
+    public static void main(String[] args) throws Exception {
+        String str1 = "姓名";
+        String str2 = "用户名";
+        demo(str1);
+        demo(str2);
     }
 }

@@ -9,6 +9,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -74,11 +75,17 @@ public class Tool {
                         if (attrName.equals("testIp")) {
                             configEntity.setTestIp(childNodes.item(j).getFirstChild().getNodeValue());
                         }
-                        if (attrName.equals("testTime")) {
-                            configEntity.setTestTime(Long.parseLong(childNodes.item(j).getFirstChild().getNodeValue()));
-                        }
                         if (attrName.equals("synchronization")) {
                             configEntity.setSynchronization(childNodes.item(j).getFirstChild().getNodeValue());
+                        }
+                        if (attrName.equals("synchronizationHour")) {
+                            configEntity.setSynchronizationHour(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("synchronizationMinute")) {
+                            configEntity.setSynchronizationMinute(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("synchronizationSecond")) {
+                            configEntity.setSynchronizationSecond(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
                         }
                         if (attrName.equals("synchronizationTime")) {
                             configEntity.setSynchronizationTime(Long.parseLong(childNodes.item(j).getFirstChild().getNodeValue()));
@@ -162,5 +169,41 @@ public class Tool {
         }
         String[] result = {};
         return list.toArray(result);
+    }
+
+    /*
+     * 判断字符串编码
+     * */
+
+    /*
+     * 二进制转十六进制
+     * */
+    public static void printHex(byte[] byteArray) {
+        StringBuffer sb = new StringBuffer();
+        for (byte b : byteArray) {
+            sb.append(Integer.toHexString((b >> 4) & 0xF));
+            sb.append(Integer.toHexString(b & 0xF));
+            sb.append(" ");
+        }
+        System.out.println(sb.toString());
+    }
+
+    /*
+     * 获取本地图片
+     * */
+    public static byte[] readPic7() {
+        try {
+            FileInputStream inputStream = new FileInputStream("C:/EntranceGuard/test.jpg");
+            int i = inputStream.available();
+            // byte数组用于存放图片字节数据
+            byte[] buff = new byte[i];
+            inputStream.read(buff);
+            // 关闭输入流
+            inputStream.close();
+            return buff;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

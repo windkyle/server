@@ -34,6 +34,12 @@ public class LoginService extends BaseService {
 
     public boolean logout() {
         // 注销和清空资源
-        return hcNetSDK.NET_DVR_Logout(lUserID) && hcNetSDK.NET_DVR_Cleanup();
+        if (hcNetSDK.NET_DVR_Logout(lUserID) && hcNetSDK.NET_DVR_Cleanup()) {
+            logger.info("设备资源释放成功");
+            return true;
+        } else {
+            logger.info("设备资源是否失败：" + hcNetSDK.NET_DVR_GetLastError());
+            return false;
+        }
     }
 }

@@ -3,12 +3,14 @@ package com.dyw.queue.service;
 import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.handler.CardGetHandler;
 import com.dyw.queue.handler.CardSendHandler;
+import com.dyw.queue.tool.Tool;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class CardService extends BaseService {
     private Logger logger = LoggerFactory.getLogger(CardService.class);
@@ -50,9 +52,9 @@ public class CardService extends BaseService {
                 struCardInfo.byCardNo[i] = 0;
             }
             byte[] cardNoBytes = cardNo.getBytes(); //卡号
-            System.arraycopy(cardNoBytes, 0, struCardInfo.byCardNo, 0, cardNoBytes.length);
+            System.arraycopy(cardNoBytes, 0, struCardInfo.byCardNo, 0, cardNo.length());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("设置卡号出错：", e);
         }
         // 设置卡片名称
         try {
@@ -73,7 +75,7 @@ public class CardService extends BaseService {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("卡号下发错误：", e);
             }
             return false;
         } else {
@@ -82,7 +84,7 @@ public class CardService extends BaseService {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("卡号下发成功：", e);
             }
             return true;
         }
@@ -174,8 +176,8 @@ public class CardService extends BaseService {
         m_struCardSendInputParam.byRes = "0".getBytes();
         Pointer pSendBuf = m_struCardSendInputParam.getPointer();
         m_struCardSendInputParam.write();
-        Thread.sleep(1000);
         if (!HCNetSDK.INSTANCE.NET_DVR_SendRemoteConfig(cardGetFtpFlag, 0x3, pSendBuf, m_struCardSendInputParam.size())) {
+            Thread.sleep(1000);
             logger.error("查询卡号失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             stopRemoteConfig(cardGetFtpFlag);
             return false;

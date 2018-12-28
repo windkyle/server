@@ -1,5 +1,6 @@
 package com.dyw.queue.service;
 
+import com.dyw.queue.HCNetSDK;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class CustomerService extends BaseService implements Runnable {
             try {
                 channel.queueDeclare(queueName, true, false, false, null);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("消费者创建队列错误：", e);
             }
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
@@ -54,11 +55,23 @@ public class CustomerService extends BaseService implements Runnable {
                         try {
                             if (cardService.getCardInfo(cardNo, loginService.getlUserID())) {
                                 logger.info("卡号已存在，先删除卡号和人脸");
-                                cardService.delCardInfo(cardNo, loginService.getlUserID());
-                                faceService.delFace(cardNo, loginService.getlUserID());
+                                //删除卡号
+                                if (cardService.delCardInfo(cardNo, loginService.getlUserID())) {
+                                    logger.info("卡号删除成功");
+                                    if (faceService.delFace(cardNo, loginService.getlUserID())) {
+                                        logger.info("人脸删除成功");
+                                    } else {
+                                        channel.basicAck(envelope.getDeliveryTag(), false);
+                                    }
+                                } else {
+                                    channel.basicAck(envelope.getDeliveryTag(), false);
+                                }
+                                if (operationCode.equals("2")) {
+                                    loginService.logout();
+                                }
                             }
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            logger.error("删除卡号和人脸出错：" + e);
                         }
                         //判断操作码
                         if (operationCode.equals("1")) {
@@ -78,7 +91,7 @@ public class CustomerService extends BaseService implements Runnable {
                         } else {
                             channel.basicReject(envelope.getDeliveryTag(), false);
                         }
-
+                        loginService.logout();//释放设备资源
                     } else {
                         channel.basicReject(envelope.getDeliveryTag(), true);
                     }
@@ -86,9 +99,9 @@ public class CustomerService extends BaseService implements Runnable {
             };
             channel.basicConsume(queueName, false, consumer);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("消费者错误位置1：", e);
         } catch (TimeoutException e) {
-            e.printStackTrace();
+            logger.error("消费者错误位置2；", e);
         }
     }
 

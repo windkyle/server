@@ -58,14 +58,9 @@ public class SynchronizationHandler implements HCNetSDK.FRemoteConfigCallback {
                 pInfoV30.write(0, lpBuffer.getByteArray(0, m_struCardInfo.size()), 0, m_struCardInfo.size());
                 m_struCardInfo.read();
                 String str = new String(m_struCardInfo.byCardNo).trim();
-                try {
-                    String srtName = new String(m_struCardInfo.byName, "GBK").trim(); //姓名
-                    logger.info("查询到的卡号: {} ,姓名: {}" + str + srtName);
-                    cards.add(str);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    logger.info("未查到卡号信息" + e);
-                }
+                //      String srtName = new String(m_struCardInfo.byName, "GBK").trim(); //姓名
+//                    logger.info("查询到的卡号: {} ,姓名: {}" + str + srtName);
+                cards.add(str);
                 break;
             default:
                 break;
