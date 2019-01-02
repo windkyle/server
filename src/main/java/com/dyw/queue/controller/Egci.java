@@ -206,6 +206,7 @@ public class Egci {
                     }
                     //返回消息给客户端
                     sendToClient(socketInfo, br, JSON.toJSONString(deviceStatus));
+                    System.out.println(JSON.toJSONString(deviceStatus));
                 }
                 //设置一体机的通行模式
                 if (operationCode.equals("4")) {
@@ -269,8 +270,8 @@ public class Egci {
             } else {
                 statusEntity.setIsLogin("0");
                 statusEntity.setDeviceIp(deviceIp.substring(1));
-                statusEntity.setCardNumber("-1");
-                statusEntity.setPassMode("-1");
+                statusEntity.setCardNumber("0");
+                statusEntity.setPassMode("0");
             }
             deviceStatus.add(statusEntity);
         }

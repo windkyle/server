@@ -1,6 +1,5 @@
 package com.dyw.queue.service;
 
-import com.dyw.queue.HCNetSDK;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
@@ -54,24 +53,24 @@ public class CustomerService extends BaseService implements Runnable {
                         //判断卡号是否存在，存在卡号则先删除和人脸/如果命令是2，则正好只执行删除操作
                         try {
                             if (cardService.getCardInfo(cardNo, loginService.getlUserID())) {
-                                logger.info("卡号已存在，先删除卡号和人脸");
+                                logger.info(ip + ":卡号已存在，先删除卡号和人脸");
                                 //删除卡号
                                 if (cardService.delCardInfo(cardNo, loginService.getlUserID())) {
-                                    logger.info("卡号删除成功");
+                                    logger.info(ip + ":卡号删除成功");
                                     if (faceService.delFace(cardNo, loginService.getlUserID())) {
-                                        logger.info("人脸删除成功");
+                                        logger.info(ip + "人脸删除成功");
                                     } else {
                                         channel.basicAck(envelope.getDeliveryTag(), false);
                                     }
                                 } else {
                                     channel.basicAck(envelope.getDeliveryTag(), false);
                                 }
-                                if (operationCode.equals("2")) {
-                                    loginService.logout();
-                                }
+                            }
+                            if (operationCode.equals("2")) {
+                                loginService.logout();
                             }
                         } catch (InterruptedException e) {
-                            logger.error("删除卡号和人脸出错：" + e);
+                            logger.error(ip + ":删除卡号和人脸出错：" + e);
                         }
                         //判断操作码
                         if (operationCode.equals("1")) {

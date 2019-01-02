@@ -27,8 +27,10 @@ public class StatusService extends BaseService {
         StatusEntity statusEntity = new StatusEntity();
         if (!HCNetSDK.INSTANCE.NET_DVR_GetDVRConfig(iUserID, HCNetSDK.NET_DVR_GET_ACS_WORK_STATUS_V50, iChannel, struAcsWorkStatusCfg.getPointer(), struAcsWorkStatusCfg.size(), pInt)) {
             logger.info("NET_DVR_GET_ACS_WORK_STATUS_V50 failed with:" + HCNetSDK.INSTANCE.NET_DVR_GetLastError() + HCNetSDK.INSTANCE.NET_DVR_GetErrorMsg(struAcsWorkStatusCfg.getPointer()));
-            statusEntity.setPassMode("-1");
-            statusEntity.setCardNumber("-1");
+//            statusEntity.setIsFace("0");
+//            statusEntity.setIsCardAndFace("0");
+            statusEntity.setPassMode("0");
+            statusEntity.setCardNumber("0");
         } else {
             struAcsWorkStatusCfg.read();
             statusV50 = struAcsWorkStatusCfg;

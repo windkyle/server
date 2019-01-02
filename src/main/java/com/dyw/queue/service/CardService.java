@@ -220,8 +220,8 @@ public class CardService extends BaseService {
      * */
     public Boolean delCardInfo(String cardNo, NativeLong lUserID) throws InterruptedException {
 
-        NativeLong cardSendFtpFlag = buildSendCardTcpCon(HCNetSDK.INSTANCE, lUserID);
-        if (cardSendFtpFlag.intValue() < 0) {
+        NativeLong cardDelFtpFlag = buildSendCardTcpCon(HCNetSDK.INSTANCE, lUserID);
+        if (cardDelFtpFlag.intValue() < 0) {
             logger.error("建立删除卡号的长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
         }
         logger.info("建立删除卡号的长连接建立成功！");
@@ -231,19 +231,19 @@ public class CardService extends BaseService {
         struCardInfo.dwSize = struCardInfo.size();
         struCardInfo.dwModifyParamType = 0x00000001;
         System.arraycopy(cardNo.getBytes(), 0, struCardInfo.byCardNo, 0, cardNo.length());
-        struCardInfo.byCardValid = 0;
+        struCardInfo.byCardValid = 0;//设置为0，进行删除
         struCardInfo.write();
         Pointer pSendBufSet = struCardInfo.getPointer();
         // 发送卡信息
-        if (!HCNetSDK.INSTANCE.NET_DVR_SendRemoteConfig(cardSendFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
-            logger.error("号信息删除请求下发失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+        if (!HCNetSDK.INSTANCE.NET_DVR_SendRemoteConfig(cardDelFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
+            logger.error("卡号信息删除请求下发失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             Thread.sleep(500);
-            stopRemoteConfig(cardSendFtpFlag);
+            stopRemoteConfig(cardDelFtpFlag);
             return false;
         } else {
             logger.info("卡号信息删除请求下发成功！");
             Thread.sleep(500);
-            stopRemoteConfig(cardSendFtpFlag);
+            stopRemoteConfig(cardDelFtpFlag);
             return true;
         }
 
