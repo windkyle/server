@@ -46,7 +46,13 @@ public class Egci {
      * */
     public Egci() throws Exception {
         //读取配置文件
-        configEntity = Tool.getConfig("C:\\software\\server\\config\\config.xml");
+        System.out.println("路径：" + System.getProperty("user.dir"));
+        configEntity = Tool.getConfig(System.getProperty("user.dir") + "\\config\\config.xml");
+        System.out.println("相对路径" + this.getClass().getResource(""));
+        System.out.println("绝对路径" + this.getClass().getResource("/"));
+        System.out.println(this.getClass().getClassLoader().getResource(""));
+        System.out.println();
+
         //一体机参数配置
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();

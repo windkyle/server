@@ -7,11 +7,11 @@
 默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
     <!-- 定义日志文件 输入位置 -->
-    <property name="logPath" value="C:/software/server/logs"/>
+    <property name="logPath" value="logs"/>
     <!-- 日志最大的历史 30天 -->
     <property name="maxHistory" value="30"/>
 
-    <!-- 配置项， 通过此节点配置日志输出位置（控制台、文件、数据库）、输出格式等-->
+    <!-- 配置项， 通过此节点配置日志输出位置（\控制台、文件、数据库）、输出格式等-->
     <!-- ConsoleAppender代表输出到控制台 -->
     <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
         <!-- layout代表输出格式 -->
@@ -34,15 +34,15 @@
             <maxHistory>${maxHistory}</maxHistory>
         </rollingPolicy>
         <!-- 按照固定窗口模式生成日志文件，当文件大于20MB时，生成新的日志文件。窗口大小是1到3，当保存了3个归档文件后，将覆盖最早的日志。 -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>${logPath}/%d{yyyy-MM-dd}/.log.zip</fileNamePattern>
-            <minIndex>1</minIndex>
-            <maxIndex>3</maxIndex>
-        </rollingPolicy>
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">-->
+        <!--<fileNamePattern>${logPath}/%d{yyyy-MM-dd}/.log.zip</fileNamePattern>-->
+        <!--<minIndex>1</minIndex>-->
+        <!--<maxIndex>3</maxIndex>-->
+        <!--</rollingPolicy>-->
         <!-- 查看当前活动文件的大小，如果超过指定大小会告知RollingFileAppender 触发当前活动文件滚动 -->
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>5MB</maxFileSize>
-        </triggeringPolicy>
+        <!--<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">-->
+        <!--<maxFileSize>5MB</maxFileSize>-->
+        <!--</triggeringPolicy>-->
     </appender>
     <!-- 特殊记录Error日志 -->
     <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -56,7 +56,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${logPath}/error/%d.log</fileNamePattern>
             <!-- 日志最大的历史 60天 -->
-            <maxHistory>60</maxHistory>
+            <maxHistory>${maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 

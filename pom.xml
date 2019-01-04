@@ -53,6 +53,18 @@
             <version>3.6.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>6.4.0.jre7</version>
+        </dependency>
+
     </dependencies>
 
 
@@ -72,6 +84,20 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!-- 是否被过滤,如果被过滤则无法使用 -->
+                <filtering>false</filtering>
+            </resource>
+            <!--<resource>-->
+                <!--<directory>src/</directory>-->
+                <!--<includes>-->
+                    <!--<include>**/*.xml</include>-->
+                <!--</includes>-->
+            <!--</resource>-->
+        </resources>
     </build>
 </project>
 

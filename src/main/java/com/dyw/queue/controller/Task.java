@@ -49,6 +49,5 @@ public class Task extends TimerTask {
                 logger.error(deviceIp + "：同步失败：设备不在线或网络异常");
             }
         }
-
     }
 }
