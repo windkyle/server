@@ -19,6 +19,7 @@ public class OnguardService extends Thread {
             while (true) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String info = br.readLine();
+                logger.info(info);
             }
         } catch (Exception e) {
             logger.error("接收onGuard数据出错：", e);
