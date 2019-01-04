@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact build-on-make="true" name="server:jar">
-    <output-path>$PROJECT_DIR$/classes/artifacts/server_jar</output-path>
+  <artifact build-on-make="true" name="egci">
+    <output-path>$PROJECT_DIR$/classes/artifacts/egci</output-path>
     <root id="root">
       <element id="archive" name="server.jar">
         <element id="directory" name="META-INF">

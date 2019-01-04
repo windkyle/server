@@ -1,0 +1,45 @@
+package com.dyw.queue.service;
+
+import com.dyw.queue.controller.Egci;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+public class EquipmentService {
+    private static Logger logger = LoggerFactory.getLogger(EquipmentService.class);
+
+    public static void initEquipmentInfo() {
+        //连接数据库
+        DatabaseService databaseService = new DatabaseService(Egci.configEntity.getDataBaseIp(), Egci.configEntity.getDataBasePort(), Egci.configEntity.getDataBaseName(), Egci.configEntity.getDataBasePass(), Egci.configEntity.getDataBaseLib());
+        try {
+            Egci.stmt = databaseService.connection().createStatement();
+            //获取设备ip列表
+            ResultSet resultSet = Egci.stmt.executeQuery("select Name,GroupId,IP from Equipment");
+            Egci.deviceIps = new ArrayList<String>();
+            Egci.deviceIps0 = new ArrayList<String>();
+            Egci.deviceIps1 = new ArrayList<String>();
+            Egci.deviceIps2 = new ArrayList<String>();
+            Egci.deviceIps3 = new ArrayList<String>();
+            while (resultSet.next()) {
+                //如果对象中有数据，就会循环打印出来
+                Egci.deviceIps.add(resultSet.getString("IP"));
+                Egci.deviceIps0.add("#" + resultSet.getString("IP"));
+                if (resultSet.getInt("GroupId") == 2) {
+                    Egci.deviceIps1.add("#" + resultSet.getString("IP"));
+                } else if (resultSet.getInt("GroupId") == 3) {
+                    Egci.deviceIps2.add("#" + resultSet.getString("IP"));
+                } else if (resultSet.getInt("GroupId") == 4) {
+                    Egci.deviceIps3.add("#" + resultSet.getString("IP"));
+                }
+            }
+            logger.info("所有设备ip：" + String.valueOf(Egci.deviceIps0));
+            logger.info("一核设备ip：" + String.valueOf(Egci.deviceIps1));
+            logger.info("二核设备ip：" + String.valueOf(Egci.deviceIps2));
+            logger.info("三核设备ip：" + String.valueOf(Egci.deviceIps3));
+        } catch (Exception e) {
+            logger.error("连接数据库和获取全部设备IP失败：", e);
+        }
+    }
+}

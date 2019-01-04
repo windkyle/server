@@ -1,8 +1,6 @@
-package com.dyw.queue.controller;
+package com.dyw.queue.service;
 
-import com.dyw.queue.service.DatabaseService;
-import com.dyw.queue.service.LoginService;
-import com.dyw.queue.service.SynchronizationService;
+import com.dyw.queue.controller.Egci;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
 
-public class Task extends TimerTask {
-    private Logger logger = LoggerFactory.getLogger(Task.class);
+public class TaskService extends TimerTask {
+    private Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     public void run() {
         List<String> cards = new ArrayList<String>();//数据库人员信息

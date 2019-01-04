@@ -13,6 +13,13 @@
     <orderEntry type="library" name="amqp-client-5.5.0" level="project" />
     <orderEntry type="library" name="jna64" level="project" />
     <orderEntry type="library" name="amqp-client-3.6.5" level="project" />
+    <orderEntry type="library" name="fastjson-1.2.2" level="project" />
+    <orderEntry type="library" name="examples" level="project" />
+    <orderEntry type="library" name="amqp-client-3.6.5 (2)" level="project" />
+    <orderEntry type="library" name="base64-2.3.8" level="project" />
+    <orderEntry type="library" name="jna" level="project" />
+    <orderEntry type="library" name="log4j-core-2.8.2" level="project" />
+    <orderEntry type="library" name="sqljdbc4-4.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />
@@ -52,12 +59,5 @@
     <orderEntry type="library" name="Maven: org.mybatis:mybatis:3.2.8" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ibatis:ibatis-core:3.0" level="project" />
     <orderEntry type="library" name="Maven: com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre7" level="project" />
-    <orderEntry type="library" name="fastjson-1.2.2" level="project" />
-    <orderEntry type="library" name="examples" level="project" />
-    <orderEntry type="library" name="amqp-client-3.6.5 (2)" level="project" />
-    <orderEntry type="library" name="base64-2.3.8" level="project" />
-    <orderEntry type="library" name="jna" level="project" />
-    <orderEntry type="library" name="log4j-core-2.8.2" level="project" />
-    <orderEntry type="library" name="sqljdbc4-4.0" level="project" />
   </component>
 </module>
