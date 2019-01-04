@@ -56,7 +56,14 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.4.6</version>
+            <version>3.2.8</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.ibatis/ibatis-core -->
+        <dependency>
+            <groupId>org.apache.ibatis</groupId>
+            <artifactId>ibatis-core</artifactId>
+            <version>3.0</version>
         </dependency>
 
         <dependency>
@@ -92,10 +99,10 @@
                 <filtering>false</filtering>
             </resource>
             <!--<resource>-->
-                <!--<directory>src/</directory>-->
-                <!--<includes>-->
-                    <!--<include>**/*.xml</include>-->
-                <!--</includes>-->
+            <!--<directory>src/</directory>-->
+            <!--<includes>-->
+            <!--<include>**/*.xml</include>-->
+            <!--</includes>-->
             <!--</resource>-->
         </resources>
     </build>

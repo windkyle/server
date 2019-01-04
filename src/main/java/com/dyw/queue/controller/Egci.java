@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Egci {
+    //mybatis框架
+//    private SqlSession session;
     //配置文件
     public static ConfigEntity configEntity;
     //一体机变量
@@ -46,13 +48,7 @@ public class Egci {
      * */
     public Egci() throws Exception {
         //读取配置文件
-        System.out.println("路径：" + System.getProperty("user.dir"));
         configEntity = Tool.getConfig(System.getProperty("user.dir") + "\\config\\config.xml");
-        System.out.println("相对路径" + this.getClass().getResource(""));
-        System.out.println("绝对路径" + this.getClass().getResource("/"));
-        System.out.println(this.getClass().getClassLoader().getResource(""));
-        System.out.println();
-
         //一体机参数配置
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();
@@ -84,7 +80,6 @@ public class Egci {
                     deviceIps3.add("#" + resultSet.getString("IP"));
                 }
             }
-            //deviceIps = Arrays.asList(new String[]{"#192.168.40.25"});
             Elogger.info("所有设备ip：" + String.valueOf(deviceIps0));
             Elogger.info("一核设备ip：" + String.valueOf(deviceIps1));
             Elogger.info("二核设备ip：" + String.valueOf(deviceIps2));
@@ -103,7 +98,7 @@ public class Egci {
         }
         //启动同步操作
         if (configEntity.getSynchronization().equals("1")) {
-            TimerManager timerManager = new TimerManager();
+            TimerManager.open();
             Elogger.info("开启自动同步功能");
         } else {
             Elogger.info("关闭自动同步功能");
