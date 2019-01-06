@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class OnguardService extends Thread {
     private static Logger logger = LoggerFactory.getLogger(OnguardService.class);
@@ -27,15 +28,26 @@ public class OnguardService extends Thread {
                 TemporaryStaffEntity temporaryStaffEntity = JSON.parseObject(info, new TypeReference<TemporaryStaffEntity>() {
                 });
                 assert temporaryStaffEntity != null;
-                System.out.println(temporaryStaffEntity.getName());
-                String sql = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + temporaryStaffEntity.getCardId() + "," + temporaryStaffEntity.getCardNumber() + "," + temporaryStaffEntity.getUserId() + "," + temporaryStaffEntity.getName() + "," + temporaryStaffEntity.getNameEn() + "," + temporaryStaffEntity.getCompany() + "," + temporaryStaffEntity.getSex() + "," + temporaryStaffEntity.getBirthday() + ")";
-                System.out.println(sql);
-                if (Egci.stmt.execute(sql)) {
-                    System.out.println("插入成功");
-                }
+
+
             }
         } catch (Exception e) {
             logger.error("接收onGuard数据出错：", e);
         }
+    }
+
+    private Boolean insert(TemporaryStaffEntity temporaryStaffEntity) {
+        Boolean resultStatus = false;
+        try {
+            System.out.println(temporaryStaffEntity.getName());
+            String sql = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + temporaryStaffEntity.getCardId() + "," + temporaryStaffEntity.getCardNumber() + "," + temporaryStaffEntity.getUserId() + "," + temporaryStaffEntity.getName() + "," + temporaryStaffEntity.getNameEn() + "," + temporaryStaffEntity.getCompany() + "," + temporaryStaffEntity.getSex() + "," + temporaryStaffEntity.getBirthday() + ")";
+            System.out.println(sql);
+            if (Egci.stmt.execute(sql)) {
+                resultStatus = true;
+            }
+        } catch (SQLException e) {
+            logger.error("onGuard数据新增失败:", e);
+        }
+        return resultStatus;
     }
 }

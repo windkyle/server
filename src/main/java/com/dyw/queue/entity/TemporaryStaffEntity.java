@@ -9,6 +9,15 @@ public class TemporaryStaffEntity {
     private String Company;
     private String Sex;
     private String Birthday;
+    private int Type;
+
+    public int getType() {
+        return Type;
+    }
+
+    public void setType(int type) {
+        Type = type;
+    }
 
     public String getCardId() {
         return CardId;
