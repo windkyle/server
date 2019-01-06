@@ -17,8 +17,9 @@ public class Server {
             ServerSocket ss = new ServerSocket(9090);
             TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
             temporaryStaffEntity.setCardNumber("123456");
-            temporaryStaffEntity.setName("egci");
-            temporaryStaffEntity.setType(1);
+            temporaryStaffEntity.setName("林志强");
+            temporaryStaffEntity.setNameEn("egci");
+            temporaryStaffEntity.setType(2);
             String json = JSON.toJSONString(temporaryStaffEntity) + "\n";
             System.out.println(json);
             System.out.println("启动服务器....");
@@ -32,13 +33,11 @@ public class Server {
 //            //读取客户端发送来的消息
 //            String mess = br.readLine();
 //            System.out.println("客户端：" + mess);
-
-
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             while (true) {
                 bw.write(json);
                 bw.flush();
-                Thread.sleep(3000);
+                Thread.sleep(10000);
             }
         } catch (IOException e) {
             e.printStackTrace();

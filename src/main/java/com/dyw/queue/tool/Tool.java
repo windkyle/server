@@ -211,6 +211,12 @@ public class Tool {
      * 给字符串增加单引号
      * */
     public static String addQuote(String info) {
-        return "'" + info + "'";
+        System.out.println(info);
+        if (info == null) {
+            System.out.println("here");
+            return "''";
+        } else {
+            return "'" + info + "'";
+        }
     }
 }
