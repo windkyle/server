@@ -1,5 +1,8 @@
 package com.dyw.queue.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.dyw.queue.entity.TemporaryStaffEntity;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -12,6 +15,13 @@ public class Server {
     public static void main(String[] args) throws InterruptedException {
         try {
             ServerSocket ss = new ServerSocket(9090);
+            TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
+            temporaryStaffEntity.setCardNumber("'123456'");
+            temporaryStaffEntity.setName("'egci'");
+//            temporaryStaffEntityList.add(temporaryStaffEntity);
+//        }
+            String json = JSON.toJSONString(temporaryStaffEntity) + "\n";
+            System.out.println(json);
             System.out.println("启动服务器....");
             Socket s = ss.accept();
             System.out.println("客户端:" + s.getInetAddress().getLocalHost() + "已连接到服务器");
@@ -21,8 +31,9 @@ public class Server {
 //            String mess = br.readLine();
 //            System.out.println("客户端：" + mess);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+
             while (true) {
-                bw.write("egci\r\n");
+                bw.write(json);
                 bw.flush();
                 Thread.sleep(2000);
             }
