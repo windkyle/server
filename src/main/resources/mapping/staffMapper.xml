@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapping.staffMapper">
+    <!--卡号查询单个人员-->
+    <select id="getOneStaff" parameterType="String" resultType="com.dyw.queue.entity.StaffEntity">
+        select * from Staff where CardNumber=#{cardNumber}
+    </select>
+    <!--查询所有人员-->
+
+    <resultMap type="StaffEntity" id="StaffList">
+        <result property="id" column="id"/>
+        <result property="userName" column="userName"/>
+        <result property="userAge" column="userAge"/>
+        <result property="userAddress" column="userAddress"/>
+    </resultMap>
+
+
+</mapper>
