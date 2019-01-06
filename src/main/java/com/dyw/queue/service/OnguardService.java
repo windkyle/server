@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.dyw.queue.controller.Egci;
 import com.dyw.queue.entity.TemporaryStaffEntity;
+import com.dyw.queue.tool.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +55,24 @@ public class OnguardService extends Thread {
         }
     }
 
+    /*
+     * 新增数据
+     * */
     private void insert(TemporaryStaffEntity temporaryStaffEntity) {
         try {
             System.out.println(temporaryStaffEntity.getName());
-            String sql = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + temporaryStaffEntity.getCardId() + "," + temporaryStaffEntity.getCardNumber() + "," + temporaryStaffEntity.getUserId() + "," + temporaryStaffEntity.getName() + "," + temporaryStaffEntity.getNameEn() + "," + temporaryStaffEntity.getCompany() + "," + temporaryStaffEntity.getSex() + "," + temporaryStaffEntity.getBirthday() + ")";
+            String sql = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + Tool.addQuote(temporaryStaffEntity.getCardId()) + "," + Tool.addQuote(temporaryStaffEntity.getCardNumber()) + "," + Tool.addQuote(temporaryStaffEntity.getUserId()) + "," + Tool.addQuote(temporaryStaffEntity.getName()) + "," + Tool.addQuote(temporaryStaffEntity.getNameEn()) + "," + Tool.addQuote(temporaryStaffEntity.getCompany()) + "," + Tool.addQuote(temporaryStaffEntity.getSex()) + "," + Tool.addQuote(temporaryStaffEntity.getBirthday()) + ")";
             System.out.println(sql);
             System.out.println(stmt.execute(sql));
         } catch (SQLException e) {
             logger.error("onGuard数据新增失败:", e);
         }
+    }
+
+    /*
+     * 更新数据
+     * */
+    private void update(TemporaryStaffEntity temporaryStaffEntity) {
+        String sql = "UPDATE Staff SET "
     }
 }

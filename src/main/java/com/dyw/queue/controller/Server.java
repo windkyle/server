@@ -1,7 +1,9 @@
 package com.dyw.queue.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.dyw.queue.entity.TemporaryStaffEntity;
+import com.dyw.queue.tool.Tool;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,20 +16,24 @@ public class Server {
         try {
             ServerSocket ss = new ServerSocket(9090);
             TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
-            temporaryStaffEntity.setCardNumber("'123456'");
-            temporaryStaffEntity.setName("'egci'");
+            temporaryStaffEntity.setCardNumber("123456");
+            temporaryStaffEntity.setName("egci");
             temporaryStaffEntity.setType(1);
-//            temporaryStaffEntityList.add(temporaryStaffEntity);
-//        }
             String json = JSON.toJSONString(temporaryStaffEntity) + "\n";
             System.out.println(json);
             System.out.println("启动服务器....");
+            TemporaryStaffEntity temporaryStaffEntity1 = JSON.parseObject(json, new TypeReference<TemporaryStaffEntity>() {
+            });
+            System.out.println(Tool.addQuote(temporaryStaffEntity1.getName()));
+            String sql = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + temporaryStaffEntity.getCardId() + "," + temporaryStaffEntity.getCardNumber() + "," + temporaryStaffEntity.getUserId() + "," + temporaryStaffEntity.getName() + "," + temporaryStaffEntity.getNameEn() + "," + temporaryStaffEntity.getCompany() + "," + temporaryStaffEntity.getSex() + "," + temporaryStaffEntity.getBirthday() + ")";
             Socket s = ss.accept();
             System.out.println("客户端:" + s.getInetAddress().getLocalHost() + "已连接到服务器");
 //            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 //            //读取客户端发送来的消息
 //            String mess = br.readLine();
 //            System.out.println("客户端：" + mess);
+
+
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             while (true) {
                 bw.write(json);

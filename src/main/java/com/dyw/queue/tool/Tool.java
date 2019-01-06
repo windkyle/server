@@ -206,4 +206,11 @@ public class Tool {
         }
         return null;
     }
+
+    /*
+     * 给字符串增加单引号
+     * */
+    public static String addQuote(String info) {
+        return "'" + info + "'";
+    }
 }
