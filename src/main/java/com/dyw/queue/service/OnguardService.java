@@ -10,11 +10,21 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class OnguardService extends Thread {
     private static Logger logger = LoggerFactory.getLogger(OnguardService.class);
+    private Statement stmt;
+
+    public OnguardService() {
+        try {
+            DatabaseService databaseService = new DatabaseService(Egci.configEntity.getDataBaseIp(), Egci.configEntity.getDataBasePort(), Egci.configEntity.getDataBaseName(), Egci.configEntity.getDataBasePass(), Egci.configEntity.getDataBaseLib());
+            stmt = databaseService.connection().createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void run() {
@@ -28,26 +38,30 @@ public class OnguardService extends Thread {
                 TemporaryStaffEntity temporaryStaffEntity = JSON.parseObject(info, new TypeReference<TemporaryStaffEntity>() {
                 });
                 assert temporaryStaffEntity != null;
+                System.out.println(temporaryStaffEntity.getType());
+                if (temporaryStaffEntity.getType() == 1) {
+                    insert(temporaryStaffEntity);
+                }
+                if (temporaryStaffEntity.getType() == 2) {
 
+                }
+                if (temporaryStaffEntity.getType() == 3) {
 
+                }
             }
         } catch (Exception e) {
             logger.error("接收onGuard数据出错：", e);
         }
     }
 
-    private Boolean insert(TemporaryStaffEntity temporaryStaffEntity) {
-        Boolean resultStatus = false;
+    private void insert(TemporaryStaffEntity temporaryStaffEntity) {
         try {
             System.out.println(temporaryStaffEntity.getName());
             String sql = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + temporaryStaffEntity.getCardId() + "," + temporaryStaffEntity.getCardNumber() + "," + temporaryStaffEntity.getUserId() + "," + temporaryStaffEntity.getName() + "," + temporaryStaffEntity.getNameEn() + "," + temporaryStaffEntity.getCompany() + "," + temporaryStaffEntity.getSex() + "," + temporaryStaffEntity.getBirthday() + ")";
             System.out.println(sql);
-            if (Egci.stmt.execute(sql)) {
-                resultStatus = true;
-            }
+            System.out.println(stmt.execute(sql));
         } catch (SQLException e) {
             logger.error("onGuard数据新增失败:", e);
         }
-        return resultStatus;
     }
 }
