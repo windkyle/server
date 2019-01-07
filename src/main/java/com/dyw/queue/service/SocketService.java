@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dyw.queue.controller.Egci;
 import com.dyw.queue.entity.StaffEntity;
 import com.dyw.queue.entity.StatusEntity;
+import com.dyw.queue.entity.TemporaryStaffEntity;
 import net.iharder.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,11 @@ public class SocketService extends Thread {
                 for (int i = 0; i < Egci.deviceIps0.size(); i++) {
                     Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0.get(i)));
                 }
+                //删除临时表中的人员信息
+                TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
+                temporaryStaffEntity.setCardNumber(staff.getCardNumber());
+                OnguardService onguardService = new OnguardService();
+                onguardService.delete(temporaryStaffEntity);
                 //返回正确消息给客户端
                 sendToClient(socketInfo, br, "success");
             }

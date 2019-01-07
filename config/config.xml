@@ -24,5 +24,8 @@
 	<synchronizationSecond>00</synchronizationSecond>
 
 	<synchronizationTime>100000</synchronizationTime>//查找全部卡号时，线程暂停时间
-	
+	//onGuardp配置
+	<onGuardIp>127.0.0.1</onGuardIp>
+	<onGuardPort>9090</onGuardPort>
+
 </config>

@@ -30,7 +30,7 @@ public class OnguardService extends Thread {
     @Override
     public void run() {
         try {
-            Socket socket = new Socket("127.0.0.1", 9090);
+            Socket socket = new Socket(Egci.configEntity.getOnGuardIp(), Egci.configEntity.getOnGuardPort());
             //接口服务端信息
             System.out.println("waiting...");
             while (true) {
@@ -58,10 +58,10 @@ public class OnguardService extends Thread {
     /*
      * 新增数据
      * */
-    private void insert(TemporaryStaffEntity temporaryStaffEntity) {
+    public void insert(TemporaryStaffEntity temporaryStaffEntity) {
         try {
-            String sql = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + Tool.addQuote(temporaryStaffEntity.getCardId()) + "," + Tool.addQuote(temporaryStaffEntity.getCardNumber()) + "," + Tool.addQuote(temporaryStaffEntity.getUserId()) + "," + Tool.addQuote(temporaryStaffEntity.getName()) + "," + Tool.addQuote(temporaryStaffEntity.getNameEn()) + "," + Tool.addQuote(temporaryStaffEntity.getCompany()) + "," + Tool.addQuote(temporaryStaffEntity.getSex()) + "," + Tool.addQuote(temporaryStaffEntity.getBirthday()) + ")";
-            stmt.execute(sql);
+            String sql_staff = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + Tool.addQuote(temporaryStaffEntity.getCardId()) + "," + Tool.addQuote(temporaryStaffEntity.getCardNumber()) + "," + Tool.addQuote(temporaryStaffEntity.getUserId()) + "," + Tool.addQuote(temporaryStaffEntity.getName()) + "," + Tool.addQuote(temporaryStaffEntity.getNameEn()) + "," + Tool.addQuote(temporaryStaffEntity.getCompany()) + "," + Tool.addQuote(temporaryStaffEntity.getSex()) + "," + Tool.addQuote(temporaryStaffEntity.getBirthday()) + ")";
+            stmt.execute(sql_staff);
             logger.error("onGuard数据新增成功");
         } catch (SQLException e) {
             logger.error("onGuard数据新增失败:", e);
@@ -71,10 +71,14 @@ public class OnguardService extends Thread {
     /*
      * 更新数据
      * */
-    private void update(TemporaryStaffEntity temporaryStaffEntity) {
+    public void update(TemporaryStaffEntity temporaryStaffEntity) {
         try {
-            String sql = "UPDATE Staff SET Name=" + Tool.addQuote(temporaryStaffEntity.getName()) + "," + "NameEn=" + Tool.addQuote(temporaryStaffEntity.getNameEn()) + "," + "CardId=" + Tool.addQuote(temporaryStaffEntity.getCardId()) + "," + "CardNumber=" + Tool.addQuote(temporaryStaffEntity.getCardNumber()) + "," + "Birthday=" + Tool.addQuote(temporaryStaffEntity.getBirthday()) + "," + "Sex=" + Tool.addQuote(temporaryStaffEntity.getSex()) + "," + "Company=" + Tool.addQuote(temporaryStaffEntity.getCompany()) + " WHERE CardNumber=" + Tool.addQuote(temporaryStaffEntity.getCardNumber());
-            stmt.execute(sql);
+            //更新人员表信息
+            String sql_staff = "UPDATE Staff SET Name=" + Tool.addQuote(temporaryStaffEntity.getName()) + "," + "NameEn=" + Tool.addQuote(temporaryStaffEntity.getNameEn()) + "," + "CardId=" + Tool.addQuote(temporaryStaffEntity.getCardId()) + "," + "CardNumber=" + Tool.addQuote(temporaryStaffEntity.getCardNumber()) + "," + "Birthday=" + Tool.addQuote(temporaryStaffEntity.getBirthday()) + "," + "Sex=" + Tool.addQuote(temporaryStaffEntity.getSex()) + "," + "Company=" + Tool.addQuote(temporaryStaffEntity.getCompany()) + " WHERE CardNumber=" + Tool.addQuote(temporaryStaffEntity.getCardNumber());
+            stmt.execute(sql_staff);
+            //更新临时表信息
+            String sql_temporary = "UPDATE TemporaryStaff SET Name=" + Tool.addQuote(temporaryStaffEntity.getName()) + "," + "NameEn=" + Tool.addQuote(temporaryStaffEntity.getNameEn()) + "," + "CardId=" + Tool.addQuote(temporaryStaffEntity.getCardId()) + "," + "CardNumber=" + Tool.addQuote(temporaryStaffEntity.getCardNumber()) + "," + "Birthday=" + Tool.addQuote(temporaryStaffEntity.getBirthday()) + "," + "Sex=" + Tool.addQuote(temporaryStaffEntity.getSex()) + "," + "Company=" + Tool.addQuote(temporaryStaffEntity.getCompany()) + " WHERE CardNumber=" + Tool.addQuote(temporaryStaffEntity.getCardNumber());
+            stmt.execute(sql_temporary);
             logger.error("onGuard数据更新成功");
         } catch (SQLException e) {
             logger.error("onGuard数据更新失败:", e);
@@ -84,11 +88,22 @@ public class OnguardService extends Thread {
     /*
      * 删除数据
      * */
-    private void delete(TemporaryStaffEntity temporaryStaffEntity) {
+    public void delete(TemporaryStaffEntity temporaryStaffEntity) {
         try {
-            String sql = "DELETE FROM Staff WHERE CardNumber= " + Tool.addQuote(temporaryStaffEntity.getCardNumber());
-            stmt.execute(sql);
+            //删除人员表数据
+            String sql_staff = "DELETE FROM Staff WHERE CardNumber= " + Tool.addQuote(temporaryStaffEntity.getCardNumber());
+            stmt.execute(sql_staff);
+            String staffInfo = "2#" + temporaryStaffEntity.getCardNumber() + "#test#none";
+            //发送删除卡号人脸消息到队列中
+            for (int i = 0; i < Egci.deviceIps0.size(); i++) {
+                Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0.get(i)));
+            }
+            //删除临时表数据
+            String sql_temporary = "DELETE FROM TemporaryStaff WHERE CardNumber= " + Tool.addQuote(temporaryStaffEntity.getCardNumber());
+            stmt.execute(sql_temporary);
         } catch (SQLException e) {
+            logger.error("onGuard数据删除失败");
+        } catch (Exception e) {
             logger.error("onGuard数据删除失败");
         }
     }

@@ -90,6 +90,13 @@ public class Tool {
                         if (attrName.equals("synchronizationTime")) {
                             configEntity.setSynchronizationTime(Long.parseLong(childNodes.item(j).getFirstChild().getNodeValue()));
                         }
+                        if (attrName.equals("onGuardIp")) {
+                            configEntity.setOnGuardIp(childNodes.item(j).getFirstChild().getNodeValue());
+                        }
+                        if (attrName.equals("onGuardPort")) {
+                            configEntity.setOnGuardPort(Short.parseShort(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+
                     }
                 }
             }

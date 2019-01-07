@@ -16,7 +16,7 @@ public class Server {
         try {
             ServerSocket ss = new ServerSocket(9090);
             TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
-            temporaryStaffEntity.setCardNumber("123456");
+            temporaryStaffEntity.setCardNumber("666666666");
             temporaryStaffEntity.setName("林志强");
             temporaryStaffEntity.setNameEn("egci");
             temporaryStaffEntity.setType(2);
@@ -26,7 +26,6 @@ public class Server {
             TemporaryStaffEntity temporaryStaffEntity1 = JSON.parseObject(json, new TypeReference<TemporaryStaffEntity>() {
             });
             System.out.println(Tool.addQuote(temporaryStaffEntity1.getName()));
-            String sql = "INSERT INTO TemporaryStaff (CardId,CardNumber,UserId,Name,NameEn,Company,Sex,Birthday) VALUES (" + temporaryStaffEntity.getCardId() + "," + temporaryStaffEntity.getCardNumber() + "," + temporaryStaffEntity.getUserId() + "," + temporaryStaffEntity.getName() + "," + temporaryStaffEntity.getNameEn() + "," + temporaryStaffEntity.getCompany() + "," + temporaryStaffEntity.getSex() + "," + temporaryStaffEntity.getBirthday() + ")";
             Socket s = ss.accept();
             System.out.println("客户端:" + s.getInetAddress().getLocalHost() + "已连接到服务器");
 //            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));

@@ -24,6 +24,25 @@ public class ConfigEntity {
     private long synchronizationTime;//查找全部卡号时，线程暂停时间
     //测试单台同步
     private String testIp;
+    //OnGuard配置
+    private String onGuardIp;
+    private short onGuardPort;
+
+    public String getOnGuardIp() {
+        return onGuardIp;
+    }
+
+    public void setOnGuardIp(String onGuardIp) {
+        this.onGuardIp = onGuardIp;
+    }
+
+    public short getOnGuardPort() {
+        return onGuardPort;
+    }
+
+    public void setOnGuardPort(short onGuardPort) {
+        this.onGuardPort = onGuardPort;
+    }
 
     public short getDevicePort() {
         return devicePort;

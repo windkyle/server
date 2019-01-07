@@ -45,7 +45,6 @@ public class CustomerService extends BaseService implements Runnable {
                     String picInfo = personInfo[3];//人脸信息
                     String ip = personInfo[4];//ip地址
                     logger.info("正在执行操作的IP:" + ip + ",卡号：" + cardNo);
-
                     //登陆
                     LoginService loginService = new LoginService();
                     loginService.login(ip, (short) 8000, "admin", "hik12345");
