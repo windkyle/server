@@ -50,7 +50,7 @@ public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
                             int iByte = struCfgStatus.byErrorCode[i] & 0xff;
                             iErrorCode = iErrorCode + (iByte << ioffset);
                         }
-                        logger.error("查询卡号失败，错误码：" + iErrorCode);
+                        logger.info("查询卡号失败，错误码：" + iErrorCode);
                         cardNumber = "none";
                         break;
                 }
@@ -68,7 +68,7 @@ public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
                     cardNumber = str;
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
-                    logger.info("未查到卡号信息" + e);
+                    logger.error("查询卡号出错" + e);
                 }
                 break;
             default:

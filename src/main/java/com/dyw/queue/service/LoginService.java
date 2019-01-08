@@ -38,7 +38,7 @@ public class LoginService extends BaseService {
             logger.info("设备资源释放成功");
             return true;
         } else {
-            logger.info("设备资源是否失败：" + hcNetSDK.NET_DVR_GetLastError());
+            logger.info("设备资源释放失败：" + hcNetSDK.NET_DVR_GetLastError());
             return false;
         }
     }

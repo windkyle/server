@@ -9,17 +9,20 @@ import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
-//        List<TemporaryStaffEntity> temporaryStaffEntityList = new ArrayList<TemporaryStaffEntity>();
-//        for (int i = 0; i < 3; i++) {
-        TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
-        temporaryStaffEntity.setCardNumber("123456");
-        temporaryStaffEntity.setName("egci");
-//            temporaryStaffEntityList.add(temporaryStaffEntity);
-//        }
-        String json = JSON.toJSONString(temporaryStaffEntity);
-        System.out.println(JSON.toJSONString(temporaryStaffEntity));
-        temporaryStaffEntity = JSON.parseObject(json, new TypeReference<TemporaryStaffEntity>() {
-        });
-        System.out.println(temporaryStaffEntity.getName());
+        try {
+            if (true) {
+                if (true) {
+                    System.out.println("1");
+                    return;
+                }
+            }
+            if (true) {
+                System.out.println("4");
+            }
+        } catch (Exception e) {
+            System.out.println("2");
+        } finally {
+            System.out.println("3");
+        }
     }
 }

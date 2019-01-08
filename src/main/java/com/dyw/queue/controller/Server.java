@@ -16,16 +16,16 @@ public class Server {
         try {
             ServerSocket ss = new ServerSocket(9090);
             TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
-            temporaryStaffEntity.setCardNumber("666666666");
-            temporaryStaffEntity.setName("林志强");
-            temporaryStaffEntity.setNameEn("egci");
+            temporaryStaffEntity.setCardNumber("3");
+            temporaryStaffEntity.setName("egci");
+            temporaryStaffEntity.setNameEn("林志强");
+            temporaryStaffEntity.setBirthday("2019-1-7");
             temporaryStaffEntity.setType(2);
             String json = JSON.toJSONString(temporaryStaffEntity) + "\n";
             System.out.println(json);
             System.out.println("启动服务器....");
             TemporaryStaffEntity temporaryStaffEntity1 = JSON.parseObject(json, new TypeReference<TemporaryStaffEntity>() {
             });
-            System.out.println(Tool.addQuote(temporaryStaffEntity1.getName()));
             Socket s = ss.accept();
             System.out.println("客户端:" + s.getInetAddress().getLocalHost() + "已连接到服务器");
 //            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));

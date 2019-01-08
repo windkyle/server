@@ -58,7 +58,6 @@ public class SocketService extends Thread {
                 //读取数据库获取人员信息
                 String sql = "select CardNumber,Name,Photo from Staff WHERE CardNumber = '" + mess.substring(2) + "'";
                 ResultSet rs = Egci.stmt.executeQuery(sql);
-                //"delete from Users where UserID='"+UserID+"'"
                 while (rs.next()) {//如果对象中有数据，就会循环打印出来
                     staff.setName(rs.getString("Name"));
                     staff.setCardNumber(rs.getString("CardNumber"));
@@ -74,7 +73,7 @@ public class SocketService extends Thread {
                 TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
                 temporaryStaffEntity.setCardNumber(staff.getCardNumber());
                 OnguardService onguardService = new OnguardService();
-                onguardService.delete(temporaryStaffEntity);
+                onguardService.deleteTemporary(temporaryStaffEntity);
                 //返回正确消息给客户端
                 sendToClient(socketInfo, br, "success");
             }
@@ -161,8 +160,6 @@ public class SocketService extends Thread {
             socket.close();
         } catch (IOException e) {
             logger.error("返回消息到客户端出错：" + e);
-        } finally {
-
         }
     }
 

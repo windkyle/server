@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class CardService extends BaseService {
+public class CardService {
     private Logger logger = LoggerFactory.getLogger(CardService.class);
     private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
     private CardSendHandler cardSendHandler = new CardSendHandler();

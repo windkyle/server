@@ -8,7 +8,7 @@ import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FaceService extends BaseService {
+public class FaceService {
     private Logger logger = LoggerFactory.getLogger(FaceService.class);
     private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
     private FaceSendHandler faceSendHandler = new FaceSendHandler();
