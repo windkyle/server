@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -38,14 +39,16 @@ public class Egci {
     //初始化静态对象
     public static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
     //监控推送服务的生产者合集
-    public static List<ProducerService> producerMonitorServices;
+    public static List<ProducerService> producerMonitorOneServices;//监听一核设备
+    public static List<ProducerService> producerMonitorTwoServices;//监听二核设备
+    public static List<ProducerService> producerMonitorThreeServices;//监听三核设备
 
     /*
      * 初始化函数
      * */
     private static void initServer() throws Exception {
         if (!HCNetSDK.INSTANCE.NET_DVR_Init()) {
-            System.out.println("SDK初始化失败");
+            Elogger.error("SDK初始化失败");
             return;
         }
         //读取配置文件
@@ -56,10 +59,21 @@ public class Egci {
         devicePass = configEntity.getDevicePass();
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
+        //初始化监听生产者
+        producerMonitorOneServices = new ArrayList<ProducerService>();
+        producerMonitorTwoServices = new ArrayList<ProducerService>();
+        producerMonitorThreeServices = new ArrayList<ProducerService>();
+        //对所有一体机设备进行布防
+        for (String deviceIp : deviceIps) {
+            LoginService loginService = new LoginService();
+            loginService.login(deviceIp, configEntity.getDevicePort(), configEntity.getDeviceName(), configEntity.getDevicePass());
+            AlarmService alarmService = new AlarmService(loginService.getlUserID());
+            alarmService.start();
+        }
+        Thread.sleep(15000);
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip
-        producerMonitorServices = new ArrayList<ProducerService>();
         for (int i = 0; i < deviceIps0.size(); i++) {
             ProducerService producerService = new ProducerService(i + "：" + deviceIps0.get(i), queueIp);
             producerServiceList.add(producerService);
@@ -84,6 +98,7 @@ public class Egci {
         onguardService.start();
         //启用socket服务
         try {
+            System.out.println("本机IP地址" + InetAddress.getLocalHost());
             ServerSocket serverSocket = new ServerSocket(configEntity.getSocketPort());
             serverSocket.setSoTimeout(0);
             serverSocket.setReuseAddress(true);

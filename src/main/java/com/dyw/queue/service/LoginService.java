@@ -6,7 +6,7 @@ import com.sun.jna.NativeLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginService extends BaseService {
+public class LoginService {
     private Logger logger = LoggerFactory.getLogger(LoginService.class);
     private NativeLong lUserID = new NativeLong(-1);
 

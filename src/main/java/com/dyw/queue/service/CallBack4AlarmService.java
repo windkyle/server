@@ -73,8 +73,7 @@ public class CallBack4AlarmService {
         byte[] bytes = new byte[strACSInfo.dwPicDataLen];
         buffers.get(bytes);
         String sAlarmTypeDesc = "：门禁主机报警信息，卡号：" + new String(strACSInfo.struAcsEventInfo.byCardNo).trim() + "，卡类型：" +
-                strACSInfo.struAcsEventInfo.byCardType + "，报警主类型：" + strACSInfo.dwMajor + "，报警次类型：" + strACSInfo.dwMinor + "，图片：" +
-                Tool.printHex(bytes);
+                strACSInfo.struAcsEventInfo.byCardType + "，报警主类型：" + strACSInfo.dwMajor + "，报警次类型：" + strACSInfo.dwMinor + "，设备IP地址：" + new String(strACSInfo.struRemoteHostAddr.sIpV4);
 //        if (strACSInfo.dwPicDataLen > 0) {
 //            SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");
 //            String newName = sf.format(new Date());

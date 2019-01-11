@@ -191,7 +191,6 @@ public class Tool {
             sb.append(Integer.toHexString(b & 0xF));
             sb.append(" ");
         }
-        System.out.println(sb.toString());
         return sb.toString();
     }
 

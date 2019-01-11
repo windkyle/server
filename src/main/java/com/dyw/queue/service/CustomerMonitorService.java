@@ -32,7 +32,7 @@ public class CustomerMonitorService implements Runnable {
             Connection connection = factory.newConnection();
             final Channel channel = connection.createChannel();
             try {
-                channel.queueDeclare(queueName, true, false, false, null);
+                channel.queueDeclare(queueName, false, false, true, null);//客户端断开后自动删除该队列
             } catch (IOException e) {
                 logger.error("消费者创建队列错误：", e);
             }
@@ -44,10 +44,15 @@ public class CustomerMonitorService implements Runnable {
                     OutputStream os = socket.getOutputStream();
                     os.write((new String(body) + "\n").getBytes());
                     os.flush();
+                    channel.basicReject(envelope.getDeliveryTag(), false);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             };
-            //无需确认
-            channel.basicConsume(queueName, true, consumer);
+            channel.basicConsume(queueName, false, consumer);
         } catch (IOException e) {
             logger.error("消费者错误位置1：", e);
         } catch (TimeoutException e) {
@@ -57,7 +62,6 @@ public class CustomerMonitorService implements Runnable {
 
     public void start() {
         logger.info("Starting: " + queueName);
-
         if (t == null) {
             t = new Thread(this, queueName);
             t.start();

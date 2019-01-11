@@ -12,7 +12,7 @@
 	<dataBaseLib>EntranceGuard</dataBaseLib>
 	<dataBaseTime>30000</dataBaseTime>//防止同步时同时操作数据库，造成堵塞
 	//队列配置
-	<queueIp>127.0.0.1</queueIp>
+	<queueIp>localhost</queueIp>
 	//socket配置
 	<socketPort>12345</socketPort>
 	//测试配置单台同步

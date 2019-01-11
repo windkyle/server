@@ -7,12 +7,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class AlarmService {
-
+public class AlarmService extends Thread {
     //布防标识符
-    private static NativeLong lAlarmHandleFlag = new NativeLong(-1);
+    private NativeLong lAlarmHandleFlag = new NativeLong(-1);
     private Logger logger = LoggerFactory.getLogger(AlarmService.class);
     private HCNetSDK.FMSGCallBack_V31 alarmHandler = new AlarmHandler();
+
+    private NativeLong lUserID;
+
+    public AlarmService(NativeLong lUserID) {
+        this.lUserID = lUserID;
+    }
+
+    @Override
+    public void run() {
+        setupAlarmChan(lUserID);
+    }
 
     /**
      * 布防
@@ -21,7 +31,6 @@ public class AlarmService {
      * @return
      */
     public void setupAlarmChan(NativeLong lUserID) {
-
         try {
             if (lUserID.intValue() == -1) {
                 logger.info("请先注册！");
@@ -48,7 +57,7 @@ public class AlarmService {
         } catch (Exception e) {
             logger.error("error", e);
         }
-        while (true) ;
+//        while (true) ;//保持监听状态
     }
 
     public void closeAlarmChan() {
