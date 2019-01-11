@@ -21,7 +21,8 @@ public class TaskService extends TimerTask {
         try {
             Statement stmt = databaseService.connection().createStatement();
             //获取设备ip列表
-            ResultSet resultSet = stmt.executeQuery("select CardNumber from Staff");
+            String sql = "select CardNumber from Staff WHERE CardNumber != '0'";
+            ResultSet resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
                 cards.add(resultSet.getString("CardNumber"));
             }

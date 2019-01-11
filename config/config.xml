@@ -18,7 +18,7 @@
 	//测试配置单台同步
 	<testIp>192.168.40.32</testIp>
 	//是否开启同步
-	<synchronization>1</synchronization>0：不开启，1：开启单台，2：代表全部开启
+	<synchronization>2</synchronization>0：不开启，1：开启单台，2：代表全部开启
 	<synchronizationHour>12</synchronizationHour>
 	<synchronizationMinute>54</synchronizationMinute>
 	<synchronizationSecond>00</synchronizationSecond>

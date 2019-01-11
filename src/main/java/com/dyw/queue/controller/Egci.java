@@ -1,5 +1,6 @@
 package com.dyw.queue.controller;
 
+import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.entity.ConfigEntity;
 import com.dyw.queue.service.*;
 import com.dyw.queue.tool.Tool;
@@ -31,14 +32,22 @@ public class Egci {
     public static List<String> deviceIps1;//一核设备
     public static List<String> deviceIps2;//二核设备
     public static List<String> deviceIps3;//三核设备
-    private static String queueIp;//队列的ip
+    public static String queueIp;//队列的ip
     //初始化生产者数组
     public static List<ProducerService> producerServiceList;
+    //初始化静态对象
+    public static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+    //监控推送服务的生产者合集
+    public static List<ProducerService> producerMonitorServices;
 
     /*
      * 初始化函数
      * */
     private static void initServer() throws Exception {
+        if (!HCNetSDK.INSTANCE.NET_DVR_Init()) {
+            System.out.println("SDK初始化失败");
+            return;
+        }
         //读取配置文件
         configEntity = Tool.getConfig(System.getProperty("user.dir") + "\\config\\config.xml");
         //一体机参数配置
@@ -50,14 +59,15 @@ public class Egci {
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip
+        producerMonitorServices = new ArrayList<ProducerService>();
         for (int i = 0; i < deviceIps0.size(); i++) {
             ProducerService producerService = new ProducerService(i + "：" + deviceIps0.get(i), queueIp);
             producerServiceList.add(producerService);
             CustomerService customerService = new CustomerService(i + "：" + deviceIps0.get(i), queueIp);
             customerService.start();
         }
-        //启动同步操作
-        if (configEntity.getSynchronization().equals("1")) {
+        //启动同步操作:0表示不启用；1表示单台；2表示全部
+        if (!configEntity.getSynchronization().equals("0")) {
             TimerService.open();
             Elogger.info("开启自动同步功能");
         } else {

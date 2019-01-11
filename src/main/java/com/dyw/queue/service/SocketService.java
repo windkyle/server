@@ -141,6 +141,19 @@ public class SocketService extends Thread {
                 //返回消息给客户端
                 sendToClient(socketInfo, br, "success");
             }
+            //实时监控消息推送
+            if (operationCode.equals("8")) {
+                ProducerService producerService = new ProducerService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp);
+                Egci.producerMonitorServices.add(producerService);
+                CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp, socketInfo);
+                customerMonitorService.start();
+
+                producerService.sendToQueue("egci");
+                producerService.sendToQueue("egci");
+                producerService.sendToQueue("egci");
+                producerService.sendToQueue("egci");
+                producerService.sendToQueue("egci");
+            }
         } catch (Exception e) {
             logger.error("socket数据处理出错：", e);
             sendToClient(socketInfo, br, "error");

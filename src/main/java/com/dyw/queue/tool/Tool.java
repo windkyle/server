@@ -96,7 +96,6 @@ public class Tool {
                         if (attrName.equals("onGuardPort")) {
                             configEntity.setOnGuardPort(Short.parseShort(childNodes.item(j).getFirstChild().getNodeValue()));
                         }
-
                     }
                 }
             }
@@ -185,7 +184,7 @@ public class Tool {
     /*
      * 二进制转十六进制
      * */
-    public static void printHex(byte[] byteArray) {
+    public static String printHex(byte[] byteArray) {
         StringBuffer sb = new StringBuffer();
         for (byte b : byteArray) {
             sb.append(Integer.toHexString((b >> 4) & 0xF));
@@ -193,6 +192,7 @@ public class Tool {
             sb.append(" ");
         }
         System.out.println(sb.toString());
+        return sb.toString();
     }
 
     /*
@@ -200,7 +200,7 @@ public class Tool {
      * */
     public static byte[] readPic7() {
         try {
-            FileInputStream inputStream = new FileInputStream("C:/EntranceGuard/test.jpg");
+            FileInputStream inputStream = new FileInputStream("C:/qb.jpg");
             int i = inputStream.available();
             // byte数组用于存放图片字节数据
             byte[] buff = new byte[i];

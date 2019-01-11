@@ -15,10 +15,10 @@ public class ProducerService {
     private Connection connection;
     private Channel channel;
 
-    public ProducerService(String queueName, String queneIp) throws Exception {
+    public ProducerService(String queueName, String queueIp) throws Exception {
         this.queueName = queueName;
         factory = new ConnectionFactory();
-        factory.setHost(queneIp);
+        factory.setHost(queueIp);
         connection = factory.newConnection();
         channel = connection.createChannel();
     }

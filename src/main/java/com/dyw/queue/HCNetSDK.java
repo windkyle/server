@@ -1182,7 +1182,7 @@ public interface HCNetSDK extends StdCallLibrary {
         public NET_DVR_IPADDR struRemoteHostAddr; // remote host address
         public NET_DVR_ACS_EVENT_INFO struAcsEventInfo;
         public int dwPicDataLen; // picture length, when 0 ,means has no picture
-        public int pPicData;  // picture data
+        public Pointer pPicData;  // picture data
         public byte[] byRes = new byte[24];
 
         @Override
@@ -2611,8 +2611,7 @@ public interface HCNetSDK extends StdCallLibrary {
     NativeLong NET_DVR_Upgrade_V40(NativeLong lUserID, ENUM_UPGRADE_TYPE dwUpgradeType, String sFileName, Pointer lpInBufer, int dwBufferSize);
 
     //升级类型
-    enum ENUM_UPGRADE_TYPE
-    {
+    enum ENUM_UPGRADE_TYPE {
         ENUM_UPGRADE_DVR, // 普通设备升级
         ENUM_UPGRADE_ADAPTER, // DVR适配器升级
         ENUM_UPGRADE_VCALIB, // 智能库升级
@@ -2620,7 +2619,9 @@ public interface HCNetSDK extends StdCallLibrary {
         ENUM_UPGRADE_ACS, // 门禁系统升级
         ENUM_UPGRADE_AUXILIARY_DEV, // 辅助设备升级
         ENUM_UPGRADE_LED //LED发送卡和接收卡升级
-    };
+    }
+
+    ;
 
     public static class NET_DVR_ACS_WORK_STATUS_V50 extends Structure {
         public int dwSize;
@@ -2685,5 +2686,80 @@ public interface HCNetSDK extends StdCallLibrary {
 
     NativeLong NET_DVR_Login_V30(String sDVRIP, short wDVRPort, String sUserName, String sPassword, NET_DVR_DEVICEINFO_V30 lpDeviceInfo);
 
+    public static interface FMSGCallBack_V31 extends StdCallCallback {
+        public boolean invoke(NativeLong lCommand, NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, int dwBufLen, Pointer pUser);
+    }
+
+    boolean NET_DVR_SetDVRMessageCallBack_V31(FMSGCallBack_V31 fMessageCallBack, Pointer pUser);
+
+    NativeLong NET_DVR_SetupAlarmChan_V41(NativeLong lUserID, NET_DVR_SETUPALARM_PARAM lpSetupParam);
+
+    boolean NET_DVR_CloseAlarmChan_V30(NativeLong lAlarmHandle);
+
+    public static final int COMM_ID_INFO_ALARM = 0x5200; //门禁身份证刷卡信息
+
+    public static final int COMM_ALARM_V30 = 0x4000;//9000报警信息主动上传
+
+    //身份证信息报警
+    public static class NET_DVR_ID_CARD_INFO_ALARM extends Structure {
+        public int dwSize;        //结构长度
+        public NET_DVR_ID_CARD_INFO  struIDCardCfg = new NET_DVR_ID_CARD_INFO();//身份证信息
+        public int dwMajor; //报警主类型，参考宏定义
+        public int dwMinor; //报警次类型，参考宏定义
+        public NET_DVR_TIME_V30  struSwipeTime; //时间
+        public byte[] byNetUser = new byte[MAX_NAMELEN] ;//网络操作的用户名
+        public NET_DVR_IPADDR    struRemoteHostAddr ;//远程主机地址
+        public int dwCardReaderNo; //读卡器编号，为0无效
+        public int dwDoorNo; //门编号，为0无效
+        public int dwPicDataLen;   //图片数据大小，不为0是表示后面带数据
+        public Pointer pPicData;
+        public byte byCardType; //卡类型，1-普通卡，2-残疾人卡，3-黑名单卡，4-巡更卡，5-胁迫卡，6-超级卡，7-来宾卡，8-解除卡，为0无效
+        public byte byDeviceNo;                             // 设备编号，为0时无效（有效范围1-255）
+        public byte[] byRes2 = new byte[2];
+        public int dwFingerPrintDataLen;                  // 指纹数据大小，不为0是表示后面带数据
+        public Pointer pFingerPrintData;
+        public int dwCapturePicDataLen;                   // 抓拍图片数据大小，不为0是表示后面带数据
+        public Pointer pCapturePicData;
+        public byte[] byRes = new byte[188];
+    }
+
+    public static final int MAX_ID_NUM_LEN                =  32;  //最大身份证号长度
+    public static final int MAX_ID_NAME_LEN               = 128;  //最大姓名长度
+    public static final int MAX_ID_ADDR_LEN               = 280;  //最大住址长度
+    public static final int MAX_ID_ISSUING_AUTHORITY_LEN  = 128;  //最大签发机关长度
+
+    //身份证信息
+    public static class NET_DVR_ID_CARD_INFO extends Structure {
+        public int dwSize;        //结构长度
+        public byte[] byName = new byte[MAX_ID_NAME_LEN];   //姓名
+        public NET_DVR_DATE struBirth; //出生日期
+        public byte[] byAddr = new byte[MAX_ID_ADDR_LEN];  //住址
+        public byte[] byIDNum = new byte[MAX_ID_NUM_LEN];   //身份证号码
+        public byte[] byIssuingAuthority = new byte[MAX_ID_ISSUING_AUTHORITY_LEN];  //签发机关
+        public NET_DVR_DATE struStartDate;  //有效开始日期
+        public NET_DVR_DATE struEndDate;  //有效截止日期
+        public byte byTermOfValidity;  //是否长期有效， 0-否，1-是（有效截止日期无效）
+        public byte bySex;  //性别，1-男，2-女
+        public byte byNation;    //民族，1-"汉"，2-"蒙古"，3-"回",4-"藏",5-"维吾尔",6-"苗",7-"彝",8-"壮",9-"布依",10-"朝鲜",
+        //11-"满",12-"侗",13-"瑶",14-"白",15-"土家",16-"哈尼",17-"哈萨克",18-"傣",19-"黎",20-"傈僳",
+        //21-"佤",22-"畲",23-"高山",24-"拉祜",25-"水",26-"东乡",27-"纳西",28-"景颇",29-"柯尔克孜",30-"土",
+        //31-"达斡尔",32-"仫佬",33-"羌",34-"布朗",35-"撒拉",36-"毛南",37-"仡佬",38-"锡伯",39-"阿昌",40-"普米",
+        //41-"塔吉克",42-"怒",43-"乌孜别克",44-"俄罗斯",45-"鄂温克",46-"德昂",47-"保安",48-"裕固",49-"京",50-"塔塔尔",
+        //51-"独龙",52-"鄂伦春",53-"赫哲",54-"门巴",55-"珞巴",56-"基诺"
+        public byte[] byRes = new byte[101];
+    }
+
+    public static class NET_DVR_TIME_V30 extends Structure
+    {
+        public short wYear;
+        public byte byMonth;
+        public byte byDay;
+        public byte byHour;
+        public byte byMinute;
+        public byte bySecond;
+        public byte byRes;
+        public short wMilliSec;
+        public byte[] byRes1 = new byte[2];
+    }
     //HCNetSDK.dll structure definition
 }
