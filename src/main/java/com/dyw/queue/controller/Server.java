@@ -11,12 +11,6 @@ import java.net.Socket;
 
 public class Server {
     public static void main(String[] args) throws InterruptedException {
-        Data data1 = new Data("192.168.40.1");
-        data1.start();
-        Data data2 = new Data("192.168.40.2");
-        data2.start();
-        Data data3 = new Data("192.168.40.3");
-        data3.start();
         try {
             ServerSocket ss = new ServerSocket(12345);
             System.out.println("启动服务器....");
@@ -25,7 +19,7 @@ public class Server {
 
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             while (true) {
-                bw.write(data1.getI() + "\n");
+                bw.write("egci\n");
                 bw.flush();
                 Thread.sleep(3000);
             }
