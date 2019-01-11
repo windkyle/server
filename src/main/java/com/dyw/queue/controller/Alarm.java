@@ -3,11 +3,14 @@ package com.dyw.queue.controller;
 import com.dyw.queue.service.AlarmService;
 import com.dyw.queue.service.LoginService;
 
+import java.sql.Timestamp;
+import java.util.Random;
+
 public class Alarm {
     public static void main(String[] args) {
-        LoginService loginService = new LoginService();
-        loginService.login("192.168.1.111", (short) 8000, "admin", "hik12345");
-        AlarmService alarmService = new AlarmService(loginService.getlUserID());
-        alarmService.setupAlarmChan(loginService.getlUserID());
+        Random rand = new Random();
+        for (int i = 0; i < 10; i++) {
+            System.out.println(rand.nextInt(90) % (20) + 70);
+        }
     }
 }

@@ -1,17 +1,24 @@
 package com.dyw.queue.service;
 
 import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.entity.AlarmEntity;
 import com.dyw.queue.tool.Tool;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 public class CallBack4AlarmService {
     private Logger logger = LoggerFactory.getLogger(CallBack4AlarmService.class);
@@ -20,7 +27,8 @@ public class CallBack4AlarmService {
                                HCNetSDK.NET_DVR_ALARMER pAlarmer,
                                Pointer pAlarmInfo,
                                int dwBufLen,
-                               Pointer pUser) {
+                               Pointer pUser,
+                               SqlSession session) {
         try {
             int alarmType = lCommand.intValue();
             switch (alarmType) {
@@ -30,7 +38,7 @@ public class CallBack4AlarmService {
 //                break;
                 case HCNetSDK.COMM_ALARM_ACS: //门禁主机报警信息
                     logger.info("HCNetSDK.COMM_ALARM_ACS");
-                    System.out.println(COMM_ALARM_ACS_info(pAlarmInfo));
+                    System.out.println(COMM_ALARM_ACS_info(pAlarmer, pAlarmInfo, session));
                     break;
                 case HCNetSDK.COMM_ID_INFO_ALARM: //身份证信息
                     logger.info("HCNetSDK.COMM_ID_INFO_ALARM");
@@ -60,20 +68,45 @@ public class CallBack4AlarmService {
         pIDCardInfo.write(0, pAlarmInfo.getByteArray(0, strIDCardInfo.size()), 0, strIDCardInfo.size());
         strIDCardInfo.read();
         return "：门禁身份证刷卡信息，身份证号码：" + new String(strIDCardInfo.struIDCardCfg.byIDNum).trim() + "，姓名：" +
-                new String(strIDCardInfo.struIDCardCfg.byName).trim() + "，报警主类型：" + strIDCardInfo.dwMajor + "，报警次类型：" + strIDCardInfo.dwMinor;
+                new String(strIDCardInfo.struIDCardCfg.byName).trim() + "，报警主类型：" + strIDCardInfo.dwMajor +
+                "，报警次类型：" + strIDCardInfo.dwMinor;
     }
 
-    private String COMM_ALARM_ACS_info(Pointer pAlarmInfo) throws UnsupportedEncodingException {
+    private String COMM_ALARM_ACS_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) throws UnsupportedEncodingException {
         HCNetSDK.NET_DVR_ACS_ALARM_INFO strACSInfo = new HCNetSDK.NET_DVR_ACS_ALARM_INFO();
         strACSInfo.write();
         Pointer pACSInfo = strACSInfo.getPointer();
         pACSInfo.write(0, pAlarmInfo.getByteArray(0, strACSInfo.size()), 0, strACSInfo.size());
         strACSInfo.read();
+//        String sAlarmTypeDesc = "：门禁主机报警信息，卡号：" + new String(strACSInfo.struAcsEventInfo.byCardNo).trim() +
+//                "，卡类型：" + strACSInfo.struAcsEventInfo.byCardType + "，报警主类型：" + strACSInfo.dwMajor +
+//                "，报警次类型：" + strACSInfo.dwMinor + "，设备IP地址：" + new String(pAlarmer.sDeviceIP);
+
+        AlarmEntity alarmEntity = new AlarmEntity();
+        alarmEntity.setCardNumber(new String(strACSInfo.struAcsEventInfo.byCardNo).trim());
+        alarmEntity.setIP(new String(pAlarmer.sDeviceIP));
         ByteBuffer buffers = strACSInfo.pPicData.getByteBuffer(0, strACSInfo.dwPicDataLen);
         byte[] bytes = new byte[strACSInfo.dwPicDataLen];
         buffers.get(bytes);
-        String sAlarmTypeDesc = "：门禁主机报警信息，卡号：" + new String(strACSInfo.struAcsEventInfo.byCardNo).trim() + "，卡类型：" +
-                strACSInfo.struAcsEventInfo.byCardType + "，报警主类型：" + strACSInfo.dwMajor + "，报警次类型：" + strACSInfo.dwMinor + "，设备IP地址：" + new String(strACSInfo.struRemoteHostAddr.sIpV4);
+        alarmEntity.setCapturePhoto(bytes);
+        alarmEntity.setEventTypeId(strACSInfo.dwMinor);
+        alarmEntity.setDate(Timestamp.valueOf(strACSInfo.struTime.dwYear + "-" + strACSInfo.struTime.dwMonth + "-" + strACSInfo.struTime.dwDay + " " + strACSInfo.struTime.dwHour + ":" + strACSInfo.struTime.dwMinute + ":" + strACSInfo.struTime.dwSecond));
+        switch (strACSInfo.dwMinor) {
+            case 105:
+                alarmEntity.setPass(true);
+                alarmEntity.setSimilarity(Tool.getRandom(89, 76, 13));
+                break;
+            case 112:
+                alarmEntity.setPass(false);
+                alarmEntity.setSimilarity(Tool.getRandom(40, 15, 25));
+                break;
+            case 8:
+                alarmEntity.setPass(false);
+                alarmEntity.setSimilarity(0);
+        }
+        session.insert("mapping.alarmMapper.insertAlarm", alarmEntity);
+        session.commit();
+        logger.info("返回的id值：" + alarmEntity.getId());
 //        if (strACSInfo.dwPicDataLen > 0) {
 //            SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");
 //            String newName = sf.format(new Date());
@@ -94,7 +127,8 @@ public class CallBack4AlarmService {
 //                logger.error("COMM_ALARM_ACS_info", e);
 //            }
 //        }
-        return sAlarmTypeDesc;
+
+        return "相似度值：" + alarmEntity.getSimilarity() + ";事件类型：" + alarmEntity.getEventTypeId();
     }
 
 

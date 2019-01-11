@@ -2,6 +2,7 @@ package com.dyw.queue.controller;
 
 import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.entity.ConfigEntity;
+import com.dyw.queue.handler.AlarmHandler;
 import com.dyw.queue.service.*;
 import com.dyw.queue.tool.Tool;
 import org.slf4j.Logger;
@@ -38,6 +39,8 @@ public class Egci {
     public static List<ProducerService> producerServiceList;
     //初始化静态对象
     public static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+    //报警回调函数
+    private static HCNetSDK.FMSGCallBack_V31 alarmHandler = new AlarmHandler();
     //监控推送服务的生产者合集
     public static List<ProducerService> producerMonitorOneServices;//监听一核设备
     public static List<ProducerService> producerMonitorTwoServices;//监听二核设备
@@ -63,14 +66,13 @@ public class Egci {
         producerMonitorOneServices = new ArrayList<ProducerService>();
         producerMonitorTwoServices = new ArrayList<ProducerService>();
         producerMonitorThreeServices = new ArrayList<ProducerService>();
-        //对所有一体机设备进行布防
-        for (String deviceIp : deviceIps) {
-            LoginService loginService = new LoginService();
-            loginService.login(deviceIp, configEntity.getDevicePort(), configEntity.getDeviceName(), configEntity.getDevicePass());
-            AlarmService alarmService = new AlarmService(loginService.getlUserID());
-            alarmService.start();
+        //设置回调函数
+        if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRMessageCallBack_V31(alarmHandler, null)) {
+            Elogger.info("设置回调函数失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
         }
-        Thread.sleep(15000);
+        //对所有一体机设备进行布防
+        EquipmentService.initEquipmentAlarm();
+        Thread.sleep(1000);
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip

@@ -223,4 +223,12 @@ public class Tool {
             return "'" + info + "'";
         }
     }
+
+    /*
+     * 生产随机数
+     * */
+    public static int getRandom(int max, int min, int difference) {
+        Random rand = new Random();
+        return rand.nextInt(max) % (difference) + min;
+    }
 }

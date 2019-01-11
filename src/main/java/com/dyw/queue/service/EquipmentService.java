@@ -1,5 +1,6 @@
 package com.dyw.queue.service;
 
+import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.controller.Egci;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,16 @@ public class EquipmentService {
             logger.info("三核设备ip：" + String.valueOf(Egci.deviceIps3));
         } catch (Exception e) {
             logger.error("连接数据库和获取全部设备IP失败：", e);
+        }
+    }
+
+    public static void initEquipmentAlarm() {
+        //对所有一体机设备进行布防
+        for (String deviceIp : Egci.deviceIps) {
+            LoginService loginService = new LoginService();
+            loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());
+            AlarmService alarmService = new AlarmService();
+            alarmService.setupAlarmChan(loginService.getlUserID());
         }
     }
 }

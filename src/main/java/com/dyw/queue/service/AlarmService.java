@@ -7,22 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class AlarmService extends Thread {
+public class AlarmService {
     //布防标识符
     private NativeLong lAlarmHandleFlag = new NativeLong(-1);
     private Logger logger = LoggerFactory.getLogger(AlarmService.class);
-    private HCNetSDK.FMSGCallBack_V31 alarmHandler = new AlarmHandler();
-
-    private NativeLong lUserID;
-
-    public AlarmService(NativeLong lUserID) {
-        this.lUserID = lUserID;
-    }
-
-    @Override
-    public void run() {
-        setupAlarmChan(lUserID);
-    }
 
     /**
      * 布防
@@ -37,10 +25,6 @@ public class AlarmService extends Thread {
             }
             if (lAlarmHandleFlag.intValue() >= 0) {
                 logger.info("已经布防过了！");
-            }
-
-            if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRMessageCallBack_V31(alarmHandler, null)) {
-                logger.info("设置回调函数失败！");
             }
             HCNetSDK.NET_DVR_SETUPALARM_PARAM strAlarmInfo = new HCNetSDK.NET_DVR_SETUPALARM_PARAM();
             strAlarmInfo.dwSize = strAlarmInfo.size();
