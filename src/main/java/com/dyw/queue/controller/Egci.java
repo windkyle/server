@@ -53,7 +53,7 @@ public class Egci {
      * 初始化函数
      * */
     private static void initServer() throws Exception {
-        if (!HCNetSDK.INSTANCE.NET_DVR_Init()) {
+        if (!hcNetSDK.NET_DVR_Init()) {
             Elogger.error("SDK初始化失败");
             return;
         }
@@ -69,10 +69,11 @@ public class Egci {
         producerMonitorOneServices = new ArrayList<ProducerService>();
         producerMonitorTwoServices = new ArrayList<ProducerService>();
         producerMonitorThreeServices = new ArrayList<ProducerService>();
-        //设置回调函数
+        //设置报警回调函数
         if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRMessageCallBack_V31(alarmHandler, null)) {
             Elogger.info("设置回调函数失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
         }
+        Thread.sleep(10000);
         //对所有一体机设备进行布防
         EquipmentService.initEquipmentAlarm();
         Thread.sleep(1000);

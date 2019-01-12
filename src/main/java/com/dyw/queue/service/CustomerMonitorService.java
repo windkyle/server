@@ -40,7 +40,6 @@ public class CustomerMonitorService implements Runnable {
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                    logger.info("有没有执行这里");
                     OutputStream os = socket.getOutputStream();
                     os.write((new String(body) + "\n").getBytes());
                     os.flush();

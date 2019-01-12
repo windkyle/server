@@ -1,6 +1,7 @@
 package com.dyw.queue.service;
 
 import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.controller.Egci;
 import com.dyw.queue.entity.FaceInfoEntity;
 import com.dyw.queue.handler.FaceSendHandler;
 import com.sun.jna.NativeLong;
@@ -10,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 public class FaceService {
     private Logger logger = LoggerFactory.getLogger(FaceService.class);
-    private HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
     private FaceSendHandler faceSendHandler = new FaceSendHandler();
 
     /*
@@ -28,12 +28,12 @@ public class FaceService {
         lpInBuffer.dwSize = lpInBuffer.size();
         lpInBuffer.write();
         // 启动远程配置。
-        NativeLong lHandle = hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_FACE_PARAM_CFG,
+        NativeLong lHandle = Egci.hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_FACE_PARAM_CFG,
                 lpInBuffer.getPointer(), lpInBuffer.size(), faceSendHandler, null);
         if (lHandle.longValue() > -1) {
             logger.info("人脸下发连接开启成功");
         } else {
-            logger.error("人脸下发连接开启失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            logger.error("人脸下发连接开启失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
         }
         lpInBuffer.read();
         // 发送长连接数据
@@ -52,7 +52,7 @@ public class FaceService {
         pSendBuf.byFaceDataType = (byte) 1;
         pSendBuf.dwSize = pSendBuf.size();
         pSendBuf.write();
-        boolean result = hcNetSDK.NET_DVR_SendRemoteConfig(lHandle, HCNetSDK.ENUM_ACS_INTELLIGENT_IDENTITY_DATA,
+        boolean result = Egci.hcNetSDK.NET_DVR_SendRemoteConfig(lHandle, HCNetSDK.ENUM_ACS_INTELLIGENT_IDENTITY_DATA,
                 pSendBuf.getPointer(), pSendBuf.size());
         try {
             Thread.sleep(500);
@@ -60,7 +60,7 @@ public class FaceService {
             logger.error("人脸下发延迟出错", e);
         }
         if (!result) {
-            logger.error("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            logger.error("人脸下发失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
             stopRemoteConfig(lHandle);
 //            try {
 //                Thread.sleep(500);
@@ -94,14 +94,14 @@ public class FaceService {
         m_struFaceDel.struProcessMode.struByCard.byFaceID[0] = 1; //人脸ID
         m_struFaceDel.write();
         Pointer lpInBuffer = m_struFaceDel.getPointer();
-        boolean lRemoteCtrl = HCNetSDK.INSTANCE.NET_DVR_RemoteControl(lUserID, HCNetSDK.NET_DVR_DEL_FACE_PARAM_CFG, lpInBuffer, m_struFaceDel.size());
+        boolean lRemoteCtrl = Egci.hcNetSDK.NET_DVR_RemoteControl(lUserID, HCNetSDK.NET_DVR_DEL_FACE_PARAM_CFG, lpInBuffer, m_struFaceDel.size());
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             logger.error("人脸下发延迟出错", e);
         }
         if (!lRemoteCtrl) {
-            logger.error("删除人脸图片失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.error("删除人脸图片失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError());
             return false;
         } else {
             logger.info("删除人脸图片成功!");
@@ -114,8 +114,8 @@ public class FaceService {
      * 断开长连接
      * */
     public Boolean stopRemoteConfig(NativeLong conFlag) {
-        if (!HCNetSDK.INSTANCE.NET_DVR_StopRemoteConfig(conFlag)) {
-            logger.error("人脸图片断开长连接失败，错误号：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+        if (!Egci.hcNetSDK.NET_DVR_StopRemoteConfig(conFlag)) {
+            logger.error("人脸图片断开长连接失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError());
             return false;
         } else {
             logger.info("人脸图片长连接断开成功！");

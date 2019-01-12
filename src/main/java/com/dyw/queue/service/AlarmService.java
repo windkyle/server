@@ -1,6 +1,7 @@
 package com.dyw.queue.service;
 
 import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.controller.Egci;
 import com.dyw.queue.handler.AlarmHandler;
 import com.sun.jna.NativeLong;
 import org.slf4j.Logger;
@@ -32,9 +33,9 @@ public class AlarmService {
             strAlarmInfo.byAlarmInfoType = 1;
             strAlarmInfo.byDeployType = 0;
             strAlarmInfo.write();
-            lAlarmHandleFlag = HCNetSDK.INSTANCE.NET_DVR_SetupAlarmChan_V41(lUserID, strAlarmInfo);
+            lAlarmHandleFlag = Egci.hcNetSDK.NET_DVR_SetupAlarmChan_V41(lUserID, strAlarmInfo);
             if (lAlarmHandleFlag.intValue() == -1) {
-                logger.info("布防失败！");
+                logger.info("布防失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
             } else {
                 logger.info("布防成功!");
             }
@@ -46,7 +47,7 @@ public class AlarmService {
 
     public void closeAlarmChan() {
         if (lAlarmHandleFlag.intValue() > -1) {
-            if (!HCNetSDK.INSTANCE.NET_DVR_CloseAlarmChan_V30(lAlarmHandleFlag)) {
+            if (!Egci.hcNetSDK.NET_DVR_CloseAlarmChan_V30(lAlarmHandleFlag)) {
                 logger.info("撤防失败!");
             } else {
                 lAlarmHandleFlag = new NativeLong(-1);

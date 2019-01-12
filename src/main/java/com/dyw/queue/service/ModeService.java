@@ -1,6 +1,7 @@
 package com.dyw.queue.service;
 
 import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.controller.Egci;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
 import org.slf4j.Logger;
@@ -15,8 +16,8 @@ public class ModeService {
         IntByReference pInt = new IntByReference(0);
         struWeekPlan.write();
 
-        if (!HCNetSDK.INSTANCE.NET_DVR_GetDVRConfig(iUserID, HCNetSDK.NET_DVR_GET_VERIFY_WEEK_PLAN, new NativeLong(1), struWeekPlan.getPointer(), struWeekPlan.size(), pInt)) {
-            logger.info("获取通行模式信息失败，错误码：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+        if (!Egci.hcNetSDK.NET_DVR_GetDVRConfig(iUserID, HCNetSDK.NET_DVR_GET_VERIFY_WEEK_PLAN, new NativeLong(1), struWeekPlan.getPointer(), struWeekPlan.size(), pInt)) {
+            logger.info("获取通行模式信息失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
         } else {
             logger.info("获取通行模式信息成功");
         }
@@ -32,8 +33,8 @@ public class ModeService {
             struWeekPlan.struPlanCfg[i].struDaysPlanCfg[0].struTimeSegment.struEndTime.bySecond = 59;   //秒
         }
         struWeekPlan.write();
-        if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRConfig(iUserID, HCNetSDK.NET_DVR_SET_VERIFY_WEEK_PLAN, new NativeLong(1), struWeekPlan.getPointer(), struWeekPlan.size())) {
-            logger.info("通行方式更改失败，错误码：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+        if (!Egci.hcNetSDK.NET_DVR_SetDVRConfig(iUserID, HCNetSDK.NET_DVR_SET_VERIFY_WEEK_PLAN, new NativeLong(1), struWeekPlan.getPointer(), struWeekPlan.size())) {
+            logger.info("通行方式更改失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
             return true;
         } else {
             logger.info("通行方式更改成功");
