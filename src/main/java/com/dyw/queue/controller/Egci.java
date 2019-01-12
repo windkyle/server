@@ -73,10 +73,9 @@ public class Egci {
         if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRMessageCallBack_V31(alarmHandler, null)) {
             Elogger.info("设置回调函数失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
         }
-        Thread.sleep(10000);
         //对所有一体机设备进行布防
         EquipmentService.initEquipmentAlarm();
-        Thread.sleep(1000);
+        Thread.sleep(10000);
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip

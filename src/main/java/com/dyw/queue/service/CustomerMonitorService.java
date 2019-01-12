@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.TimeoutException;
 
 public class CustomerMonitorService implements Runnable {
@@ -17,11 +18,13 @@ public class CustomerMonitorService implements Runnable {
     private String queueIp;
     private Thread t;
     private Socket socket;
+    private ProducerService producerService;
 
-    public CustomerMonitorService(String queueName, String queueIp, Socket socket) {
+    public CustomerMonitorService(String queueName, String queueIp, Socket socket, ProducerService producerService) {
         this.queueName = queueName;
         this.queueIp = queueIp;
         this.socket = socket;
+        this.producerService = producerService;
     }
 
     @Override
@@ -40,14 +43,23 @@ public class CustomerMonitorService implements Runnable {
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                    OutputStream os = socket.getOutputStream();
-                    os.write((new String(body) + "\n").getBytes());
-                    os.flush();
-                    channel.basicReject(envelope.getDeliveryTag(), false);
                     try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        OutputStream os = socket.getOutputStream();
+                        os.write((new String(body) + "\n").getBytes());
+                        os.flush();
+                        channel.basicReject(envelope.getDeliveryTag(), false);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (SocketException e) {
+                        //这里出现错误说明客户端已经断开
+                        channel.basicReject(envelope.getDeliveryTag(), false);
+                        Egci.producerMonitorOneServices.remove(producerService);
+                        Egci.producerMonitorTwoServices.remove(producerService);
+                        Egci.producerMonitorThreeServices.remove(producerService);
+                        channel.queueDelete(queueName);
                     }
                 }
             };

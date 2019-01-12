@@ -145,7 +145,7 @@ public class SocketService extends Thread {
             if (operationCode.equals("8")) {
                 String[] info = mess.split("#");
                 ProducerService producerService = new ProducerService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp);
-                CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp, socketInfo);
+                CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp, socketInfo, producerService);
                 customerMonitorService.start();
                 if (info[1].equals("1")) {
                     Egci.producerMonitorOneServices.add(producerService);
