@@ -1,21 +1,20 @@
 package com.dyw.queue.controller;
 
-import com.dyw.queue.entity.AlarmEntity;
-import com.dyw.queue.service.AlarmService;
-import com.dyw.queue.service.LoginService;
+import com.dyw.queue.service.ProducerService;
 
-import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class Alarm {
-    public static void main(String[] args) {
-        Set<AlarmEntity> alarmEntities = new HashSet<AlarmEntity>();
-        for (int i = 0; i < 10; i++) {
-            AlarmEntity alarmEntity = new AlarmEntity();
-            alarmEntities.add(alarmEntity);
+    public static void main(String[] args) throws Exception {
+        Map<String, ProducerService> maps = new HashMap<String, ProducerService>();
+        maps.put("one", new ProducerService("one", "localhost"));
+        maps.put("two", new ProducerService("two", "localhost"));
+        System.out.println(maps.size());
+        if (maps.get("three") != null) {
+            System.out.println("ok");
+        }else {
+            System.out.println("error");
         }
-        System.out.println(alarmEntities.size());
+        System.out.println(maps.get("one"));
     }
 }

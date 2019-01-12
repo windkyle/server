@@ -1,8 +1,6 @@
 package com.dyw.queue.service;
 
-import com.dyw.queue.controller.Egci;
 import com.rabbitmq.client.*;
-import net.iharder.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,15 +49,13 @@ public class CustomerMonitorService implements Runnable {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            logger.error("延迟出现错误", e);
                         }
                     } catch (SocketException e) {
                         //这里出现错误说明客户端已经断开
                         channel.basicReject(envelope.getDeliveryTag(), false);
-                        Egci.producerMonitorOneServices.remove(producerService);
-                        Egci.producerMonitorTwoServices.remove(producerService);
-                        Egci.producerMonitorThreeServices.remove(producerService);
-                        channel.queueDelete(queueName);
+//                        channel.queueDelete(queueName);
+                        logger.error("客户端：" + socket.getInetAddress().getHostAddress() + " 已断开");
                     }
                 }
             };

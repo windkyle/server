@@ -7,6 +7,8 @@ import com.rabbitmq.client.MessageProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class ProducerService {
 
     private String queueName;
@@ -25,6 +27,15 @@ public class ProducerService {
 
     public void sendToQueue(String body) throws Exception {
         channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, body.getBytes("GBK"));
+    }
+
+    public void deleteQueue() {
+        try {
+            channel.queueDelete(queueName);
+            logger.info("删除队列成功");
+        } catch (IOException e) {
+            logger.error("删除队列失败", e);
+        }
     }
 
 

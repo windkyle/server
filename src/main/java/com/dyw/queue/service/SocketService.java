@@ -144,6 +144,13 @@ public class SocketService extends Thread {
             //实时监控消息推送
             if (operationCode.equals("8")) {
                 String[] info = mess.split("#");
+                if (Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()) != null) {
+                    Egci.producerMonitorOneServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
+                    Egci.producerMonitorTwoServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
+                    Egci.producerMonitorThreeServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
+                    Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()).deleteQueue();
+                    Thread.sleep(3000);
+                }
                 ProducerService producerService = new ProducerService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp);
                 CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp, socketInfo, producerService);
                 customerMonitorService.start();
@@ -156,6 +163,7 @@ public class SocketService extends Thread {
                 if (info[3].equals("1")) {
                     Egci.producerMonitorThreeServices.add(producerService);
                 }
+                Egci.producerServiceMap.put(socketInfo.getInetAddress().getHostAddress(), producerService);
                 Thread.sleep(2000);
             }
         } catch (IOException e) {

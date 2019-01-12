@@ -15,7 +15,9 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Egci {
     //mybatis框架
@@ -48,6 +50,8 @@ public class Egci {
     public static List<ProducerService> producerMonitorOneServices;//监听一核设备
     public static List<ProducerService> producerMonitorTwoServices;//监听二核设备
     public static List<ProducerService> producerMonitorThreeServices;//监听三核设备
+    //推送服务的生产者对象数组，用来解决异常推送问题
+    public static Map<String, ProducerService> producerServiceMap;
 
     /*
      * 初始化函数
@@ -76,6 +80,8 @@ public class Egci {
         //对所有一体机设备进行布防
         EquipmentService.initEquipmentAlarm();
         Thread.sleep(10000);
+
+        producerServiceMap = new HashMap<String, ProducerService>();
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip
