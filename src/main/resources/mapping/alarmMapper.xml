@@ -7,6 +7,6 @@
     <insert id="insertAlarm" parameterType="com.dyw.queue.entity.AlarmEntity" useGeneratedKeys="true" keyProperty="Id">
         INSERT INTO
         PassRecord
-        (CapturePhoto,CardNumber,StaffName,EquipmentName,Date,Similarity,IsPass,EventTypeId)values(#{CapturePhoto},#{CardNumber},#{StaffName},#{EquipmentName},#{Date},#{Similarity},#{IsPass},#{EventTypeId});
+        (CapturePhoto,CardNumber,StaffName,EquipmentName,Date,Similarity,IsPass,EventTypeId,IP)values(#{CapturePhoto},#{CardNumber},#{StaffName},#{EquipmentName},#{Date},#{Similarity},#{IsPass},#{EventTypeId},#{IP});
     </insert>
 </mapper>

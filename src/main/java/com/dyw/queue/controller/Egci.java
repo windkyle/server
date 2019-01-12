@@ -29,11 +29,14 @@ public class Egci {
     //全局变量
     private static Logger Elogger = LoggerFactory.getLogger(Egci.class);
     public static Statement stmt;
-    public static List<String> deviceIps;//所有设备，不带“#”，给同步功能用的
-    public static List<String> deviceIps0;//所有设备
-    public static List<String> deviceIps1;//一核设备
-    public static List<String> deviceIps2;//二核设备
-    public static List<String> deviceIps3;//三核设备
+    public static List<String> deviceIps0;//所有设备，不带“#”
+    public static List<String> deviceIps1;//一核设备，不带“#”
+    public static List<String> deviceIps2;//二核设备，不带“#”
+    public static List<String> deviceIps3;//三核设备，不带“#”
+    public static List<String> deviceIps0WithOctothorpe;//所有设备，带“#”
+    public static List<String> deviceIps1WithOctothorpe;//一核设备，带“#”
+    public static List<String> deviceIps2WithOctothorpe;//二核设备，带“#”
+    public static List<String> deviceIps3WithOctothorpe;//三核设备，带“#”
     public static String queueIp;//队列的ip
     //初始化生产者数组
     public static List<ProducerService> producerServiceList;
@@ -76,10 +79,10 @@ public class Egci {
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
         queueIp = configEntity.getQueueIp();//获取队列ip
-        for (int i = 0; i < deviceIps0.size(); i++) {
-            ProducerService producerService = new ProducerService(i + "：" + deviceIps0.get(i), queueIp);
+        for (int i = 0; i < deviceIps0WithOctothorpe.size(); i++) {
+            ProducerService producerService = new ProducerService(i + "：" + deviceIps0WithOctothorpe.get(i), queueIp);
             producerServiceList.add(producerService);
-            CustomerService customerService = new CustomerService(i + "：" + deviceIps0.get(i), queueIp);
+            CustomerService customerService = new CustomerService(i + "：" + deviceIps0WithOctothorpe.get(i), queueIp);
             customerService.start();
         }
         //启动同步操作:0表示不启用；1表示单台；2表示全部

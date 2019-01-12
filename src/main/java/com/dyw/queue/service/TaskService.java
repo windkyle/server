@@ -31,9 +31,9 @@ public class TaskService extends TimerTask {
         }
         //1：单台启用同步；2：全部启用同步
         if (Egci.configEntity.getSynchronization().equals("1")) {
-            Egci.deviceIps = Collections.singletonList(Egci.configEntity.getTestIp());
+            Egci.deviceIps0 = Collections.singletonList(Egci.configEntity.getTestIp());
         }
-        for (String deviceIp : Egci.deviceIps) {
+        for (String deviceIp : Egci.deviceIps0) {
             LoginService loginService = new LoginService();
             loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());
             if (loginService.getlUserID().longValue() > -1) {

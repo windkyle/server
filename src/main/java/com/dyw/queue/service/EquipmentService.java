@@ -18,27 +18,33 @@ public class EquipmentService {
             Egci.stmt = databaseService.connection().createStatement();
             //获取设备ip列表
             ResultSet resultSet = Egci.stmt.executeQuery("select Name,GroupId,IP from Equipment");
-            Egci.deviceIps = new ArrayList<String>();
             Egci.deviceIps0 = new ArrayList<String>();
             Egci.deviceIps1 = new ArrayList<String>();
             Egci.deviceIps2 = new ArrayList<String>();
             Egci.deviceIps3 = new ArrayList<String>();
+            Egci.deviceIps0WithOctothorpe = new ArrayList<String>();
+            Egci.deviceIps1WithOctothorpe = new ArrayList<String>();
+            Egci.deviceIps2WithOctothorpe = new ArrayList<String>();
+            Egci.deviceIps3WithOctothorpe = new ArrayList<String>();
             while (resultSet.next()) {
                 //如果对象中有数据，就会循环打印出来
-                Egci.deviceIps.add(resultSet.getString("IP"));
-                Egci.deviceIps0.add("#" + resultSet.getString("IP"));
+                Egci.deviceIps0.add(resultSet.getString("IP"));
+                Egci.deviceIps0WithOctothorpe.add("#" + resultSet.getString("IP"));
                 if (resultSet.getInt("GroupId") == 2) {
-                    Egci.deviceIps1.add("#" + resultSet.getString("IP"));
+                    Egci.deviceIps1.add(resultSet.getString("IP"));
+                    Egci.deviceIps1WithOctothorpe.add("#" + resultSet.getString("IP"));
                 } else if (resultSet.getInt("GroupId") == 3) {
-                    Egci.deviceIps2.add("#" + resultSet.getString("IP"));
+                    Egci.deviceIps2.add(resultSet.getString("IP"));
+                    Egci.deviceIps2WithOctothorpe.add("#" + resultSet.getString("IP"));
                 } else if (resultSet.getInt("GroupId") == 4) {
-                    Egci.deviceIps3.add("#" + resultSet.getString("IP"));
+                    Egci.deviceIps3.add(resultSet.getString("IP"));
+                    Egci.deviceIps3WithOctothorpe.add("#" + resultSet.getString("IP"));
                 }
             }
-            logger.info("所有设备ip：" + String.valueOf(Egci.deviceIps0));
-            logger.info("一核设备ip：" + String.valueOf(Egci.deviceIps1));
-            logger.info("二核设备ip：" + String.valueOf(Egci.deviceIps2));
-            logger.info("三核设备ip：" + String.valueOf(Egci.deviceIps3));
+            logger.info("所有设备ip：" + String.valueOf(Egci.deviceIps0WithOctothorpe));
+            logger.info("一核设备ip：" + String.valueOf(Egci.deviceIps1WithOctothorpe));
+            logger.info("二核设备ip：" + String.valueOf(Egci.deviceIps2WithOctothorpe));
+            logger.info("三核设备ip：" + String.valueOf(Egci.deviceIps3WithOctothorpe));
         } catch (Exception e) {
             logger.error("连接数据库和获取全部设备IP失败：", e);
         }
@@ -46,7 +52,7 @@ public class EquipmentService {
 
     public static void initEquipmentAlarm() {
         //对所有一体机设备进行布防
-        for (String deviceIp : Egci.deviceIps) {
+        for (String deviceIp : Egci.deviceIps0) {
             LoginService loginService = new LoginService();
             loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());
             AlarmService alarmService = new AlarmService();

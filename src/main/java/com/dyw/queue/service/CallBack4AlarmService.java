@@ -1,6 +1,7 @@
 package com.dyw.queue.service;
 
 import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.controller.Egci;
 import com.dyw.queue.entity.AlarmEntity;
 import com.dyw.queue.tool.Tool;
 import com.sun.jna.NativeLong;
@@ -17,8 +18,10 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.Random;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 public class CallBack4AlarmService {
     private Logger logger = LoggerFactory.getLogger(CallBack4AlarmService.class);
@@ -51,13 +54,6 @@ public class CallBack4AlarmService {
         } catch (Exception e) {
             logger.error("error", e);
         }
-
-//        //TODO 发送给ai_yuyue
-//        logger.info(JSON.toJSONString(pAlarmer));
-//        HashMap<String, Object> dataMap = new HashMap<>();
-//        dataMap.put("entity", entity);
-//        dataMap.put("ip", sIP);
-//        logger.info("dataMap : " + JSON.toJSONString(dataMap));
         return true;
     }
 
@@ -78,19 +74,16 @@ public class CallBack4AlarmService {
         Pointer pACSInfo = strACSInfo.getPointer();
         pACSInfo.write(0, pAlarmInfo.getByteArray(0, strACSInfo.size()), 0, strACSInfo.size());
         strACSInfo.read();
-//        String sAlarmTypeDesc = "：门禁主机报警信息，卡号：" + new String(strACSInfo.struAcsEventInfo.byCardNo).trim() +
-//                "，卡类型：" + strACSInfo.struAcsEventInfo.byCardType + "，报警主类型：" + strACSInfo.dwMajor +
-//                "，报警次类型：" + strACSInfo.dwMinor + "，设备IP地址：" + new String(pAlarmer.sDeviceIP);
-
         AlarmEntity alarmEntity = new AlarmEntity();
         alarmEntity.setCardNumber(new String(strACSInfo.struAcsEventInfo.byCardNo).trim());
-        alarmEntity.setIP(new String(pAlarmer.sDeviceIP));
+        alarmEntity.setIP(new String(pAlarmer.sDeviceIP).trim());
         ByteBuffer buffers = strACSInfo.pPicData.getByteBuffer(0, strACSInfo.dwPicDataLen);
         byte[] bytes = new byte[strACSInfo.dwPicDataLen];
         buffers.get(bytes);
         alarmEntity.setCapturePhoto(bytes);
         alarmEntity.setEventTypeId(strACSInfo.dwMinor);
         alarmEntity.setDate(Timestamp.valueOf(strACSInfo.struTime.dwYear + "-" + strACSInfo.struTime.dwMonth + "-" + strACSInfo.struTime.dwDay + " " + strACSInfo.struTime.dwHour + ":" + strACSInfo.struTime.dwMinute + ":" + strACSInfo.struTime.dwSecond));
+        //依据事件类型生成不同的事件对象
         switch (strACSInfo.dwMinor) {
             case 105:
                 alarmEntity.setPass(true);
@@ -104,30 +97,39 @@ public class CallBack4AlarmService {
                 alarmEntity.setPass(false);
                 alarmEntity.setSimilarity(0);
         }
+        //提交数据
         session.insert("mapping.alarmMapper.insertAlarm", alarmEntity);
+        //插入数据
         session.commit();
-        logger.info("返回的id值：" + alarmEntity.getId());
-//        if (strACSInfo.dwPicDataLen > 0) {
-//            SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");
-//            String newName = sf.format(new Date());
-//            FileOutputStream fos;
-//            try {
-//                String filename = newName + "_ACS_card_" + new String(strACSInfo.struAcsEventInfo.byCardNo).trim() + ".jpg";
-//                fos = new FileOutputStream(filename);
-//                //将字节写入文件
-//                long offset = 0;
-//                ByteBuffer buffers = strACSInfo.pPicData.getByteBuffer(offset, strACSInfo.dwPicDataLen);
-//                byte[] bytes = new byte[strACSInfo.dwPicDataLen];
-//                buffers.rewind();
-//                buffers.get(bytes);
-//                fos.write(bytes);
-//                fos.close();
-//            } catch (IOException e) {
-//                // TODO Auto-generated catch block
-//                logger.error("COMM_ALARM_ACS_info", e);
-//            }
-//        }
-
+        //推送通信到消费者
+        if (Egci.deviceIps1.contains(alarmEntity.getIP())) {
+            logger.info("设备属于一核");
+            for (ProducerService producerService : Egci.producerMonitorOneServices) {
+                try {
+                    producerService.sendToQueue(alarmEntity.getId() + "");
+                } catch (Exception e) {
+                    logger.error("推送通信到消费者失败", e);
+                }
+            }
+        } else if (Egci.deviceIps2.contains(alarmEntity.getIP())) {
+            logger.info("设备属于二核");
+            for (ProducerService producerService : Egci.producerMonitorTwoServices) {
+                try {
+                    producerService.sendToQueue(alarmEntity.getId() + "");
+                } catch (Exception e) {
+                    logger.error("推送通信到消费者失败", e);
+                }
+            }
+        } else if (Egci.deviceIps3.contains(alarmEntity.getIP())) {
+            logger.info("设备属于三核");
+            for (ProducerService producerService : Egci.producerMonitorThreeServices) {
+                try {
+                    producerService.sendToQueue(alarmEntity.getId() + "");
+                } catch (Exception e) {
+                    logger.error("推送通信到消费者失败", e);
+                }
+            }
+        }
         return "相似度值：" + alarmEntity.getSimilarity() + ";事件类型：" + alarmEntity.getEventTypeId();
     }
 

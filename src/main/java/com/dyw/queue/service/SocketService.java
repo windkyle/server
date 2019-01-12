@@ -66,8 +66,8 @@ public class SocketService extends Thread {
                 //重新组织人员信息:操作码+卡号+名称+图片
                 staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
                 //发送消息到队列中
-                for (int i = 0; i < Egci.deviceIps0.size(); i++) {
-                    Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0.get(i)));
+                for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
+                    Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
                 }
                 //删除临时表中的人员信息
                 TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
@@ -81,8 +81,8 @@ public class SocketService extends Thread {
             if (operationCode.equals("2")) {
                 staffInfo = "2#" + mess.substring(2) + "#test#none";
                 //发送消息到队列中
-                for (int i = 0; i < Egci.deviceIps0.size(); i++) {
-                    Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0.get(i)));
+                for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
+                    Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
                 }
                 //返回消息给客户端
                 sendToClient(socketInfo, br, "success");
@@ -91,13 +91,13 @@ public class SocketService extends Thread {
             if (operationCode.equals("3")) {
                 List<StatusEntity> deviceStatus = new ArrayList<StatusEntity>();
                 if (mess.substring(2).equals("0")) {
-                    deviceStatus = getStatus(Egci.deviceIps0);
+                    deviceStatus = getStatus(Egci.deviceIps0WithOctothorpe);
                 } else if (mess.substring(2).equals("1")) {
-                    deviceStatus = getStatus(Egci.deviceIps1);
+                    deviceStatus = getStatus(Egci.deviceIps1WithOctothorpe);
                 } else if (mess.substring(2).equals("2")) {
-                    deviceStatus = getStatus(Egci.deviceIps2);
+                    deviceStatus = getStatus(Egci.deviceIps2WithOctothorpe);
                 } else if (mess.substring(2).equals("3")) {
-                    deviceStatus = getStatus(Egci.deviceIps3);
+                    deviceStatus = getStatus(Egci.deviceIps3WithOctothorpe);
                 }
                 //返回消息给客户端
                 sendToClient(socketInfo, br, JSON.toJSONString(deviceStatus));

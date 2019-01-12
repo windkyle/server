@@ -96,8 +96,8 @@ public class OnguardService extends Thread {
             //重新组织人员信息:操作码+卡号+名称+图片
             String staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
             //发送消息到队列中
-            for (int i = 0; i < Egci.deviceIps0.size(); i++) {
-                Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0.get(i)));
+            for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
+                Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
             }
             logger.info("onGuard数据更新成功");
         } catch (SQLException e) {
@@ -117,8 +117,8 @@ public class OnguardService extends Thread {
             stmt.execute(sql_staff);
             //删除设备信息
             String staffInfo = "2#" + temporaryStaffEntity.getCardNumber() + "#test#none";
-            for (int i = 0; i < Egci.deviceIps0.size(); i++) {
-                Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0.get(i)));
+            for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
+                Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
             }
             logger.info("人员表数据删除成功");
         } catch (SQLException e) {
