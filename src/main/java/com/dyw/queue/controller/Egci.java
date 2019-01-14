@@ -116,6 +116,8 @@ public class Egci {
         } catch (InterruptedException e) {
             Elogger.error("一体机设备布防延迟失败", e);
         }
+        //进行自动布防重连定时任务
+        AlarmTimerService.open();
         //用来处理通行信息推送的问题
         producerServiceMap = new HashMap<String, ProducerService>();
         //初始化下发队列
