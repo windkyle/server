@@ -1,6 +1,5 @@
 package com.dyw.queue.service;
 
-import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.controller.Egci;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +11,7 @@ public class EquipmentService {
     private static Logger logger = LoggerFactory.getLogger(EquipmentService.class);
 
     public static void initEquipmentInfo() {
-        //连接数据库
-        DatabaseService databaseService = new DatabaseService(Egci.configEntity.getDataBaseIp(), Egci.configEntity.getDataBasePort(), Egci.configEntity.getDataBaseName(), Egci.configEntity.getDataBasePass(), Egci.configEntity.getDataBaseLib());
         try {
-            Egci.stmt = databaseService.connection().createStatement();
             //获取设备ip列表
             ResultSet resultSet = Egci.stmt.executeQuery("select Name,GroupId,IP from Equipment");
             Egci.deviceIps0 = new ArrayList<String>();

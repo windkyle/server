@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 public class ProducerService {
 
@@ -17,12 +18,18 @@ public class ProducerService {
     private Connection connection;
     private Channel channel;
 
-    public ProducerService(String queueName, String queueIp) throws Exception {
+    public ProducerService(String queueName, String queueIp) {
         this.queueName = queueName;
         factory = new ConnectionFactory();
         factory.setHost(queueIp);
-        connection = factory.newConnection();
-        channel = connection.createChannel();
+        try {
+            connection = factory.newConnection();
+            channel = connection.createChannel();
+        } catch (IOException e) {
+            logger.error("创建生产者失败", e);
+        } catch (TimeoutException e) {
+            logger.error("创建生产者失败", e);
+        }
     }
 
     public void sendToQueue(String body) throws Exception {

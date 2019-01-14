@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	//一体机配置
-	<devicePort>8000</devicePort>
-	<deviceName>admin</deviceName>
-	<devicePass>hik12345</devicePass>
-	//数据库配置
-	<dataBaseIp>localhost</dataBaseIp>
-	<dataBasePort>1433</dataBasePort>
-	<dataBaseName>dyw</dataBaseName>
-	<dataBasePass>hik12345</dataBasePass>
-	<dataBaseLib>EntranceGuard</dataBaseLib>
-	<dataBaseTime>30000</dataBaseTime>//防止同步时同时操作数据库，造成堵塞
-	//队列配置
-	<queueIp>localhost</queueIp>
-	//socket配置
-	<socketPort>12345</socketPort>
-	//测试配置单台同步
-	<testIp>192.168.40.32</testIp>
-	//是否开启同步
-	<synchronization>2</synchronization>0：不开启，1：开启单台，2：代表全部开启
-	<synchronizationHour>12</synchronizationHour>
-	<synchronizationMinute>54</synchronizationMinute>
-	<synchronizationSecond>00</synchronizationSecond>
-
-	<synchronizationTime>100000</synchronizationTime>//查找全部卡号时，线程暂停时间
-	//onGuardp配置
-	<onGuardIp>127.0.0.1</onGuardIp>
-	<onGuardPort>9090</onGuardPort>
+    //一体机配置
+    <devicePort>8000</devicePort>
+    <deviceName>admin</deviceName>
+    <devicePass>hik12345</devicePass>
+    //数据库配置
+    <dataBaseIp>localhost</dataBaseIp>
+    <dataBasePort>1433</dataBasePort>
+    <dataBaseName>dyw</dataBaseName>
+    <dataBasePass>hik12345</dataBasePass>
+    <dataBaseLib>EntranceGuard</dataBaseLib>
+    <dataBaseTime>30000</dataBaseTime>//防止同步时同时操作数据库，造成堵塞
+    //队列配置
+    <queueIp>localhost</queueIp>
+    //socket配置
+    <socketPort>12345</socketPort>
+    //测试配置单台同步
+    <testIp>192.168.40.32</testIp>
+    //是否开启同步
+    <synchronization>2</synchronization>0：不开启，1：开启单台，2：代表全部开启
+    <synchronizationHour>12</synchronizationHour>
+    <synchronizationMinute>54</synchronizationMinute>
+    <synchronizationSecond>00</synchronizationSecond>
+    <synchronizationTime>100000</synchronizationTime>//查找全部卡号时，线程暂停时间
+    //onGuard配置
+    <onGuardIp>127.0.0.1</onGuardIp>
+    <onGuardPort>9090</onGuardPort>
+    //报警回调函数暂停时间
+    <alarmTime>10000</alarmTime>
 
 </config>

@@ -96,6 +96,9 @@ public class Tool {
                         if (attrName.equals("onGuardPort")) {
                             configEntity.setOnGuardPort(Short.parseShort(childNodes.item(j).getFirstChild().getNodeValue()));
                         }
+                        if (attrName.equals("alarmTime")) {
+                            configEntity.setAlarmTime(Long.parseLong(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
                     }
                 }
             }

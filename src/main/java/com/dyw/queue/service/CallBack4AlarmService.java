@@ -12,16 +12,10 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
 
-import org.apache.commons.lang3.ArrayUtils;
 
 public class CallBack4AlarmService {
     private Logger logger = LoggerFactory.getLogger(CallBack4AlarmService.class);

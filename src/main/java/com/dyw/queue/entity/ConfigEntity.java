@@ -27,6 +27,8 @@ public class ConfigEntity {
     //OnGuard配置
     private String onGuardIp;
     private short onGuardPort;
+    //报警回调函数暂停时间
+    private long alarmTime;
 
     public String getOnGuardIp() {
         return onGuardIp;
@@ -178,5 +180,13 @@ public class ConfigEntity {
 
     public void setSynchronizationSecond(int synchronizationSecond) {
         this.synchronizationSecond = synchronizationSecond;
+    }
+
+    public long getAlarmTime() {
+        return alarmTime;
+    }
+
+    public void setAlarmTime(long alarmTime) {
+        this.alarmTime = alarmTime;
     }
 }

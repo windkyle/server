@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class Egci {
     public static String deviceName;
     public static String devicePass;
     //全局变量
-    private static Logger Elogger = LoggerFactory.getLogger(Egci.class);
+    private static Logger Elogger;
     public static Statement stmt;
     public static List<String> deviceIps0;//所有设备，不带“#”
     public static List<String> deviceIps1;//一核设备，不带“#”
@@ -43,9 +44,9 @@ public class Egci {
     //初始化生产者数组
     public static List<ProducerService> producerServiceList;
     //初始化静态对象
-    public static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+    public static HCNetSDK hcNetSDK;
     //报警回调函数
-    private static HCNetSDK.FMSGCallBack_V31 alarmHandler = new AlarmHandler();
+    private static HCNetSDK.FMSGCallBack_V31 alarmHandler;
     //监控推送服务的生产者合集
     public static List<ProducerService> producerMonitorOneServices;//监听一核设备
     public static List<ProducerService> producerMonitorTwoServices;//监听二核设备
@@ -56,7 +57,12 @@ public class Egci {
     /*
      * 初始化函数
      * */
-    private static void initServer() throws Exception {
+    private static void initServer() {
+        //初始化日志对象
+        Elogger = LoggerFactory.getLogger(Egci.class);
+        //初始化SDK静态对象
+        hcNetSDK = HCNetSDK.INSTANCE;
+        //初始化SDK
         if (!hcNetSDK.NET_DVR_Init()) {
             Elogger.error("SDK初始化失败");
             return;
@@ -67,6 +73,13 @@ public class Egci {
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();
         devicePass = configEntity.getDevicePass();
+        //连接数据库
+        DatabaseService databaseService = new DatabaseService(Egci.configEntity.getDataBaseIp(), Egci.configEntity.getDataBasePort(), Egci.configEntity.getDataBaseName(), Egci.configEntity.getDataBasePass(), Egci.configEntity.getDataBaseLib());
+        try {
+            Egci.stmt = databaseService.connection().createStatement();
+        } catch (SQLException e) {
+            Elogger.error("连接数据库失败", e);
+        }
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
         //初始化监听生产者
@@ -74,13 +87,18 @@ public class Egci {
         producerMonitorTwoServices = new ArrayList<ProducerService>();
         producerMonitorThreeServices = new ArrayList<ProducerService>();
         //设置报警回调函数
+        alarmHandler = new AlarmHandler();
         if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRMessageCallBack_V31(alarmHandler, null)) {
             Elogger.info("设置回调函数失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
         }
         //对所有一体机设备进行布防
         EquipmentService.initEquipmentAlarm();
-        Thread.sleep(10000);
-
+        try {
+            Thread.sleep(configEntity.getAlarmTime());
+        } catch (InterruptedException e) {
+            Elogger.error("一体机设备布防延迟失败", e);
+        }
+        //用来处理通行信息推送的问题
         producerServiceMap = new HashMap<String, ProducerService>();
         //初始化下发队列
         producerServiceList = new ArrayList<ProducerService>();
@@ -123,6 +141,8 @@ public class Egci {
             }
         } catch (IOException e) {
             Elogger.error("开启socket服务失败：", e);
+        } catch (InterruptedException e) {
+            Elogger.error("开启socket服务失败：", e);
         }
     }
 
@@ -133,6 +153,7 @@ public class Egci {
             Elogger.error("错误：", e);
         } finally {
             Elogger.error("人脸通行服务程序出现严重错误,需要被关闭");
+            while (true) ;
         }
     }
 }
