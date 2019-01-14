@@ -144,6 +144,7 @@ public class SocketService extends Thread {
             //实时监控消息推送
             if (operationCode.equals("8")) {
                 String[] info = mess.split("#");
+                //判断客户端IP地址是否布防过：如果有，则先清除布防信息，防止多次推送消息
                 if (Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()) != null) {
                     Egci.producerMonitorOneServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
                     Egci.producerMonitorTwoServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));

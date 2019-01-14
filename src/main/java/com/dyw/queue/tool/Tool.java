@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.*;
 
 public class Tool {
@@ -233,5 +234,15 @@ public class Tool {
     public static int getRandom(int max, int min, int difference) {
         Random rand = new Random();
         return rand.nextInt(max) % (difference) + min;
+    }
+
+    /*
+     * 测试设备设备在线
+     * */
+    public static boolean ping(String ipAddress) throws Exception {
+        int timeOut = 3000;  //超时应该在3钞以上
+        boolean status = InetAddress.getByName(ipAddress).isReachable(timeOut);
+        // 当返回值是true时，说明host是可用的，false则不可。
+        return status;
     }
 }

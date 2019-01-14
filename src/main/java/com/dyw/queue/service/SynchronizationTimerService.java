@@ -1,6 +1,7 @@
 package com.dyw.queue.service;
 
 import com.dyw.queue.controller.Egci;
+import com.dyw.queue.task.SynchronizationTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,8 +9,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 
-public class TimerService {
-    private static Logger logger = LoggerFactory.getLogger(TimerService.class);
+public class SynchronizationTimerService {
+    private static Logger logger = LoggerFactory.getLogger(SynchronizationTimerService.class);
     //时间间隔(一天)
     private static final long PERIOD_DAY = 24 * 60 * 60 * 1000;
 
@@ -25,11 +26,11 @@ public class TimerService {
             date = addDay(date, 1);
         }
         Timer timer = new Timer();
-        TaskService taskService = new TaskService();
+        SynchronizationTaskService synchronizationTaskService = new SynchronizationTaskService();
         logger.info("用来测试同步的ip是：" + Egci.configEntity.getTestIp());
         logger.info("同步时刻是：" + calendar.getTime());
         //安排指定的任务在指定的时间开始进行重复的固定延迟执行。
-        timer.schedule(taskService, date, PERIOD_DAY);
+        timer.schedule(synchronizationTaskService, date, PERIOD_DAY);
     }
 
     // 增加或减少天数

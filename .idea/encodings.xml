@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/dyw/queue/controller/Client.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/dyw/queue/controller/Egci.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/dyw/queue/controller/NetState.java" charset="GBK" />
   </component>
 </project>

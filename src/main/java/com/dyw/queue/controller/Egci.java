@@ -82,6 +82,19 @@ public class Egci {
         }
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
+        //获取设备网络状态
+        try {
+            for (String ip : Egci.deviceIps0) {
+                NetStateService netStateService = new NetStateService();
+                if (netStateService.ping(ip)) {
+                    System.out.println("网络正常");
+                } else {
+                    System.out.println("网络异常");
+                }
+            }
+        } catch (Exception e) {
+            Elogger.error("获取设备网络状态失败", e);
+        }
         //初始化监听生产者
         producerMonitorOneServices = new ArrayList<ProducerService>();
         producerMonitorTwoServices = new ArrayList<ProducerService>();
@@ -111,7 +124,7 @@ public class Egci {
         }
         //启动同步操作:0表示不启用；1表示单台；2表示全部
         if (!configEntity.getSynchronization().equals("0")) {
-            TimerService.open();
+            SynchronizationTimerService.open();
             Elogger.info("开启自动同步功能");
         } else {
             Elogger.info("关闭自动同步功能");
