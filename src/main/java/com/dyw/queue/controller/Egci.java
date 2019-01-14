@@ -40,6 +40,8 @@ public class Egci {
     public static List<String> deviceIps1WithOctothorpe;//一核设备，带“#”
     public static List<String> deviceIps2WithOctothorpe;//二核设备，带“#”
     public static List<String> deviceIps3WithOctothorpe;//三核设备，带“#”
+    public static List<String> deviceIpsOn;//在线设备
+    public static List<String> deviceIpsOff;//离线设备
     public static String queueIp;//队列的ip
     //初始化生产者数组
     public static List<ProducerService> producerServiceList;
@@ -82,19 +84,8 @@ public class Egci {
         }
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
-        //获取一体机设备网络状态
-        try {
-            for (String ip : Egci.deviceIps0) {
-                NetStateService netStateService = new NetStateService();
-                if (netStateService.ping(ip)) {
-                    System.out.println("网络正常");
-                } else {
-                    System.out.println("网络异常");
-                }
-            }
-        } catch (Exception e) {
-            Elogger.error("获取设备网络状态失败", e);
-        }
+        //定时获取一体机设备网络状态
+        PingTimerService.open();
         //初始化监听生产者
         producerMonitorOneServices = new ArrayList<ProducerService>();
         producerMonitorTwoServices = new ArrayList<ProducerService>();

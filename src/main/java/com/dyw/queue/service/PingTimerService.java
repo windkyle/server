@@ -12,7 +12,7 @@ public class PingTimerService {
     public static void open() {
         Timer timer = new Timer();
         PingTaskService pingTaskService = new PingTaskService();
-        timer.schedule(pingTaskService, 10000, 3000);
+        timer.schedule(pingTaskService, 1000, 600000);
     }
 
 }

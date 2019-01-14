@@ -17,9 +17,9 @@ public class PingTaskService extends TimerTask {
             for (String ip : Egci.deviceIps0) {
                 NetStateService netStateService = new NetStateService();
                 if (netStateService.ping(ip)) {
-                    System.out.println("网络正常");
+                    Egci.deviceIpsOn.add(ip);
                 } else {
-                    System.out.println("网络异常");
+                    Egci.deviceIpsOff.add(ip);
                 }
             }
         } catch (Exception e) {
