@@ -48,11 +48,13 @@ public class EquipmentService {
 
     public static void initEquipmentAlarm() {
         //对所有一体机设备进行布防
-        for (String deviceIp : Egci.deviceIps0) {
+        for (String deviceIp : Egci.deviceIpsOn) {
             LoginService loginService = new LoginService();
             loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());
             AlarmService alarmService = new AlarmService();
-            alarmService.setupAlarmChan(loginService.getlUserID());
+            if (!alarmService.setupAlarmChan(loginService.getlUserID())) {
+                Egci.deviceIpsAlarmFail.add(deviceIp);
+            }
         }
     }
 }

@@ -10,7 +10,8 @@ public class LoginService {
     private Logger logger = LoggerFactory.getLogger(LoginService.class);
     private NativeLong lUserID = new NativeLong(-1);
 
-    public NativeLong login(String ip, short port, String name, String pass) {
+    public Boolean login(String ip, short port, String name, String pass) {
+        Boolean status = false;
         //注册之前先注销已注册的用户,预览情况下不可注销
         if (lUserID.longValue() > -1) {
             //先注销
@@ -21,11 +22,12 @@ public class LoginService {
         lUserID = Egci.hcNetSDK.NET_DVR_Login_V30(ip, port, name, pass, m_strDeviceInfo);
         if (lUserID.longValue() < 0) {
             logger.info("设备登陆失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
+            status = false;
         } else {
             logger.info("设备登陆成功");
-
+            status = true;
         }
-        return lUserID;
+        return status;
     }
 
     public NativeLong getlUserID() {

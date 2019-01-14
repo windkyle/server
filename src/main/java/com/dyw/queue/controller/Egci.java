@@ -15,10 +15,7 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Egci {
     //mybatis框架
@@ -42,6 +39,7 @@ public class Egci {
     public static List<String> deviceIps3WithOctothorpe;//三核设备，带“#”
     public static List<String> deviceIpsOn;//在线设备
     public static List<String> deviceIpsOff;//离线设备
+    public static Set<String> deviceIpsAlarmFail;//布防失败的设备
     public static String queueIp;//队列的ip
     //初始化生产者数组
     public static List<ProducerService> producerServiceList;
@@ -84,8 +82,23 @@ public class Egci {
         }
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
-        //定时获取一体机设备网络状态
-        PingTimerService.open();
+        //定时获取一体机设备网络状态,并设置定时状态更新
+        deviceIpsOn = new ArrayList<String>();
+        deviceIpsOff = new ArrayList<String>();
+        for (String ip : deviceIps0) {
+            try {
+                NetStateService netStateService = new NetStateService();
+                if (netStateService.ping(ip)) {
+                    deviceIpsOn.add(ip);
+                } else {
+                    deviceIpsOff.add(ip);
+                }
+                PingTimerService pingTimerService = new PingTimerService(ip);
+                pingTimerService.start();
+            } catch (Exception e) {
+                Elogger.error("获取在线/离线设备出错", e);
+            }
+        }
         //初始化监听生产者
         producerMonitorOneServices = new ArrayList<ProducerService>();
         producerMonitorTwoServices = new ArrayList<ProducerService>();
@@ -96,6 +109,7 @@ public class Egci {
             Elogger.info("设置回调函数失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
         }
         //对所有一体机设备进行布防
+        deviceIpsAlarmFail = new HashSet<String>();
         EquipmentService.initEquipmentAlarm();
         try {
             Thread.sleep(configEntity.getAlarmTime());

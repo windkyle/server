@@ -6,13 +6,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Timer;
 
-public class PingTimerService {
-    private static Logger logger = LoggerFactory.getLogger(PingTimerService.class);
+public class PingTimerService extends Thread {
+    private Logger logger = LoggerFactory.getLogger(PingTimerService.class);
+    private String deviceIp;
 
-    public static void open() {
-        Timer timer = new Timer();
-        PingTaskService pingTaskService = new PingTaskService();
-        timer.schedule(pingTaskService, 1000, 600000);
+    public PingTimerService(String deviceIp) {
+        this.deviceIp = deviceIp;
     }
 
+    @Override
+    public void run() {
+        Timer timer = new Timer();
+        PingTaskService pingTaskService = new PingTaskService(deviceIp);
+        timer.schedule(pingTaskService, 6000, 10000);
+        logger.info(deviceIp + ":启用自动更新网络状态");
+    }
 }

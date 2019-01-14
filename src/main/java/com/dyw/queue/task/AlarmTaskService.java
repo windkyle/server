@@ -1,0 +1,25 @@
+package com.dyw.queue.task;
+
+import com.dyw.queue.controller.Egci;
+import com.dyw.queue.service.AlarmService;
+import com.dyw.queue.service.LoginService;
+import com.dyw.queue.service.NetStateService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.TimerTask;
+
+public class AlarmTaskService extends TimerTask {
+    @Override
+    public void run() {
+        for (String deviceIp : Egci.deviceIpsAlarmFail) {
+            LoginService loginService = new LoginService();
+            if (loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass())) {
+                AlarmService alarmService = new AlarmService();
+                if (alarmService.setupAlarmChan(loginService.getlUserID())) {
+                    Egci.deviceIpsAlarmFail.remove(deviceIp);
+                }
+            }
+        }
+    }
+}

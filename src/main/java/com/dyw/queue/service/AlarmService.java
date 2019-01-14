@@ -19,7 +19,8 @@ public class AlarmService {
      * @param lUserID 海康注册成功后返回的userId
      * @return
      */
-    public void setupAlarmChan(NativeLong lUserID) {
+    public Boolean setupAlarmChan(NativeLong lUserID) {
+        Boolean status = false;
         try {
             if (lUserID.intValue() == -1) {
                 logger.info("请先注册！");
@@ -36,13 +37,15 @@ public class AlarmService {
             lAlarmHandleFlag = Egci.hcNetSDK.NET_DVR_SetupAlarmChan_V41(lUserID, strAlarmInfo);
             if (lAlarmHandleFlag.intValue() == -1) {
                 logger.info("布防失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
+                status = false;
             } else {
                 logger.info("布防成功!");
+                status = true;
             }
         } catch (Exception e) {
             logger.error("error", e);
         }
-//        while (true) ;//保持监听状态
+        return status;
     }
 
     public void closeAlarmChan() {
