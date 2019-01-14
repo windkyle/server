@@ -82,7 +82,7 @@ public class Egci {
         }
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
-        //获取设备网络状态
+        //获取一体机设备网络状态
         try {
             for (String ip : Egci.deviceIps0) {
                 NetStateService netStateService = new NetStateService();
