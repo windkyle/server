@@ -1,13 +1,10 @@
 package com.dyw.queue.task;
 
 import com.dyw.queue.controller.Egci;
-import com.dyw.queue.service.AlarmService;
-import com.dyw.queue.service.LoginService;
 import com.dyw.queue.service.NetStateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
 import java.util.TimerTask;
 
 public class PingTaskService extends TimerTask {
