@@ -28,5 +28,6 @@
     <onGuardPort>9090</onGuardPort>
     //报警回调函数暂停时间
     <alarmTime>10000</alarmTime>
+    <pushTime>800</pushTime>
 
 </config>
