@@ -18,7 +18,7 @@ public class PingTimerService extends Thread {
     public void run() {
         Timer timer = new Timer();
         PingTaskService pingTaskService = new PingTaskService(deviceIp);
-        timer.schedule(pingTaskService, 6000, 10000);
+        timer.schedule(pingTaskService, 30000, 10000);
         logger.info(deviceIp + ":启用自动更新网络状态");
     }
 }

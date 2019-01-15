@@ -83,7 +83,7 @@ public class Egci {
         }
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
-        //定时获取一体机设备网络状态,并设置定时状态更新
+        //获取一体机设备网络状态,并设置定时状态更新
         deviceIpsOn = new ArrayList<String>();
         deviceIpsOff = new ArrayList<String>();
         for (String ip : deviceIps0) {

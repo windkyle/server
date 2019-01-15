@@ -54,6 +54,11 @@ public class AlarmHandler implements HCNetSDK.FMSGCallBack_V31 {
                           int dwBufLen,
                           Pointer pUser) {
         logger.info(String.format("lCommand : %d", lCommand.intValue()));
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            logger.error("报警回调延迟出错", e);
+        }
         return callBack4AlarmService.alarmNotice(lCommand, pAlarmer, pAlarmInfo, dwBufLen, pUser, session);
     }
 }

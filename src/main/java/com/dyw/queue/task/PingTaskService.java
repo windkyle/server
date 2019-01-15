@@ -22,7 +22,7 @@ public class PingTaskService extends TimerTask {
             NetStateService netStateService = new NetStateService();
             if (netStateService.ping(deviceIp)) {
                 if (!previousStatus) {
-                    logger.info(deviceIp + ":加入布防定时任务");
+                    logger.info(deviceIp + ":加入布防重连任务");
                     Egci.deviceIpsAlarmFail.add(deviceIp);
                 }
                 previousStatus = true;

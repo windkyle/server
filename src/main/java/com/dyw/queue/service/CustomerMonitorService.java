@@ -47,7 +47,7 @@ public class CustomerMonitorService implements Runnable {
                         os.flush();
                         channel.basicReject(envelope.getDeliveryTag(), false);
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(800);
                         } catch (InterruptedException e) {
                             logger.error("延迟出现错误", e);
                         }

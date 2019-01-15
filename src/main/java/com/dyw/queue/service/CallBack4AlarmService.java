@@ -8,15 +8,12 @@ import com.dyw.queue.tool.Tool;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
-import java.util.List;
 
 
 public class CallBack4AlarmService {
@@ -37,7 +34,7 @@ public class CallBack4AlarmService {
 //                break;
                 case HCNetSDK.COMM_ALARM_ACS: //门禁主机报警信息
                     logger.info("HCNetSDK.COMM_ALARM_ACS");
-                    System.out.println(COMM_ALARM_ACS_info(pAlarmer, pAlarmInfo, session));
+                    COMM_ALARM_ACS_info(pAlarmer, pAlarmInfo, session);
                     break;
                 case HCNetSDK.COMM_ID_INFO_ALARM: //身份证信息
                     logger.info("HCNetSDK.COMM_ID_INFO_ALARM");
@@ -64,7 +61,7 @@ public class CallBack4AlarmService {
                 "，报警次类型：" + strIDCardInfo.dwMinor;
     }
 
-    private String COMM_ALARM_ACS_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) throws UnsupportedEncodingException {
+    private void COMM_ALARM_ACS_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) throws UnsupportedEncodingException {
         HCNetSDK.NET_DVR_ACS_ALARM_INFO strACSInfo = new HCNetSDK.NET_DVR_ACS_ALARM_INFO();
         strACSInfo.write();
         Pointer pACSInfo = strACSInfo.getPointer();
@@ -73,10 +70,15 @@ public class CallBack4AlarmService {
         AlarmEntity alarmEntity = new AlarmEntity();
         alarmEntity.setCardNumber(new String(strACSInfo.struAcsEventInfo.byCardNo).trim());
         alarmEntity.setIP(new String(pAlarmer.sDeviceIP).trim());
-        ByteBuffer buffers = strACSInfo.pPicData.getByteBuffer(0, strACSInfo.dwPicDataLen);
-        byte[] bytes = new byte[strACSInfo.dwPicDataLen];
-        buffers.get(bytes);
-        alarmEntity.setCapturePhoto(bytes);
+        try {
+            ByteBuffer buffers = strACSInfo.pPicData.getByteBuffer(0, strACSInfo.dwPicDataLen);
+            byte[] bytes = new byte[strACSInfo.dwPicDataLen];
+            buffers.get(bytes);
+            alarmEntity.setCapturePhoto(bytes);
+        } catch (Exception e) {
+            alarmEntity.setCapturePhoto(null);
+            return;
+        }
         alarmEntity.setEventTypeId(strACSInfo.dwMinor);
         alarmEntity.setDate(Timestamp.valueOf(strACSInfo.struTime.dwYear + "-" + strACSInfo.struTime.dwMonth + "-" + strACSInfo.struTime.dwDay + " " + strACSInfo.struTime.dwHour + ":" + strACSInfo.struTime.dwMinute + ":" + strACSInfo.struTime.dwSecond));
         alarmEntity.setEquipmentName(Egci.deviceIps0Map.get(alarmEntity.getIP()));//设备名称
@@ -95,8 +97,12 @@ public class CallBack4AlarmService {
                 alarmEntity.setSimilarity(0);
         }
         //读取人员姓名
-        StaffEntity staffEntity = session.selectOne("mapping.staffMapper.getStaff", alarmEntity);
-        alarmEntity.setStaffName(staffEntity.getName());
+        try {
+            StaffEntity staffEntity = session.selectOne("mapping.staffMapper.getStaff", alarmEntity);
+            alarmEntity.setStaffName(staffEntity.getName());
+        } catch (Exception e) {
+            alarmEntity.setStaffName(null);
+        }
         //提交数据
         session.insert("mapping.alarmMapper.insertAlarm", alarmEntity);
         //插入数据
@@ -130,10 +136,12 @@ public class CallBack4AlarmService {
                 }
             }
         }
-        return "相似度值：" + alarmEntity.getSimilarity() + ";事件类型：" + alarmEntity.getEventTypeId();
+        //判断布防是否是在线断开后自动重连了
+        if (Egci.deviceIpsAlarmFail.contains(alarmEntity.getIP())) {
+            Egci.deviceIpsAlarmFail.remove(alarmEntity.getIP());
+        }
+        System.out.println("相似度值：" + alarmEntity.getSimilarity() + ";事件类型：" + alarmEntity.getEventTypeId());
     }
-
-
 //    private AlarmDesc COMM_ALARM_V30_info(Pointer pAlarmInfo) {
 //        HCNetSDK.NET_DVR_ALARMINFO_V30 strAlarmInfoV30 = new HCNetSDK.NET_DVR_ALARMINFO_V30();
 //        strAlarmInfoV30.write();
