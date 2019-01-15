@@ -40,6 +40,7 @@ public class Egci {
     public static List<String> deviceIpsOn;//在线设备
     public static List<String> deviceIpsOff;//离线设备
     public static Set<String> deviceIpsAlarmFail;//布防失败的设备
+    public static Map<String, String> deviceIps0Map;//所有设备的信息，包含设备名称
     public static String queueIp;//队列的ip
     //初始化生产者数组
     public static List<ProducerService> producerServiceList;
@@ -116,7 +117,7 @@ public class Egci {
         } catch (InterruptedException e) {
             Elogger.error("一体机设备布防延迟失败", e);
         }
-        //进行自动布防重连定时任务
+        //开启自动布防重连定时任务
         AlarmTimerService.open();
         //用来处理通行信息推送的问题
         producerServiceMap = new HashMap<String, ProducerService>();

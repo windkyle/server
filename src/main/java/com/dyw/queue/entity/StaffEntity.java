@@ -1,24 +1,24 @@
 package com.dyw.queue.entity;
 
 public class StaffEntity {
-    private String cardNumber;
-    private String name;
+    private String CardNumber;
+    private String Name;
     private byte[] Photo;
 
     public String getCardNumber() {
-        return cardNumber;
+        return CardNumber;
     }
 
     public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
+        CardNumber = cardNumber;
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        Name = name;
     }
 
     public byte[] getPhoto() {

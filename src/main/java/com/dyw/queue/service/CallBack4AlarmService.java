@@ -3,6 +3,7 @@ package com.dyw.queue.service;
 import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.controller.Egci;
 import com.dyw.queue.entity.AlarmEntity;
+import com.dyw.queue.entity.StaffEntity;
 import com.dyw.queue.tool.Tool;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 public class CallBack4AlarmService {
@@ -77,6 +79,7 @@ public class CallBack4AlarmService {
         alarmEntity.setCapturePhoto(bytes);
         alarmEntity.setEventTypeId(strACSInfo.dwMinor);
         alarmEntity.setDate(Timestamp.valueOf(strACSInfo.struTime.dwYear + "-" + strACSInfo.struTime.dwMonth + "-" + strACSInfo.struTime.dwDay + " " + strACSInfo.struTime.dwHour + ":" + strACSInfo.struTime.dwMinute + ":" + strACSInfo.struTime.dwSecond));
+        alarmEntity.setEquipmentName(Egci.deviceIps0Map.get(alarmEntity.getIP()));//设备名称
         //依据事件类型生成不同的事件对象
         switch (strACSInfo.dwMinor) {
             case 105:
@@ -91,6 +94,9 @@ public class CallBack4AlarmService {
                 alarmEntity.setPass(false);
                 alarmEntity.setSimilarity(0);
         }
+        //读取人员姓名
+        StaffEntity staffEntity = session.selectOne("mapping.staffMapper.getStaff", alarmEntity);
+        alarmEntity.setStaffName(staffEntity.getName());
         //提交数据
         session.insert("mapping.alarmMapper.insertAlarm", alarmEntity);
         //插入数据

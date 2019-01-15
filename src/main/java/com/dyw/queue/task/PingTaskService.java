@@ -10,7 +10,7 @@ import java.util.TimerTask;
 public class PingTaskService extends TimerTask {
     private Logger logger = LoggerFactory.getLogger(PingTaskService.class);
     private String deviceIp;
-    private Boolean previousStatus = false;
+    private Boolean previousStatus = true;
 
     public PingTaskService(String deviceIp) {
         this.deviceIp = deviceIp;
