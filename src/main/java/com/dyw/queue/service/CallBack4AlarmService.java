@@ -75,8 +75,8 @@ public class CallBack4AlarmService {
         buffersId.get(bytesId);
         faceCollectionEntity.setIdentificationPhoto(bytesId);//身份证图片
         try {
-            ByteBuffer buffersCp = strIDCardInfo.pPicData.getByteBuffer(0, strIDCardInfo.dwPicDataLen);
-            byte[] bytesCp = new byte[strIDCardInfo.dwPicDataLen];
+            ByteBuffer buffersCp = strIDCardInfo.pCapturePicData.getByteBuffer(0, strIDCardInfo.dwCapturePicDataLen);
+            byte[] bytesCp = new byte[strIDCardInfo.dwCapturePicDataLen];
             buffersCp.get(bytesCp);
             faceCollectionEntity.setStaffPhoto(bytesCp);
         } catch (Exception e) {
