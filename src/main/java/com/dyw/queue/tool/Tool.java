@@ -100,6 +100,12 @@ public class Tool {
                         if (attrName.equals("alarmTime")) {
                             configEntity.setAlarmTime(Long.parseLong(childNodes.item(j).getFirstChild().getNodeValue()));
                         }
+                        if (attrName.equals("pushTime")) {
+                            configEntity.setPushTime(Long.parseLong(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("callBackTime")) {
+                            configEntity.setCallBackTime(Long.parseLong(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
                     }
                 }
             }

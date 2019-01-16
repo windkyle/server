@@ -13,7 +13,8 @@ public class Client {
             //接口服务端信息
             System.out.println("连接服务器成功，等待接收数据...");
             OutputStream os = socket.getOutputStream();
-            os.write("8#1#1#1\n".getBytes());
+//            os.write("8#1#1#1\n".getBytes());
+            os.write("7#192.168.1.111\n".getBytes());
             os.flush();
             while (true) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));

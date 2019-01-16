@@ -1,5 +1,6 @@
 package com.dyw.queue.service;
 
+import com.dyw.queue.controller.Egci;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +17,11 @@ public class CustomerMonitorService implements Runnable {
     private String queueIp;
     private Thread t;
     private Socket socket;
-    private ProducerService producerService;
 
-    public CustomerMonitorService(String queueName, String queueIp, Socket socket, ProducerService producerService) {
+    public CustomerMonitorService(String queueName, String queueIp, Socket socket) {
         this.queueName = queueName;
         this.queueIp = queueIp;
         this.socket = socket;
-        this.producerService = producerService;
     }
 
     @Override
@@ -47,14 +46,14 @@ public class CustomerMonitorService implements Runnable {
                         os.flush();
                         channel.basicReject(envelope.getDeliveryTag(), false);
                         try {
-                            Thread.sleep(800);
+                            //服务端推送消息到客户端的延迟时间，防止客户端数据接收出错
+                            Thread.sleep(Egci.configEntity.getPushTime());
                         } catch (InterruptedException e) {
                             logger.error("延迟出现错误", e);
                         }
                     } catch (SocketException e) {
                         //这里出现错误说明客户端已经断开
                         channel.basicReject(envelope.getDeliveryTag(), false);
-//                        channel.queueDelete(queueName);
                         logger.error("客户端：" + socket.getInetAddress().getHostAddress() + " 已断开");
                     }
                 }

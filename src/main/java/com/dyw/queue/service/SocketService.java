@@ -141,6 +141,28 @@ public class SocketService extends Thread {
                 //返回消息给客户端
                 sendToClient(socketInfo, br, "success");
             }
+            //获取采集设备的图片和身份证信息
+            if (operationCode.equals("7")) {
+                String[] info = mess.split("#");
+                Egci.deviceIpsFaceCollection.remove(info[1]);
+                //创建采集设备推送的队列
+                try {
+                    Egci.faceCollectionIpWithProducer.get(info[1]).deleteQueue();//先删除
+                } catch (Exception e) {
+                    logger.error("error", e);
+                }
+                Thread.sleep(2000);
+                ProducerService producerService = new ProducerService("face:" + info[1], Egci.queueIp);
+                CustomerMonitorService customerMonitorService = new CustomerMonitorService("face:" + info[1], Egci.queueIp, socketInfo);
+                customerMonitorService.start();
+                //对采集设备布防
+                LoginService loginService = new LoginService();
+                loginService.login(info[1], Egci.devicePort, Egci.deviceName, Egci.devicePass);
+                AlarmService alarmService = new AlarmService();
+                alarmService.setupAlarmChan(loginService.getlUserID());
+                Egci.deviceIpsFaceCollection.add(info[1]);
+                Egci.faceCollectionIpWithProducer.put(info[1], producerService);
+            }
             //实时监控消息推送
             if (operationCode.equals("8")) {
                 String[] info = mess.split("#");
@@ -153,7 +175,7 @@ public class SocketService extends Thread {
                     Thread.sleep(3000);
                 }
                 ProducerService producerService = new ProducerService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp);
-                CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp, socketInfo, producerService);
+                CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp, socketInfo);
                 customerMonitorService.start();
                 if (info[1].equals("1")) {
                     Egci.producerMonitorOneServices.add(producerService);
@@ -165,7 +187,6 @@ public class SocketService extends Thread {
                     Egci.producerMonitorThreeServices.add(producerService);
                 }
                 Egci.producerServiceMap.put(socketInfo.getInetAddress().getHostAddress(), producerService);
-                Thread.sleep(2000);
             }
         } catch (IOException e) {
             logger.error("socket断开");

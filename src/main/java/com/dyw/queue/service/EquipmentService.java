@@ -58,6 +58,12 @@ public class EquipmentService {
             if (!alarmService.setupAlarmChan(loginService.getlUserID())) {
                 Egci.deviceIpsAlarmFail.add(deviceIp);
             }
+            try {
+                //每布防一台设备后暂停时间，用来防止数据量瞬间过大导致程序出错
+                Thread.sleep(Egci.configEntity.getAlarmTime());
+            } catch (InterruptedException e) {
+                logger.error("单台一体机设备布防延迟失败", e);
+            }
         }
     }
 }

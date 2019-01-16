@@ -1,6 +1,7 @@
 package com.dyw.queue.handler;
 
 import com.dyw.queue.HCNetSDK;
+import com.dyw.queue.controller.Egci;
 import com.dyw.queue.service.CallBack4AlarmService;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
@@ -55,7 +56,8 @@ public class AlarmHandler implements HCNetSDK.FMSGCallBack_V31 {
                           Pointer pUser) {
         logger.info(String.format("lCommand : %d", lCommand.intValue()));
         try {
-            Thread.sleep(500);
+            //防止回调函数返回的数据量过大导致程序出错
+            Thread.sleep(Egci.configEntity.getCallBackTime());
         } catch (InterruptedException e) {
             logger.error("报警回调延迟出错", e);
         }

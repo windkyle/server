@@ -3,6 +3,7 @@ package com.dyw.queue.service;
 import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.controller.Egci;
 import com.dyw.queue.entity.AlarmEntity;
+import com.dyw.queue.entity.FaceCollectionEntity;
 import com.dyw.queue.entity.StaffEntity;
 import com.dyw.queue.tool.Tool;
 import com.sun.jna.NativeLong;
@@ -38,7 +39,7 @@ public class CallBack4AlarmService {
                     break;
                 case HCNetSDK.COMM_ID_INFO_ALARM: //身份证信息
                     logger.info("HCNetSDK.COMM_ID_INFO_ALARM");
-                    COMM_ID_INFO_ALARM_info(pAlarmInfo);
+                    COMM_ID_INFO_ALARM_info(pAlarmer, pAlarmInfo, session);
                     break;
                 default:
                     logger.info("go default");
@@ -50,15 +51,44 @@ public class CallBack4AlarmService {
         return true;
     }
 
-    private String COMM_ID_INFO_ALARM_info(Pointer pAlarmInfo) {
+    private void COMM_ID_INFO_ALARM_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) {
         HCNetSDK.NET_DVR_ID_CARD_INFO_ALARM strIDCardInfo = new HCNetSDK.NET_DVR_ID_CARD_INFO_ALARM();
         strIDCardInfo.write();
         Pointer pIDCardInfo = strIDCardInfo.getPointer();
         pIDCardInfo.write(0, pAlarmInfo.getByteArray(0, strIDCardInfo.size()), 0, strIDCardInfo.size());
         strIDCardInfo.read();
-        return "：门禁身份证刷卡信息，身份证号码：" + new String(strIDCardInfo.struIDCardCfg.byIDNum).trim() + "，姓名：" +
-                new String(strIDCardInfo.struIDCardCfg.byName).trim() + "，报警主类型：" + strIDCardInfo.dwMajor +
-                "，报警次类型：" + strIDCardInfo.dwMinor;
+        //人证比对失败，不保存和推送信息
+        if (strIDCardInfo.dwMinor == 112) {
+            return;
+        }
+        FaceCollectionEntity faceCollectionEntity = new FaceCollectionEntity();
+        faceCollectionEntity.setName(new String(strIDCardInfo.struIDCardCfg.byName).trim());//姓名
+        faceCollectionEntity.setCardId(new String(strIDCardInfo.struIDCardCfg.byIDNum).trim());//身份证号
+        faceCollectionEntity.setNation(String.valueOf((strIDCardInfo.struIDCardCfg.byNation)));//民族
+        faceCollectionEntity.setSex(String.valueOf((strIDCardInfo.struIDCardCfg.bySex)));//性别
+        faceCollectionEntity.setBirthday(strIDCardInfo.struIDCardCfg.struBirth.wYear + "-" + strIDCardInfo.struIDCardCfg.struBirth.byMonth + "-" + strIDCardInfo.struIDCardCfg.struBirth.byDay);//出生日期
+        faceCollectionEntity.setExpirationDate(strIDCardInfo.struIDCardCfg.struStartDate.wYear + "-" + strIDCardInfo.struIDCardCfg.struStartDate.byMonth + "-" + strIDCardInfo.struIDCardCfg.struStartDate.byDay + " 到 " + strIDCardInfo.struIDCardCfg.struEndDate.wYear + "-" + strIDCardInfo.struIDCardCfg.struEndDate.byMonth + "-" + strIDCardInfo.struIDCardCfg.struEndDate.byDay);//有效期
+        faceCollectionEntity.setOrganization(new String(strIDCardInfo.struIDCardCfg.byIssuingAuthority).trim());//签发机关
+        ByteBuffer buffersId = strIDCardInfo.pPicData.getByteBuffer(0, strIDCardInfo.dwPicDataLen);
+        byte[] bytesId = new byte[strIDCardInfo.dwPicDataLen];
+        buffersId.get(bytesId);
+        faceCollectionEntity.setIdentificationPhoto(bytesId);//身份证图片
+        try {
+            ByteBuffer buffersCp = strIDCardInfo.pPicData.getByteBuffer(0, strIDCardInfo.dwPicDataLen);
+            byte[] bytesCp = new byte[strIDCardInfo.dwPicDataLen];
+            buffersCp.get(bytesCp);
+            faceCollectionEntity.setStaffPhoto(bytesCp);
+        } catch (Exception e) {
+            faceCollectionEntity.setStaffPhoto(null);
+            return;
+        }
+        session.insert("mapping.faceCollectionMapper.insertFaceCollection", faceCollectionEntity);
+        session.commit();
+        try {
+            Egci.faceCollectionIpWithProducer.get(new String(pAlarmer.sDeviceIP).trim()).sendToQueue(faceCollectionEntity.getId() + "");
+        } catch (Exception e) {
+            logger.error("推送通信到消费者失败", e);
+        }
     }
 
     private void COMM_ALARM_ACS_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) throws UnsupportedEncodingException {
@@ -67,6 +97,26 @@ public class CallBack4AlarmService {
         Pointer pACSInfo = strACSInfo.getPointer();
         pACSInfo.write(0, pAlarmInfo.getByteArray(0, strACSInfo.size()), 0, strACSInfo.size());
         strACSInfo.read();
+        if (Egci.deviceIpsFaceCollection.contains(new String(pAlarmer.sDeviceIP).trim())) {
+            FaceCollectionEntity faceCollectionEntity = new FaceCollectionEntity();
+            try {
+                ByteBuffer buffers = strACSInfo.pPicData.getByteBuffer(0, strACSInfo.dwPicDataLen);
+                byte[] bytes = new byte[strACSInfo.dwPicDataLen];
+                buffers.get(bytes);
+                faceCollectionEntity.setStaffPhoto(bytes);
+            } catch (Exception e) {
+                faceCollectionEntity.setStaffPhoto(null);
+                return;
+            }
+            session.insert("mapping.faceCollectionMapper.insertFaceCollection", faceCollectionEntity);
+            session.commit();
+            try {
+                Egci.faceCollectionIpWithProducer.get(new String(pAlarmer.sDeviceIP).trim()).sendToQueue(faceCollectionEntity.getId() + "");
+            } catch (Exception e) {
+                logger.error("推送通信到消费者失败", e);
+            }
+            return;
+        }
         AlarmEntity alarmEntity = new AlarmEntity();
         alarmEntity.setCardNumber(new String(strACSInfo.struAcsEventInfo.byCardNo).trim());
         alarmEntity.setIP(new String(pAlarmer.sDeviceIP).trim());

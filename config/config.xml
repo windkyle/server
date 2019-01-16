@@ -26,8 +26,10 @@
     //onGuard配置
     <onGuardIp>127.0.0.1</onGuardIp>
     <onGuardPort>9090</onGuardPort>
-    //报警回调函数暂停时间
+    //每布防一台设备后暂停时间
     <alarmTime>10000</alarmTime>
+    //服务端推送消息到客户端的延迟时间，防止客户端数据接收出错
     <pushTime>800</pushTime>
-
+    //报警回调函数延迟时间，防止回调函数返回的数据量过大导致程序出错
+    <callBackTime>500</callBackTime>
 </config>

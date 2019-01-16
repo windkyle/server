@@ -41,7 +41,8 @@ public class Egci {
     public static List<String> deviceIpsOff;//离线设备
     public static Set<String> deviceIpsAlarmFail;//布防失败的设备
     public static Map<String, String> deviceIps0Map;//所有设备的信息，包含设备名称
-    public static String queueIp;//队列的ip
+    //队列的ip
+    public static String queueIp;
     //初始化生产者数组
     public static List<ProducerService> producerServiceList;
     //初始化静态对象
@@ -52,6 +53,12 @@ public class Egci {
     public static List<ProducerService> producerMonitorOneServices;//监听一核设备
     public static List<ProducerService> producerMonitorTwoServices;//监听二核设备
     public static List<ProducerService> producerMonitorThreeServices;//监听三核设备
+    //采集设备的生产者合集
+//    public static List<ProducerService> producerFaceCollectionServices;
+    //采集设备IP合集，用来判断返回的消息来自采集设备还是一体机
+    public static Set<String> deviceIpsFaceCollection;
+    //采集设备和对应的生产者的map
+    public static Map<String, ProducerService> faceCollectionIpWithProducer;
     //推送服务的生产者对象数组，用来解决异常推送问题
     public static Map<String, ProducerService> producerServiceMap;
 
@@ -104,6 +111,10 @@ public class Egci {
         producerMonitorOneServices = new ArrayList<ProducerService>();
         producerMonitorTwoServices = new ArrayList<ProducerService>();
         producerMonitorThreeServices = new ArrayList<ProducerService>();
+        //初始化采集设备相关信息
+//        producerFaceCollectionServices = new ArrayList<ProducerService>();
+        deviceIpsFaceCollection = new HashSet<String>();
+        faceCollectionIpWithProducer = new HashMap<String, ProducerService>();
         //设置报警回调函数
         alarmHandler = new AlarmHandler();
         if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRMessageCallBack_V31(alarmHandler, null)) {
@@ -112,11 +123,6 @@ public class Egci {
         //对所有一体机设备进行布防
         deviceIpsAlarmFail = new HashSet<String>();
         EquipmentService.initEquipmentAlarm();
-        try {
-            Thread.sleep(configEntity.getAlarmTime());
-        } catch (InterruptedException e) {
-            Elogger.error("一体机设备布防延迟失败", e);
-        }
         //开启自动布防重连定时任务
         AlarmTimerService.open();
         //用来处理通行信息推送的问题

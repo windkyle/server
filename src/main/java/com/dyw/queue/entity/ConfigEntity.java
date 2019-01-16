@@ -29,6 +29,10 @@ public class ConfigEntity {
     private short onGuardPort;
     //报警回调函数暂停时间
     private long alarmTime;
+    //服务端推送消息到客户端的延迟时间
+    private long pushTime;
+    //报警回调函数延迟时间
+    private long callBackTime;
 
     public String getOnGuardIp() {
         return onGuardIp;
@@ -188,5 +192,21 @@ public class ConfigEntity {
 
     public void setAlarmTime(long alarmTime) {
         this.alarmTime = alarmTime;
+    }
+
+    public long getPushTime() {
+        return pushTime;
+    }
+
+    public void setPushTime(long pushTime) {
+        this.pushTime = pushTime;
+    }
+
+    public long getCallBackTime() {
+        return callBackTime;
+    }
+
+    public void setCallBackTime(long callBackTime) {
+        this.callBackTime = callBackTime;
     }
 }
