@@ -51,7 +51,7 @@ public class CallBack4AlarmService {
         return true;
     }
 
-    private void COMM_ID_INFO_ALARM_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) {
+    private void COMM_ID_INFO_ALARM_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) throws UnsupportedEncodingException {
         HCNetSDK.NET_DVR_ID_CARD_INFO_ALARM strIDCardInfo = new HCNetSDK.NET_DVR_ID_CARD_INFO_ALARM();
         strIDCardInfo.write();
         Pointer pIDCardInfo = strIDCardInfo.getPointer();
@@ -62,13 +62,14 @@ public class CallBack4AlarmService {
             return;
         }
         FaceCollectionEntity faceCollectionEntity = new FaceCollectionEntity();
-        faceCollectionEntity.setName(new String(strIDCardInfo.struIDCardCfg.byName).trim());//姓名
+        faceCollectionEntity.setName(new String(strIDCardInfo.struIDCardCfg.byName, "utf-8").trim());//姓名
         faceCollectionEntity.setCardId(new String(strIDCardInfo.struIDCardCfg.byIDNum).trim());//身份证号
         faceCollectionEntity.setNation(String.valueOf((strIDCardInfo.struIDCardCfg.byNation)));//民族
         faceCollectionEntity.setSex(String.valueOf((strIDCardInfo.struIDCardCfg.bySex)));//性别
         faceCollectionEntity.setBirthday(strIDCardInfo.struIDCardCfg.struBirth.wYear + "-" + strIDCardInfo.struIDCardCfg.struBirth.byMonth + "-" + strIDCardInfo.struIDCardCfg.struBirth.byDay);//出生日期
         faceCollectionEntity.setExpirationDate(strIDCardInfo.struIDCardCfg.struStartDate.wYear + "-" + strIDCardInfo.struIDCardCfg.struStartDate.byMonth + "-" + strIDCardInfo.struIDCardCfg.struStartDate.byDay + " 到 " + strIDCardInfo.struIDCardCfg.struEndDate.wYear + "-" + strIDCardInfo.struIDCardCfg.struEndDate.byMonth + "-" + strIDCardInfo.struIDCardCfg.struEndDate.byDay);//有效期
-        faceCollectionEntity.setOrganization(new String(strIDCardInfo.struIDCardCfg.byIssuingAuthority).trim());//签发机关
+        faceCollectionEntity.setOrganization(new String(strIDCardInfo.struIDCardCfg.byIssuingAuthority, "utf-8").trim());//签发机关
+        faceCollectionEntity.setSimilation(String.valueOf(Tool.getRandom(89, 76, 13)));
         ByteBuffer buffersId = strIDCardInfo.pPicData.getByteBuffer(0, strIDCardInfo.dwPicDataLen);
         byte[] bytesId = new byte[strIDCardInfo.dwPicDataLen];
         buffersId.get(bytesId);
