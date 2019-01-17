@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "config/mybatis-3-mapper.dtd">
 <mapper namespace="mapping.equipmentMapper">
     <!--卡号查询单个人员-->
     <select id="getOneEquipment" parameterType="String" resultType="com.dyw.queue.entity.StaffEntity">

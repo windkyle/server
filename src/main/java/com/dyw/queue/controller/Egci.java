@@ -76,7 +76,7 @@ public class Egci {
             return;
         }
         //读取配置文件
-        configEntity = Tool.getConfig(System.getProperty("user.dir") + "\\config\\config.xml");
+        configEntity = Tool.getConfig(System.getProperty("user.dir") + "/config/config.xml");
         //一体机参数配置
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();

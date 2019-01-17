@@ -86,7 +86,7 @@
                     <target>1.6</target>
                     <encoding>UTF-8</encoding>
                     <compilerArguments>
-                        <extdirs>${basedir}/src</extdirs>
+                        <extdirs>${basedir}</extdirs>
                     </compilerArguments>
                 </configuration>
             </plugin>

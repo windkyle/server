@@ -35,6 +35,11 @@ public class AlarmHandler implements HCNetSDK.FMSGCallBack_V31 {
             SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(reader);
             //创建能执行映射文件中sql的sqlSession
             session = sessionFactory.openSession();
+            if (session == null) {
+                logger.error("session对象创建失败");
+            } else {
+                logger.info("session对象创建成功");
+            }
             /**
              * 映射sql的标识字符串，
              * me.gacl.mapping.userMapper是userMapper.xml文件中mapper标签的namespace属性的值，
