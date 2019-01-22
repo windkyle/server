@@ -140,7 +140,7 @@ public class SynchronizationService implements Runnable {
             for (int i = 0; i < HCNetSDK.ACS_CARD_NO_LEN; i++) {
                 struCardInfo.byCardNo[i] = 0;
             }
-            byte[] cardNoBytes = cardNo.getBytes(); //卡号
+            byte[] cardNoBytes = cardNo.trim().getBytes(); //卡号
             System.arraycopy(cardNoBytes, 0, struCardInfo.byCardNo, 0, cardNo.length());
         } catch (Exception e) {
             logger.error("设置卡号失败：", e);
