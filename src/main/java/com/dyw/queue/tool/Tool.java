@@ -12,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 public class Tool {
@@ -251,4 +252,11 @@ public class Tool {
         // 当返回值是true时，说明host是可用的，false则不可。
         return status;
     }
+
+    /*
+     * ByteBuffer转byte数组
+     * */
+//    public static byte[] ByteBufferToBytes(ByteBuffer byteBuffer, int bufferLength) {
+//
+//    }
 }

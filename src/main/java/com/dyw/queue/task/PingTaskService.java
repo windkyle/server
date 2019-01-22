@@ -27,6 +27,7 @@ public class PingTaskService extends TimerTask {
                 }
                 previousStatus = true;
             } else {
+                Egci.deviceIpsAlarmFail.remove(deviceIp);
                 previousStatus = false;
             }
         } catch (Exception e) {

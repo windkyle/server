@@ -150,15 +150,17 @@ public class SynchronizationService implements Runnable {
             for (int i = 0; i < HCNetSDK.NAME_LEN; i++) {
                 struCardInfo.byName[i] = 0;
             }
-            byte[] nameBytes = cardName.getBytes("GBK");
+            byte[] nameBytes = cardName.trim().getBytes("GBK");
             System.arraycopy(nameBytes, 0, struCardInfo.byName, 0, nameBytes.length);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             logger.error("设置卡片名称出错 :" + e);
         }
         struCardInfo.write();
         Pointer pSendBufSet = struCardInfo.getPointer();
         // 发送卡信息
-        if (!hcNetSDK.NET_DVR_SendRemoteConfig(cardSendFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
+        if (!hcNetSDK.NET_DVR_SendRemoteConfig(cardSendFtpFlag, 0x3, pSendBufSet, struCardInfo.size()))
+
+        {
             logger.error("卡号下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
             stopRemoteConfig(cardSendFtpFlag);
             try {
@@ -167,7 +169,9 @@ public class SynchronizationService implements Runnable {
                 logger.error("error", e);
             }
             return false;
-        } else {
+        } else
+
+        {
             logger.info("卡号下发成功");
             stopRemoteConfig(cardSendFtpFlag);
             try {
@@ -177,6 +181,7 @@ public class SynchronizationService implements Runnable {
             }
             return true;
         }
+
     }
 
     /*
@@ -325,11 +330,10 @@ public class SynchronizationService implements Runnable {
 //            System.out.println("一体机全部卡号：" + synchronizationHandler.getCards());
             List<String> adds;//要下发的卡号合集
             List<String> deletes;//要删除的卡号合集
-            List<String> cards = new ArrayList<String>();
-            logger.info("数据库人员数量" + cards.size());
             //测试union String[] toBeStored = list.toArray(new String[list.size()]);
             String[] deviceNumbers = synchronizationHandler.getCards().toArray(new String[synchronizationHandler.getCards().size()]);//一体机人员信息
             String[] dataBaseNumbers = dataBaseCards.toArray(new String[dataBaseCards.size()]);//数据库人员信息
+            logger.info("设备卡数量：" + deviceNumbers.length + ";数据库卡数量：" + dataBaseNumbers.length);
             //差集
             String[] result_minus = Tool.minus(deviceNumbers, dataBaseNumbers);
 //            System.out.println("待处理卡号：" + Arrays.toString(result_minus));
@@ -365,8 +369,8 @@ public class SynchronizationService implements Runnable {
             }
             for (StaffEntity staffEntity : staffEntities) {
 //                System.out.println("下发的卡号和名称：" + staffEntity.getCardNumber() + "; " + staffEntity.getName());
-                setCardInfo(lUserID, staffEntity.getCardNumber(), staffEntity.getName(), "666666");
-                setFaceInfo(staffEntity.getCardNumber(), staffEntity.getPhoto(), lUserID);
+                setCardInfo(lUserID, staffEntity.getCardNumber().trim(), staffEntity.getName().trim(), "666666");
+                setFaceInfo(staffEntity.getCardNumber().trim(), staffEntity.getPhoto(), lUserID);
             }
         } catch (InterruptedException e) {
             logger.error("同步出现错误", e);

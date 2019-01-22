@@ -61,9 +61,9 @@ public class CardService {
             for (int i = 0; i < HCNetSDK.NAME_LEN; i++) {
                 struCardInfo.byName[i] = 0;
             }
-            byte[] nameBytes = cardName.getBytes("GBK");
+            byte[] nameBytes = cardName.trim().getBytes("GBK");
             System.arraycopy(nameBytes, 0, struCardInfo.byName, 0, nameBytes.length);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             logger.error("设置卡片名称出错 :" + e);
         }
         struCardInfo.write();

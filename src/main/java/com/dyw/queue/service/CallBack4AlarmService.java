@@ -90,9 +90,13 @@ public class CallBack4AlarmService {
         } catch (Exception e) {
             logger.error("推送通信到消费者失败", e);
         }
+        //判断布防是否是在线断开后自动重连了
+        if (Egci.deviceIpsAlarmFail.contains(new String(pAlarmer.sDeviceIP).trim())) {
+            Egci.deviceIpsAlarmFail.remove(new String(pAlarmer.sDeviceIP).trim());
+        }
     }
 
-    private void COMM_ALARM_ACS_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) throws UnsupportedEncodingException {
+    private void COMM_ALARM_ACS_info(HCNetSDK.NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, SqlSession session) {
         HCNetSDK.NET_DVR_ACS_ALARM_INFO strACSInfo = new HCNetSDK.NET_DVR_ACS_ALARM_INFO();
         strACSInfo.write();
         Pointer pACSInfo = strACSInfo.getPointer();
@@ -146,6 +150,11 @@ public class CallBack4AlarmService {
             case 8:
                 alarmEntity.setPass(false);
                 alarmEntity.setSimilarity(0);
+                break;
+            default:
+                alarmEntity.setPass(false);
+                alarmEntity.setSimilarity(0);
+                break;
         }
         //读取人员姓名
         try {
@@ -160,7 +169,6 @@ public class CallBack4AlarmService {
         session.commit();
         //推送通信到消费者
         if (Egci.deviceIps1.contains(alarmEntity.getIP())) {
-            logger.info("设备属于一核");
             for (ProducerService producerService : Egci.producerMonitorOneServices) {
                 try {
                     producerService.sendToQueue(alarmEntity.getId() + "");
@@ -169,7 +177,6 @@ public class CallBack4AlarmService {
                 }
             }
         } else if (Egci.deviceIps2.contains(alarmEntity.getIP())) {
-            logger.info("设备属于二核");
             for (ProducerService producerService : Egci.producerMonitorTwoServices) {
                 try {
                     producerService.sendToQueue(alarmEntity.getId() + "");
@@ -178,7 +185,6 @@ public class CallBack4AlarmService {
                 }
             }
         } else if (Egci.deviceIps3.contains(alarmEntity.getIP())) {
-            logger.info("设备属于三核");
             for (ProducerService producerService : Egci.producerMonitorThreeServices) {
                 try {
                     producerService.sendToQueue(alarmEntity.getId() + "");
@@ -191,7 +197,6 @@ public class CallBack4AlarmService {
         if (Egci.deviceIpsAlarmFail.contains(alarmEntity.getIP())) {
             Egci.deviceIpsAlarmFail.remove(alarmEntity.getIP());
         }
-        System.out.println("相似度值：" + alarmEntity.getSimilarity() + ";事件类型：" + alarmEntity.getEventTypeId());
     }
 //    private AlarmDesc COMM_ALARM_V30_info(Pointer pAlarmInfo) {
 //        HCNetSDK.NET_DVR_ALARMINFO_V30 strAlarmInfoV30 = new HCNetSDK.NET_DVR_ALARMINFO_V30();

@@ -10,9 +10,12 @@ import org.slf4j.LoggerFactory;
 import java.util.TimerTask;
 
 public class AlarmTaskService extends TimerTask {
+    private Logger logger = LoggerFactory.getLogger(AlarmTaskService.class);
+
     @Override
     public void run() {
         for (String deviceIp : Egci.deviceIpsAlarmFail) {
+            logger.info(deviceIp + "：正在重新布防");
             LoginService loginService = new LoginService();
             if (loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass())) {
                 AlarmService alarmService = new AlarmService();

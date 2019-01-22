@@ -25,8 +25,9 @@ public class OnguardService extends Thread {
         try {
             DatabaseService databaseService = new DatabaseService(Egci.configEntity.getDataBaseIp(), Egci.configEntity.getDataBasePort(), Egci.configEntity.getDataBaseName(), Egci.configEntity.getDataBasePass(), Egci.configEntity.getDataBaseLib());
             stmt = databaseService.connection().createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info("onGuard数据库连接成功");
+        } catch (Exception e) {
+            logger.error("连接数据库失败", e);
         }
     }
 
@@ -45,11 +46,9 @@ public class OnguardService extends Thread {
                 System.out.println(temporaryStaffEntity.getType());
                 if (temporaryStaffEntity.getType() == 1) {
                     insert(temporaryStaffEntity);
-                }
-                if (temporaryStaffEntity.getType() == 2) {
+                } else if (temporaryStaffEntity.getType() == 2) {
                     update(temporaryStaffEntity);
-                }
-                if (temporaryStaffEntity.getType() == 3) {
+                } else if (temporaryStaffEntity.getType() == 3) {
                     deleteStaff(temporaryStaffEntity);
                     deleteTemporary(temporaryStaffEntity);
                 }

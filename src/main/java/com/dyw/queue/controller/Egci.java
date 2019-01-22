@@ -4,6 +4,9 @@ import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.entity.ConfigEntity;
 import com.dyw.queue.handler.AlarmHandler;
 import com.dyw.queue.service.*;
+import com.dyw.queue.timer.AlarmTimer;
+import com.dyw.queue.timer.PingTimer;
+import com.dyw.queue.timer.SynchronizationTimer;
 import com.dyw.queue.tool.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +91,9 @@ public class Egci {
         } catch (SQLException e) {
             Elogger.error("连接数据库失败", e);
         }
+        //启用onGuard数据接收服务
+        OnguardService onguardService = new OnguardService();
+        onguardService.start();
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
         //获取一体机设备网络状态,并设置定时状态更新
@@ -101,8 +107,8 @@ public class Egci {
                 } else {
                     deviceIpsOff.add(ip);
                 }
-                PingTimerService pingTimerService = new PingTimerService(ip);
-                pingTimerService.start();
+                PingTimer pingTimer = new PingTimer(ip);
+                pingTimer.start();
             } catch (Exception e) {
                 Elogger.error("获取在线/离线设备出错", e);
             }
@@ -124,7 +130,7 @@ public class Egci {
         deviceIpsAlarmFail = new HashSet<String>();
         EquipmentService.initEquipmentAlarm();
         //开启自动布防重连定时任务
-        AlarmTimerService.open();
+        AlarmTimer.open();
         //用来处理通行信息推送的问题
         producerServiceMap = new HashMap<String, ProducerService>();
         //初始化下发队列
@@ -138,7 +144,7 @@ public class Egci {
         }
         //启动同步操作:0表示不启用；1表示单台；2表示全部
         if (!configEntity.getSynchronization().equals("0")) {
-            SynchronizationTimerService.open();
+            SynchronizationTimer.open();
             Elogger.info("开启自动同步功能");
         } else {
             Elogger.info("关闭自动同步功能");
@@ -149,9 +155,6 @@ public class Egci {
         Elogger.info("系统默认字符编码：" + Charset.defaultCharset()); //查询结果GBK
         //操作系统用户使用的语言
         Elogger.info("系统默认语言：" + System.getProperty("user.language")); //查询结果zh
-        //启用onGuard数据接收服务
-        OnguardService onguardService = new OnguardService();
-        onguardService.start();
         //启用socket服务
         try {
             System.out.println("本机IP地址" + InetAddress.getLocalHost());

@@ -60,12 +60,6 @@ public class AlarmHandler implements HCNetSDK.FMSGCallBack_V31 {
                           int dwBufLen,
                           Pointer pUser) {
         logger.info(String.format("lCommand : %d", lCommand.intValue()));
-        try {
-            //防止回调函数返回的数据量过大导致程序出错
-            Thread.sleep(Egci.configEntity.getCallBackTime());
-        } catch (InterruptedException e) {
-            logger.error("报警回调延迟出错", e);
-        }
         return callBack4AlarmService.alarmNotice(lCommand, pAlarmer, pAlarmInfo, dwBufLen, pUser, session);
     }
 }

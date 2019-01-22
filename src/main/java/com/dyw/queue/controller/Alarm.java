@@ -13,8 +13,16 @@ public class Alarm {
         Alarm alarm = new Alarm();
         System.out.println(alarm.getClass().getResource("../../"));
         System.out.println(alarm.getClass().getResource("/"));
-        System.out.println(System.getProperty("user.dir")+"/target/egci");
+        test();
+        if (1 > 0) {
+            return;
+        }
+        System.out.println(System.getProperty("user.dir") + "/target/egci");
         System.out.println(alarm.getClass().getClassLoader().getResource(""));
-        System.out.println(alarm.getClass().getClassLoader().getResource("/"));//null
+    }
+
+    public static void test() {
+        System.out.println(Alarm.class.getClassLoader().getResource("/"));//null
+        return;
     }
 }

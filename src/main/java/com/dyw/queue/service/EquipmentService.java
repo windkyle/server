@@ -56,6 +56,7 @@ public class EquipmentService {
             loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());
             AlarmService alarmService = new AlarmService();
             if (!alarmService.setupAlarmChan(loginService.getlUserID())) {
+                logger.info(deviceIp + "：第一次布防失败");
                 Egci.deviceIpsAlarmFail.add(deviceIp);
             }
             try {

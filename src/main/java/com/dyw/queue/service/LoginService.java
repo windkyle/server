@@ -21,10 +21,10 @@ public class LoginService {
         HCNetSDK.NET_DVR_DEVICEINFO_V30 m_strDeviceInfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
         lUserID = HCNetSDK.INSTANCE.NET_DVR_Login_V30(ip, port, name, pass, m_strDeviceInfo);
         if (lUserID.longValue() < 0) {
-            logger.info("设备登陆失败，错误码：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+            logger.info(ip + ":设备登陆失败，错误码：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
             status = false;
         } else {
-            logger.info("设备登陆成功");
+            logger.info(ip + ":设备登陆成功");
             status = true;
         }
         return status;

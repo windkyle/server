@@ -1,4 +1,4 @@
-package com.dyw.queue.service;
+package com.dyw.queue.timer;
 
 import com.dyw.queue.controller.Egci;
 import com.dyw.queue.task.SynchronizationTaskService;
@@ -9,14 +9,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 
-public class SynchronizationTimerService {
-    private static Logger logger = LoggerFactory.getLogger(SynchronizationTimerService.class);
+public class SynchronizationTimer {
+    private static Logger logger = LoggerFactory.getLogger(SynchronizationTimer.class);
     //时间间隔(一天)
     private static final long PERIOD_DAY = 24 * 60 * 60 * 1000;
 
     public static void open() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, Egci.configEntity.getSynchronizationHour()); //凌晨1点
+        calendar.set(Calendar.HOUR_OF_DAY, Egci.configEntity.getSynchronizationHour());
         calendar.set(Calendar.MINUTE, Egci.configEntity.getSynchronizationMinute());
         calendar.set(Calendar.SECOND, Egci.configEntity.getSynchronizationSecond());
         Date date = calendar.getTime(); //第一次执行定时任务的时间

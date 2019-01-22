@@ -22,7 +22,7 @@ import java.util.List;
 public interface HCNetSDK extends StdCallLibrary {
 
     //Function Mapped via JNA
-    HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary(System.getProperty("user.dir") + "/lib/HCNetSDK", HCNetSDK.class);
+    HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary(System.getProperty("user.dir") + "\\lib\\HCNetSDK", HCNetSDK.class);
 
     boolean NET_DVR_SetConnectTime(int dwWaitTime, int dwTryTime);
 
