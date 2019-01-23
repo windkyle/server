@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class EquipmentService {
     private static Logger logger = LoggerFactory.getLogger(EquipmentService.class);
@@ -24,6 +25,8 @@ public class EquipmentService {
             Egci.deviceIps2WithOctothorpe = new ArrayList<String>();
             Egci.deviceIps3WithOctothorpe = new ArrayList<String>();
             Egci.deviceIps0Map = new HashMap<String, String>();
+            Egci.deviceIpsAlarmFail = new HashSet<String>();
+
             while (resultSet.next()) {
                 //如果对象中有数据，就会循环打印出来
                 Egci.deviceIps0Map.put(resultSet.getString("IP"), resultSet.getString("Name"));

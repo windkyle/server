@@ -127,7 +127,6 @@ public class Egci {
             Elogger.info("设置回调函数失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
         }
         //对所有一体机设备进行布防
-        deviceIpsAlarmFail = new HashSet<String>();
         EquipmentService.initEquipmentAlarm();
         //开启自动布防重连定时任务
         AlarmTimer.open();
