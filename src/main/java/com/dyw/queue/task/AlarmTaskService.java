@@ -20,7 +20,9 @@ public class AlarmTaskService extends TimerTask {
             if (loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass())) {
                 AlarmService alarmService = new AlarmService();
                 if (alarmService.setupAlarmChan(loginService.getlUserID())) {
-                    Egci.deviceIpsAlarmFail.remove(deviceIp);
+                    if (Egci.deviceIpsAlarmFail.contains(deviceIp)) {
+                        Egci.deviceIpsAlarmFail.remove(deviceIp);
+                    }
                 }
             }
         }
