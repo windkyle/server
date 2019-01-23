@@ -47,6 +47,16 @@ public class CustomerService implements Runnable {
                     String picInfo = personInfo[3];//人脸信息
                     String ip = personInfo[4];//ip地址
                     logger.info("正在执行操作的IP:" + ip + ",卡号：" + cardNo);
+                    if (!Egci.deviceIpsOn.contains(ip)) {
+                        try {
+                            Thread.sleep(20000);
+                        } catch (InterruptedException e) {
+                            logger.error("下发延迟失败", e);
+                        }
+                        logger.info("设备:" + ip + "不在线");
+                        channel.basicReject(envelope.getDeliveryTag(), true);
+                        return;
+                    }
                     //登陆
                     LoginService loginService = new LoginService();
                     loginService.login(ip, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());

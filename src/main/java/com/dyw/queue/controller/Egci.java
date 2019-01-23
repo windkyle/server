@@ -40,7 +40,7 @@ public class Egci {
     public static List<String> deviceIps1WithOctothorpe;//一核设备，带“#”
     public static List<String> deviceIps2WithOctothorpe;//二核设备，带“#”
     public static List<String> deviceIps3WithOctothorpe;//三核设备，带“#”
-    public static List<String> deviceIpsOn;//在线设备
+    public static Set<String> deviceIpsOn;//在线设备
     public static List<String> deviceIpsOff;//离线设备
     public static Set<String> deviceIpsAlarmFail;//布防失败的设备
     public static Map<String, String> deviceIps0Map;//所有设备的信息，包含设备名称
@@ -97,7 +97,7 @@ public class Egci {
         //初始化设备信息
         EquipmentService.initEquipmentInfo();
         //获取一体机设备网络状态,并设置定时状态更新
-        deviceIpsOn = new ArrayList<String>();
+        deviceIpsOn = new HashSet<String>();
         deviceIpsOff = new ArrayList<String>();
         for (String ip : deviceIps0) {
             try {

@@ -26,12 +26,18 @@ public class PingTaskService extends TimerTask {
                     Egci.deviceIpsAlarmFail.add(deviceIp);
                 }
                 previousStatus = true;
+                Egci.deviceIpsOn.add(deviceIp);
             } else {
-                Egci.deviceIpsAlarmFail.remove(deviceIp);
+                if (Egci.deviceIpsAlarmFail.contains(deviceIp)) {
+                    Egci.deviceIpsAlarmFail.remove(deviceIp);
+                }
+                if (Egci.deviceIpsOn.contains(deviceIp)) {
+                    Egci.deviceIpsOn.remove(deviceIp);
+                }
                 previousStatus = false;
             }
         } catch (Exception e) {
-            logger.error("获取设备网络状态失败", e);
+            logger.error("定时获取设备网络状态失败", e);
         }
     }
 }

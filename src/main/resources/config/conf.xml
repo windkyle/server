@@ -7,7 +7,7 @@
             <!-- 配置数据库连接信息 -->
             <dataSource type="POOLED">
                 <property name="driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
-                <property name="url" value="jdbc:sqlserver://192.168.1.152:1433;databaseName=EntranceGuard"/>
+                <property name="url" value="jdbc:sqlserver://192.168.40.10:1433;databaseName=EntranceGuard"/>
                 <property name="username" value="dyw"/>
                 <property name="password" value="hik12345"/>
             </dataSource>
