@@ -23,6 +23,8 @@ public class AlarmTaskService extends TimerTask {
                     if (Egci.deviceIpsAlarmFail.contains(deviceIp)) {
                         Egci.deviceIpsAlarmFail.remove(deviceIp);
                     }
+                } else {
+                    loginService.logout();
                 }
             }
         }

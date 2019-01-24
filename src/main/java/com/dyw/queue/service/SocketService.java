@@ -101,7 +101,6 @@ public class SocketService extends Thread {
                 }
                 //返回消息给客户端
                 sendToClient(socketInfo, br, JSON.toJSONString(deviceStatus));
-                System.out.println(JSON.toJSONString(deviceStatus));
             }
             //设置一体机的通行模式
             if (operationCode.equals("4")) {
@@ -120,6 +119,7 @@ public class SocketService extends Thread {
                     //返回消息给客户端
                     sendToClient(socketInfo, br, "success");
                 }
+                loginService.logout();
             }
             //设置切换器模式:0是关闭人脸识别，1是开启人脸识别
             if (operationCode.equals("5")) {
@@ -140,18 +140,23 @@ public class SocketService extends Thread {
                 }
                 //返回消息给客户端
                 sendToClient(socketInfo, br, "success");
+                loginService.logout();
             }
             //获取采集设备的图片和身份证信息
             if (operationCode.equals("7")) {
                 String[] info = mess.split("#");
-                Egci.deviceIpsFaceCollection.remove(info[1]);
-                //创建采集设备推送的队列
-                try {
-                    Egci.faceCollectionIpWithProducer.get(info[1]).deleteQueue();//先删除
-                } catch (Exception e) {
-                    logger.error("error", e);
+                if (Egci.deviceIpsFaceCollection.contains(info[1])) {
+                    Egci.deviceIpsFaceCollection.remove(info[1]);
+                }
+                if (Egci.faceCollectionIpWithLogin.containsKey(info[1])) {
+                    Egci.faceCollectionIpWithLogin.get(info[1]).logout();
+                }
+                //先删除采集设备推送的队列
+                if (Egci.faceCollectionIpWithProducer.containsKey(info[1])) {
+                    Egci.faceCollectionIpWithProducer.get(info[1]).deleteQueue();
                 }
                 Thread.sleep(2000);
+                //创建采集设备推送的队列
                 ProducerService producerService = new ProducerService("face:" + info[1], Egci.queueIp);
                 CustomerMonitorService customerMonitorService = new CustomerMonitorService("face:" + info[1], Egci.queueIp, socketInfo);
                 customerMonitorService.start();
@@ -162,6 +167,7 @@ public class SocketService extends Thread {
                 alarmService.setupAlarmChan(loginService.getlUserID());
                 Egci.deviceIpsFaceCollection.add(info[1]);
                 Egci.faceCollectionIpWithProducer.put(info[1], producerService);
+                Egci.faceCollectionIpWithLogin.put(info[1], loginService);
             }
             //实时监控消息推送
             if (operationCode.equals("8")) {
@@ -234,6 +240,7 @@ public class SocketService extends Thread {
             }
             deviceStatus.add(statusEntity);
         }
+        loginService.logout();
         return deviceStatus;
     }
 }

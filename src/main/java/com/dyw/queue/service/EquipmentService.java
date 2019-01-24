@@ -61,6 +61,7 @@ public class EquipmentService {
             if (!alarmService.setupAlarmChan(loginService.getlUserID())) {
                 logger.info(deviceIp + "：第一次布防失败");
                 Egci.deviceIpsAlarmFail.add(deviceIp);
+                loginService.logout();
             }
             try {
                 //每布防一台设备后暂停时间，用来防止数据量瞬间过大导致程序出错

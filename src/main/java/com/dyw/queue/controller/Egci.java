@@ -62,6 +62,8 @@ public class Egci {
     public static Set<String> deviceIpsFaceCollection;
     //采集设备和对应的生产者的map
     public static Map<String, ProducerService> faceCollectionIpWithProducer;
+    //采集设备和对应的登陆信息的map
+    public static Map<String, LoginService> faceCollectionIpWithLogin;
     //推送服务的生产者对象数组，用来解决异常推送问题
     public static Map<String, ProducerService> producerServiceMap;
 
@@ -121,6 +123,7 @@ public class Egci {
 //        producerFaceCollectionServices = new ArrayList<ProducerService>();
         deviceIpsFaceCollection = new HashSet<String>();
         faceCollectionIpWithProducer = new HashMap<String, ProducerService>();
+        faceCollectionIpWithLogin = new HashMap<String, LoginService>();
         //设置报警回调函数
         alarmHandler = new AlarmHandler();
         if (!HCNetSDK.INSTANCE.NET_DVR_SetDVRMessageCallBack_V31(alarmHandler, null)) {
