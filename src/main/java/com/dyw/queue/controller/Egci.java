@@ -143,6 +143,13 @@ public class Egci {
             producerServiceList.add(producerService);
             CustomerService customerService = new CustomerService(i + "：" + deviceIps0WithOctothorpe.get(i), queueIp);
             customerService.start();
+
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                Elogger.error("每生成一个队列后延迟500毫秒出错", e);
+            }
+
         }
         //启动同步操作:0表示不启用；1表示单台；2表示全部
         if (!configEntity.getSynchronization().equals("0")) {

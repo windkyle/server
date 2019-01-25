@@ -21,6 +21,7 @@ public class ProducerService {
     public ProducerService(String queueName, String queueIp) {
         this.queueName = queueName;
         factory = new ConnectionFactory();
+        factory.setAutomaticRecoveryEnabled(true);//断线重连
         factory.setHost(queueIp);
         try {
             connection = factory.newConnection();

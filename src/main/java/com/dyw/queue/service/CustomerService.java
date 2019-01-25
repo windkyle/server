@@ -29,6 +29,7 @@ public class CustomerService implements Runnable {
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(queueIp);
+            factory.setAutomaticRecoveryEnabled(true);//断线重连
             Connection connection = factory.newConnection();
             final Channel channel = connection.createChannel();
             try {
@@ -36,7 +37,8 @@ public class CustomerService implements Runnable {
             } catch (IOException e) {
                 logger.error("消费者创建队列错误：", e);
             }
-            channel.basicQos(1);//每次从队列中获取指定的条数为：1
+            channel.basicQos(0, 1, true);//每次从队列中获取指定的条数为：1
+
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -122,4 +124,6 @@ public class CustomerService implements Runnable {
             t.start();
         }
     }
+    //获取消费者的数量
+
 }
