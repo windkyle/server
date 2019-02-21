@@ -110,6 +110,11 @@ public class CustomerService implements Runnable {
                 }
             };
             channel.basicConsume(queueName, false, consumer);
+            try {
+                logger.info("消费者数量" + queueName + ":" + channel.consumerCount(queueName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             logger.error("消费者错误位置1：", e);
         } catch (TimeoutException e) {

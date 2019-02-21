@@ -147,7 +147,7 @@ public class Egci {
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e) {
-                Elogger.error("每生成一个队列后延迟500毫秒出错", e);
+                Elogger.error("每生成一个队列后延迟300毫秒出错", e);
             }
 
         }
