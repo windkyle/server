@@ -33,6 +33,16 @@ public class ConfigEntity {
     private long pushTime;
     //报警回调函数延迟时间
     private long callBackTime;
+    //服务程序关闭时间1
+    private int exitTimeStatus1;
+    private int exitTimeHour1;
+    private int exitTimeMinute1;
+    private int exitTimeSecond1;
+    //服务程序关闭时间2
+    private int exitTimeStatus2;
+    private int exitTimeHour2;
+    private int exitTimeMinute2;
+    private int exitTimeSecond2;
 
     public String getOnGuardIp() {
         return onGuardIp;
@@ -208,5 +218,69 @@ public class ConfigEntity {
 
     public void setCallBackTime(long callBackTime) {
         this.callBackTime = callBackTime;
+    }
+
+    public int getExitTimeStatus1() {
+        return exitTimeStatus1;
+    }
+
+    public void setExitTimeStatus1(int exitTimeStatus1) {
+        this.exitTimeStatus1 = exitTimeStatus1;
+    }
+
+    public int getExitTimeHour1() {
+        return exitTimeHour1;
+    }
+
+    public void setExitTimeHour1(int exitTimeHour1) {
+        this.exitTimeHour1 = exitTimeHour1;
+    }
+
+    public int getExitTimeMinute1() {
+        return exitTimeMinute1;
+    }
+
+    public void setExitTimeMinute1(int exitTimeMinute1) {
+        this.exitTimeMinute1 = exitTimeMinute1;
+    }
+
+    public int getExitTimeSecond1() {
+        return exitTimeSecond1;
+    }
+
+    public void setExitTimeSecond1(int exitTimeSecond1) {
+        this.exitTimeSecond1 = exitTimeSecond1;
+    }
+
+    public int getExitTimeStatus2() {
+        return exitTimeStatus2;
+    }
+
+    public void setExitTimeStatus2(int exitTimeStatus2) {
+        this.exitTimeStatus2 = exitTimeStatus2;
+    }
+
+    public int getExitTimeHour2() {
+        return exitTimeHour2;
+    }
+
+    public void setExitTimeHour2(int exitTimeHour2) {
+        this.exitTimeHour2 = exitTimeHour2;
+    }
+
+    public int getExitTimeMinute2() {
+        return exitTimeMinute2;
+    }
+
+    public void setExitTimeMinute2(int exitTimeMinute2) {
+        this.exitTimeMinute2 = exitTimeMinute2;
+    }
+
+    public int getExitTimeSecond2() {
+        return exitTimeSecond2;
+    }
+
+    public void setExitTimeSecond2(int exitTimeSecond2) {
+        this.exitTimeSecond2 = exitTimeSecond2;
     }
 }

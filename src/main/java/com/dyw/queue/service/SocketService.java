@@ -158,7 +158,7 @@ public class SocketService extends Thread {
                 Thread.sleep(2000);
                 //创建采集设备推送的队列
                 ProducerService producerService = new ProducerService("face:" + info[1], Egci.queueIp);
-                CustomerMonitorService customerMonitorService = new CustomerMonitorService("face:" + info[1], Egci.queueIp, socketInfo);
+                CustomerMonitorService customerMonitorService = new CustomerMonitorService("face:" + info[1], producerService.getChannel(), socketInfo);
                 customerMonitorService.start();
                 //对采集设备布防
                 LoginService loginService = new LoginService();
@@ -181,7 +181,7 @@ public class SocketService extends Thread {
                     Thread.sleep(3000);
                 }
                 ProducerService producerService = new ProducerService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp);
-                CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp, socketInfo);
+                CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), producerService.getChannel(), socketInfo);
                 customerMonitorService.start();
                 if (info[1].equals("1")) {
                     Egci.producerMonitorOneServices.add(producerService);

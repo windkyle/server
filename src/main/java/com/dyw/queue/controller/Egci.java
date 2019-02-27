@@ -4,9 +4,7 @@ import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.entity.ConfigEntity;
 import com.dyw.queue.handler.AlarmHandler;
 import com.dyw.queue.service.*;
-import com.dyw.queue.timer.AlarmTimer;
-import com.dyw.queue.timer.PingTimer;
-import com.dyw.queue.timer.SynchronizationTimer;
+import com.dyw.queue.timer.*;
 import com.dyw.queue.tool.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,10 +69,16 @@ public class Egci {
      * 初始化函数
      * */
     private static void initServer() {
+        System.out.println(System.getProperty("user.dir"));
+        System.out.println("进程id：" + Tool.getProcessID());
         //初始化日志对象
         Elogger = LoggerFactory.getLogger(Egci.class);
         //初始化SDK静态对象
-        hcNetSDK = HCNetSDK.INSTANCE;
+        try {
+            hcNetSDK = HCNetSDK.INSTANCE;
+        } catch (Exception e) {
+            Elogger.error("初始化SDK静态对象，失败", e);
+        }
         //初始化SDK
         if (!hcNetSDK.NET_DVR_Init()) {
             Elogger.error("SDK初始化失败");
@@ -82,6 +86,7 @@ public class Egci {
         }
         //读取配置文件
         configEntity = Tool.getConfig(System.getProperty("user.dir") + "/config/config.xml");
+//        configEntity = Tool.getConfig("C:\\software\\server\\config\\config.xml");
         //一体机参数配置
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();
@@ -92,6 +97,13 @@ public class Egci {
             Egci.stmt = databaseService.connection().createStatement();
         } catch (SQLException e) {
             Elogger.error("连接数据库失败", e);
+        }
+        //将pid写入数据库
+        try {
+            Egci.stmt.executeUpdate("UPDATE SystemStatus SET processIdentification = " + Tool.getProcessID());
+            Elogger.info("将pid写入数据库成功");
+        } catch (SQLException e) {
+            Elogger.error("将pid写入数据库失败", e);
         }
         //启用onGuard数据接收服务
         OnguardService onguardService = new OnguardService();
@@ -141,22 +153,37 @@ public class Egci {
         for (int i = 0; i < deviceIps0WithOctothorpe.size(); i++) {
             ProducerService producerService = new ProducerService(i + "：" + deviceIps0WithOctothorpe.get(i), queueIp);
             producerServiceList.add(producerService);
-            CustomerService customerService = new CustomerService(i + "：" + deviceIps0WithOctothorpe.get(i), queueIp);
+            CustomerService customerService = new CustomerService(i + "：" + deviceIps0WithOctothorpe.get(i), producerService.getChannel());
             customerService.start();
-
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e) {
                 Elogger.error("每生成一个队列后延迟300毫秒出错", e);
             }
-
+            //获取消费者的数量
+            try {
+                Elogger.info("队列名称：" + i + "：" + deviceIps0WithOctothorpe.get(i) + "  数量：" + producerService.getChannel().consumerCount(i + "：" + deviceIps0WithOctothorpe.get(i)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        //启用队列重连功能
+        QueueTimer.open();
         //启动同步操作:0表示不启用；1表示单台；2表示全部
         if (!configEntity.getSynchronization().equals("0")) {
             SynchronizationTimer.open();
             Elogger.info("开启自动同步功能");
         } else {
             Elogger.info("关闭自动同步功能");
+        }
+        //启用程序定时关闭功能
+        if (configEntity.getExitTimeStatus1() == 1) {
+            ProcessTimer.exit1();
+            Elogger.info("启用程序定时关闭1");
+        }
+        if (configEntity.getExitTimeStatus2() == 1) {
+            ProcessTimer.exit2();
+            Elogger.info("启用程序定时关闭2");
         }
         //获取系统默认编码
         Elogger.info("系统默认编码：" + System.getProperty("file.encoding")); //查询结果GBK

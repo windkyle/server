@@ -19,7 +19,7 @@ import java.sql.Statement;
 
 public class OnguardService extends Thread {
     private static Logger logger = LoggerFactory.getLogger(OnguardService.class);
-    private Statement stmt;
+    private static Statement stmt;
 
     public OnguardService() {
         try {

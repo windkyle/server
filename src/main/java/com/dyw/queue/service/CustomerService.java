@@ -1,11 +1,9 @@
 package com.dyw.queue.service;
 
-import com.dyw.queue.HCNetSDK;
 import com.dyw.queue.controller.Egci;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 import net.iharder.Base64;
 import org.slf4j.Logger;
@@ -14,31 +12,19 @@ import org.slf4j.LoggerFactory;
 public class CustomerService implements Runnable {
     private Logger logger = LoggerFactory.getLogger(CustomerService.class);
     private String queueName;
-    private String queueIp;
+    private Channel channel;
     private CardService cardService = new CardService();
     private FaceService faceService = new FaceService();
     private Thread t;
 
-    public CustomerService(String queueName, String queueIp) {
+    public CustomerService(String queueName, Channel channel) {
         this.queueName = queueName;
-        this.queueIp = queueIp;
+        this.channel = channel;
     }
 
     @Override
     public void run() {
         try {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(queueIp);
-            factory.setAutomaticRecoveryEnabled(true);//断线重连
-            Connection connection = factory.newConnection();
-            final Channel channel = connection.createChannel();
-            try {
-                channel.queueDeclare(queueName, true, false, false, null);
-            } catch (IOException e) {
-                logger.error("消费者创建队列错误：", e);
-            }
-            channel.basicQos(0, 1, true);//每次从队列中获取指定的条数为：1
-
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -110,15 +96,8 @@ public class CustomerService implements Runnable {
                 }
             };
             channel.basicConsume(queueName, false, consumer);
-            try {
-                logger.info("消费者数量" + queueName + ":" + channel.consumerCount(queueName));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         } catch (IOException e) {
             logger.error("消费者错误位置1：", e);
-        } catch (TimeoutException e) {
-            logger.error("消费者错误位置2；", e);
         }
     }
 
@@ -129,6 +108,4 @@ public class CustomerService implements Runnable {
             t.start();
         }
     }
-    //获取消费者的数量
-
 }

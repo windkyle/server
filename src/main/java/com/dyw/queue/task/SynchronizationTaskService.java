@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
 
+
+
 public class SynchronizationTaskService extends TimerTask {
     private Logger logger = LoggerFactory.getLogger(SynchronizationTaskService.class);
 

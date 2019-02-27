@@ -31,6 +31,12 @@ public class ProducerService {
         } catch (TimeoutException e) {
             logger.error("创建生产者失败", e);
         }
+        try {
+            channel.queueDeclare(queueName, true, false, false, null);
+            channel.basicQos(0, 1, true);//每次从队列中获取指定的条数为：1
+        } catch (IOException e) {
+            logger.error("消费者创建队列错误：", e);
+        }
     }
 
     public void sendToQueue(String body) throws Exception {
@@ -46,5 +52,29 @@ public class ProducerService {
         }
     }
 
+    /*
+     * 返回Channel
+     * */
+    public Channel getChannel() {
+        return channel;
+    }
 
+    /*
+     * 返回队列名称
+     * */
+    public String getQueueName() {
+        return queueName;
+    }
+
+    /*
+     * 获取消费者数量
+     * */
+    public long getConsumerCount() {
+        try {
+            return channel.consumerCount(queueName);
+        } catch (IOException e) {
+            logger.error("获取消费者数量出错", e);
+            return 0;
+        }
+    }
 }

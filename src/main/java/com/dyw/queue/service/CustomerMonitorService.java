@@ -14,29 +14,19 @@ import java.util.concurrent.TimeoutException;
 public class CustomerMonitorService implements Runnable {
     private Logger logger = LoggerFactory.getLogger(CustomerMonitorService.class);
     private String queueName;
-    private String queueIp;
+    private Channel channel;
     private Thread t;
     private Socket socket;
 
-    public CustomerMonitorService(String queueName, String queueIp, Socket socket) {
+    public CustomerMonitorService(String queueName, Channel channel, Socket socket) {
         this.queueName = queueName;
-        this.queueIp = queueIp;
+        this.channel = channel;
         this.socket = socket;
     }
 
     @Override
     public void run() {
         try {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(queueIp);
-            Connection connection = factory.newConnection();
-            final Channel channel = connection.createChannel();
-            try {
-                channel.queueDeclare(queueName, false, false, true, null);//客户端断开后自动删除该队列
-            } catch (IOException e) {
-                logger.error("消费者创建队列错误：", e);
-            }
-            channel.basicQos(1);//每次从队列中获取指定的条数为：1
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -54,15 +44,13 @@ public class CustomerMonitorService implements Runnable {
                     } catch (SocketException e) {
                         //这里出现错误说明客户端已经断开
                         channel.basicReject(envelope.getDeliveryTag(), false);
-                        logger.error("客户端：" + socket.getInetAddress().getHostAddress() + " 已断开", e);
+                        logger.error("客户端：" + socket.getInetAddress().getHostAddress() + " 已断开");
                     }
                 }
             };
             channel.basicConsume(queueName, false, consumer);
         } catch (IOException e) {
             logger.error("消费者错误位置1：", e);
-        } catch (TimeoutException e) {
-            logger.error("消费者错误位置2；", e);
         }
     }
 

@@ -23,6 +23,7 @@ public interface HCNetSDK extends StdCallLibrary {
 
     //Function Mapped via JNA
     HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary(System.getProperty("user.dir") + "\\lib\\HCNetSDK", HCNetSDK.class);
+//    HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary("C:\\software\\server\\lib\\HCNetSDK", HCNetSDK.class);
 
     boolean NET_DVR_SetConnectTime(int dwWaitTime, int dwTryTime);
 
@@ -2703,12 +2704,12 @@ public interface HCNetSDK extends StdCallLibrary {
     //身份证信息报警
     public static class NET_DVR_ID_CARD_INFO_ALARM extends Structure {
         public int dwSize;        //结构长度
-        public NET_DVR_ID_CARD_INFO  struIDCardCfg = new NET_DVR_ID_CARD_INFO();//身份证信息
+        public NET_DVR_ID_CARD_INFO struIDCardCfg = new NET_DVR_ID_CARD_INFO();//身份证信息
         public int dwMajor; //报警主类型，参考宏定义
         public int dwMinor; //报警次类型，参考宏定义
-        public NET_DVR_TIME_V30  struSwipeTime; //时间
-        public byte[] byNetUser = new byte[MAX_NAMELEN] ;//网络操作的用户名
-        public NET_DVR_IPADDR    struRemoteHostAddr ;//远程主机地址
+        public NET_DVR_TIME_V30 struSwipeTime; //时间
+        public byte[] byNetUser = new byte[MAX_NAMELEN];//网络操作的用户名
+        public NET_DVR_IPADDR struRemoteHostAddr;//远程主机地址
         public int dwCardReaderNo; //读卡器编号，为0无效
         public int dwDoorNo; //门编号，为0无效
         public int dwPicDataLen;   //图片数据大小，不为0是表示后面带数据
@@ -2723,10 +2724,10 @@ public interface HCNetSDK extends StdCallLibrary {
         public byte[] byRes = new byte[188];
     }
 
-    public static final int MAX_ID_NUM_LEN                =  32;  //最大身份证号长度
-    public static final int MAX_ID_NAME_LEN               = 128;  //最大姓名长度
-    public static final int MAX_ID_ADDR_LEN               = 280;  //最大住址长度
-    public static final int MAX_ID_ISSUING_AUTHORITY_LEN  = 128;  //最大签发机关长度
+    public static final int MAX_ID_NUM_LEN = 32;  //最大身份证号长度
+    public static final int MAX_ID_NAME_LEN = 128;  //最大姓名长度
+    public static final int MAX_ID_ADDR_LEN = 280;  //最大住址长度
+    public static final int MAX_ID_ISSUING_AUTHORITY_LEN = 128;  //最大签发机关长度
 
     //身份证信息
     public static class NET_DVR_ID_CARD_INFO extends Structure {
@@ -2749,8 +2750,7 @@ public interface HCNetSDK extends StdCallLibrary {
         public byte[] byRes = new byte[101];
     }
 
-    public static class NET_DVR_TIME_V30 extends Structure
-    {
+    public static class NET_DVR_TIME_V30 extends Structure {
         public short wYear;
         public byte byMonth;
         public byte byDay;

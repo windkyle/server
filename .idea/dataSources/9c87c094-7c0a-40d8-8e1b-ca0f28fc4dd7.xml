@@ -29,7 +29,7 @@
     </database>
     <schema id="9" parent="2" name="dbo">
       <ObjectId>1</ObjectId>
-      <IntrospectionTimestamp>2019-01-17.00:28:38.170</IntrospectionTimestamp>
+      <IntrospectionTimestamp>2019-02-27.23:44:00.433</IntrospectionTimestamp>
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
@@ -147,94 +147,99 @@
       <CreatedTimestamp>2019-01-08.00:55:51.377</CreatedTimestamp>
       <ModifiedTimestamp>2019-01-08.01:19:03.243</ModifiedTimestamp>
     </table>
-    <table id="37" parent="9" name="TemporaryStaff">
+    <table id="37" parent="9" name="SystemStatus">
+      <ObjectId>1070626857</ObjectId>
+      <CreatedTimestamp>2019-02-27.23:35:58.380</CreatedTimestamp>
+      <ModifiedTimestamp>2019-02-27.23:35:58.397</ModifiedTimestamp>
+    </table>
+    <table id="38" parent="9" name="TemporaryStaff">
       <ObjectId>446624634</ObjectId>
       <CreatedTimestamp>2019-01-08.19:51:02.390</CreatedTimestamp>
       <ModifiedTimestamp>2019-01-08.19:51:02.483</ModifiedTimestamp>
     </table>
-    <table id="38" parent="9" name="UserRoles">
+    <table id="39" parent="9" name="UserRoles">
       <ObjectId>1557580587</ObjectId>
       <CreatedTimestamp>2018-08-31.19:03:26.133</CreatedTimestamp>
       <ModifiedTimestamp>2018-09-04.01:03:19.050</ModifiedTimestamp>
     </table>
-    <table id="39" parent="9" name="Users">
+    <table id="40" parent="9" name="Users">
       <ObjectId>1765581328</ObjectId>
       <CreatedTimestamp>2018-09-04.01:03:18.253</CreatedTimestamp>
       <ModifiedTimestamp>2018-09-04.03:43:45.553</ModifiedTimestamp>
     </table>
-    <table id="40" parent="9" name="sysdiagrams">
+    <table id="41" parent="9" name="sysdiagrams">
       <ObjectId>949578421</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.580</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.580</ModifiedTimestamp>
     </table>
-    <routine id="41" parent="9" name="fn_diagramobjects">
+    <routine id="42" parent="9" name="fn_diagramobjects">
       <ObjectId>1093578934</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.640</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.640</ModifiedTimestamp>
       <RoutineKind>function</RoutineKind>
       <RoutineType>scalar-fun</RoutineType>
     </routine>
-    <routine id="42" parent="9" name="sp_alterdiagram">
+    <routine id="43" parent="9" name="sp_alterdiagram">
       <ObjectId>1061578820</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.637</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.637</ModifiedTimestamp>
       <RoutineKind>procedure</RoutineKind>
       <RoutineType>proc</RoutineType>
     </routine>
-    <routine id="43" parent="9" name="sp_creatediagram">
+    <routine id="44" parent="9" name="sp_creatediagram">
       <ObjectId>1029578706</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.633</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.633</ModifiedTimestamp>
       <RoutineKind>procedure</RoutineKind>
       <RoutineType>proc</RoutineType>
     </routine>
-    <routine id="44" parent="9" name="sp_dropdiagram">
+    <routine id="45" parent="9" name="sp_dropdiagram">
       <ObjectId>1077578877</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.640</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.640</ModifiedTimestamp>
       <RoutineKind>procedure</RoutineKind>
       <RoutineType>proc</RoutineType>
     </routine>
-    <routine id="45" parent="9" name="sp_helpdiagramdefinition">
+    <routine id="46" parent="9" name="sp_helpdiagramdefinition">
       <ObjectId>1013578649</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.633</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.633</ModifiedTimestamp>
       <RoutineKind>procedure</RoutineKind>
       <RoutineType>proc</RoutineType>
     </routine>
-    <routine id="46" parent="9" name="sp_helpdiagrams">
+    <routine id="47" parent="9" name="sp_helpdiagrams">
       <ObjectId>997578592</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.607</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.607</ModifiedTimestamp>
       <RoutineKind>procedure</RoutineKind>
       <RoutineType>proc</RoutineType>
     </routine>
-    <routine id="47" parent="9" name="sp_renamediagram">
+    <routine id="48" parent="9" name="sp_renamediagram">
       <ObjectId>1045578763</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.637</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.637</ModifiedTimestamp>
       <RoutineKind>procedure</RoutineKind>
       <RoutineType>proc</RoutineType>
     </routine>
-    <routine id="48" parent="9" name="sp_upgraddiagrams">
+    <routine id="49" parent="9" name="sp_upgraddiagrams">
       <ObjectId>933578364</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.577</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.577</ModifiedTimestamp>
       <RoutineKind>procedure</RoutineKind>
       <RoutineType>proc</RoutineType>
     </routine>
-    <column id="49" parent="22" name="Id">
+    <column id="50" parent="22" name="Id">
       <Position>1</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="50" parent="22" name="PK_AlarmEventType">
+    <index id="51" parent="22" name="PK_AlarmEventType">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="51" parent="22" name="PK_AlarmEventType">
+    <key id="52" parent="22" name="PK_AlarmEventType">
       <ObjectId>1314103722</ObjectId>
       <CreatedTimestamp>2018-11-29.03:56:24.637</CreatedTimestamp>
       <ModifiedTimestamp>2018-11-29.03:56:24.637</ModifiedTimestamp>
@@ -242,34 +247,34 @@
       <UnderlyingIndexName>PK_AlarmEventType</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="52" parent="23" name="Id">
+    <column id="53" parent="23" name="Id">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="53" parent="23" name="Name">
+    <column id="54" parent="23" name="Name">
       <Position>2</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="54" parent="23" name="IP">
+    <column id="55" parent="23" name="IP">
       <Position>3</Position>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="55" parent="23" name="Group">
+    <column id="56" parent="23" name="Group">
       <Position>4</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="56" parent="23" name="PK_Capture">
+    <index id="57" parent="23" name="PK_Capture">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="57" parent="23" name="PK_Capture">
+    <key id="58" parent="23" name="PK_Capture">
       <ObjectId>1986106116</ObjectId>
       <CreatedTimestamp>2018-12-06.17:02:28.280</CreatedTimestamp>
       <ModifiedTimestamp>2018-12-06.17:02:28.280</ModifiedTimestamp>
@@ -277,51 +282,51 @@
       <UnderlyingIndexName>PK_Capture</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="58" parent="24" name="Id">
+    <column id="59" parent="24" name="Id">
       <Position>1</Position>
       <Comment>设备编号</Comment>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="59" parent="24" name="GroupId">
+    <column id="60" parent="24" name="GroupId">
       <Position>2</Position>
       <Comment>描述</Comment>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="60" parent="24" name="Name">
+    <column id="61" parent="24" name="Name">
       <Position>3</Position>
       <Comment>状态</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="61" parent="24" name="IP">
+    <column id="62" parent="24" name="IP">
       <Position>4</Position>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="62" parent="24" name="SortId">
+    <column id="63" parent="24" name="SortId">
       <Position>5</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="63" parent="24" name="SetupUserId">
+    <column id="64" parent="24" name="SetupUserId">
       <Position>6</Position>
       <Comment>api布防后返回的id</Comment>
       <DataType>int|0</DataType>
     </column>
-    <column id="64" parent="24" name="StatusSwitchSocketIP">
+    <column id="65" parent="24" name="StatusSwitchSocketIP">
       <Position>7</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <index id="65" parent="24" name="PK_Equipment">
+    <index id="66" parent="24" name="PK_Equipment">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="66" parent="24" name="PK_Equipment">
+    <key id="67" parent="24" name="PK_Equipment">
       <ObjectId>706101556</ObjectId>
       <CreatedTimestamp>2018-11-14.18:03:32.283</CreatedTimestamp>
       <ModifiedTimestamp>2018-11-14.18:03:32.283</ModifiedTimestamp>
@@ -329,7 +334,7 @@
       <UnderlyingIndexName>PK_Equipment</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="67" parent="24" name="FK_Equipment_EquipmentGroup">
+    <foreign-key id="68" parent="24" name="FK_Equipment_EquipmentGroup">
       <ObjectId>770101784</ObjectId>
       <CreatedTimestamp>2018-11-14.18:14:57.690</CreatedTimestamp>
       <ModifiedTimestamp>2018-11-14.18:14:57.690</ModifiedTimestamp>
@@ -340,33 +345,33 @@
       <RefKeyName>PK_EquipmentCategory</RefKeyName>
       <RefColNames>Id</RefColNames>
     </foreign-key>
-    <column id="68" parent="25" name="Id">
+    <column id="69" parent="25" name="Id">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="69" parent="25" name="Name">
+    <column id="70" parent="25" name="Name">
       <Position>2</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="70" parent="25" name="SortId">
+    <column id="71" parent="25" name="SortId">
       <Position>3</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="71" parent="25" name="Remark">
+    <column id="72" parent="25" name="Remark">
       <Position>4</Position>
       <DataType>nvarchar(max)|0</DataType>
     </column>
-    <index id="72" parent="25" name="PK_EquipmentCategory">
+    <index id="73" parent="25" name="PK_EquipmentCategory">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="73" parent="25" name="PK_EquipmentCategory">
+    <key id="74" parent="25" name="PK_EquipmentCategory">
       <ObjectId>674101442</ObjectId>
       <CreatedTimestamp>2018-11-14.18:00:36.840</CreatedTimestamp>
       <ModifiedTimestamp>2018-11-14.18:00:36.840</ModifiedTimestamp>
@@ -374,53 +379,53 @@
       <UnderlyingIndexName>PK_EquipmentCategory</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="74" parent="26" name="Id">
+    <column id="75" parent="26" name="Id">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="75" parent="26" name="Title">
+    <column id="76" parent="26" name="Title">
       <Position>2</Position>
       <Comment>主题</Comment>
       <DataType>nvarchar(150)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="76" parent="26" name="Description">
+    <column id="77" parent="26" name="Description">
       <Position>3</Position>
       <Comment>描述</Comment>
       <DataType>nvarchar(max)|0</DataType>
     </column>
-    <column id="77" parent="26" name="EventType">
+    <column id="78" parent="26" name="EventType">
       <Position>4</Position>
       <Comment>事件类型（0：正常事件，1报警事</Comment>
       <DataType>tinyint|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="78" parent="26" name="CreatedDate">
+    <column id="79" parent="26" name="CreatedDate">
       <Position>5</Position>
       <Comment>创建时间</Comment>
       <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="79" parent="26" name="CreatedBy">
+    <column id="80" parent="26" name="CreatedBy">
       <Position>6</Position>
       <Comment>创建人</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="80" parent="26" name="EquipmentCode">
+    <column id="81" parent="26" name="EquipmentCode">
       <Position>7</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="81" parent="26" name="PK_EventLog">
+    <index id="82" parent="26" name="PK_EventLog">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="82" parent="26" name="PK_EventLog">
+    <key id="83" parent="26" name="PK_EventLog">
       <ObjectId>738101670</ObjectId>
       <CreatedTimestamp>2018-11-14.18:03:33.327</CreatedTimestamp>
       <ModifiedTimestamp>2018-11-14.18:03:33.327</ModifiedTimestamp>
@@ -428,59 +433,59 @@
       <UnderlyingIndexName>PK_EventLog</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="83" parent="27" name="Id">
+    <column id="84" parent="27" name="Id">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="84" parent="27" name="Similation">
+    <column id="85" parent="27" name="Similation">
       <Position>2</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="85" parent="27" name="Name">
+    <column id="86" parent="27" name="Name">
       <Position>3</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="86" parent="27" name="CardId">
+    <column id="87" parent="27" name="CardId">
       <Position>4</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="87" parent="27" name="Nation">
+    <column id="88" parent="27" name="Nation">
       <Position>5</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="88" parent="27" name="Sex">
+    <column id="89" parent="27" name="Sex">
       <Position>6</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="89" parent="27" name="Birthday">
+    <column id="90" parent="27" name="Birthday">
       <Position>7</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="90" parent="27" name="ExpirationDate">
+    <column id="91" parent="27" name="ExpirationDate">
       <Position>8</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="91" parent="27" name="IdentificationPhoto">
+    <column id="92" parent="27" name="IdentificationPhoto">
       <Position>9</Position>
       <DataType>image|0</DataType>
     </column>
-    <column id="92" parent="27" name="Organization">
+    <column id="93" parent="27" name="Organization">
       <Position>10</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="93" parent="27" name="StaffPhoto">
+    <column id="94" parent="27" name="StaffPhoto">
       <Position>11</Position>
       <DataType>image|0</DataType>
     </column>
-    <index id="94" parent="27" name="PK_FaceCollectionTemp">
+    <index id="95" parent="27" name="PK_FaceCollectionTemp">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="95" parent="27" name="PK_FaceCollectionTemp">
+    <key id="96" parent="27" name="PK_FaceCollectionTemp">
       <ObjectId>894626230</ObjectId>
       <CreatedTimestamp>2019-01-16.19:59:48.673</CreatedTimestamp>
       <ModifiedTimestamp>2019-01-16.19:59:48.673</ModifiedTimestamp>
@@ -488,22 +493,22 @@
       <UnderlyingIndexName>PK_FaceCollectionTemp</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="96" parent="28" name="IP">
+    <column id="97" parent="28" name="IP">
       <Position>1</Position>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="97" parent="28" name="Description">
+    <column id="98" parent="28" name="Description">
       <Position>2</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <index id="98" parent="28" name="PK_IP">
+    <index id="99" parent="28" name="PK_IP">
       <Position>1</Position>
       <ColNames>IP</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="99" parent="28" name="PK_IP">
+    <key id="100" parent="28" name="PK_IP">
       <ObjectId>34099162</ObjectId>
       <CreatedTimestamp>2018-09-06.20:10:36.267</CreatedTimestamp>
       <ModifiedTimestamp>2018-09-06.20:10:36.267</ModifiedTimestamp>
@@ -511,35 +516,35 @@
       <UnderlyingIndexName>PK_IP</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="100" parent="29" name="Id">
+    <column id="101" parent="29" name="Id">
       <Position>1</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="101" parent="29" name="ModuleName">
+    <column id="102" parent="29" name="ModuleName">
       <Position>2</Position>
       <Comment>模块名称</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="102" parent="29" name="ClientType">
+    <column id="103" parent="29" name="ClientType">
       <Position>3</Position>
       <Comment>客户端类型（1：监控端；2：办证</Comment>
       <DataType>tinyint|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="103" parent="29" name="Description">
+    <column id="104" parent="29" name="Description">
       <Position>4</Position>
       <Comment>描述</Comment>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <index id="104" parent="29" name="PK_Module">
+    <index id="105" parent="29" name="PK_Module">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="105" parent="29" name="PK_Module">
+    <key id="106" parent="29" name="PK_Module">
       <ObjectId>789577851</ObjectId>
       <CreatedTimestamp>2018-08-20.06:26:50.760</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-20.06:26:50.760</ModifiedTimestamp>
@@ -547,55 +552,55 @@
       <UnderlyingIndexName>PK_Module</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="106" parent="30" name="Id">
+    <column id="107" parent="30" name="Id">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="107" parent="30" name="UserId">
+    <column id="108" parent="30" name="UserId">
       <Position>2</Position>
       <Comment>用户Id</Comment>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="108" parent="30" name="Username">
+    <column id="109" parent="30" name="Username">
       <Position>3</Position>
       <Comment>手机号</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="109" parent="30" name="Module">
+    <column id="110" parent="30" name="Module">
       <Position>5</Position>
       <Comment>模块</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="110" parent="30" name="Action">
+    <column id="111" parent="30" name="Action">
       <Position>6</Position>
       <Comment>动作</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="111" parent="30" name="Remark">
+    <column id="112" parent="30" name="Remark">
       <Position>7</Position>
       <Comment>备注</Comment>
       <DataType>nvarchar(500)|0</DataType>
     </column>
-    <column id="112" parent="30" name="AddDate">
+    <column id="113" parent="30" name="AddDate">
       <Position>8</Position>
       <Comment>时间</Comment>
       <DefaultExpression>getdate()</DefaultExpression>
       <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="113" parent="30" name="PK_OperationLog">
+    <index id="114" parent="30" name="PK_OperationLog">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="114" parent="30" name="PK_OperationLog">
+    <key id="115" parent="30" name="PK_OperationLog">
       <ObjectId>1669580986</ObjectId>
       <CreatedTimestamp>2018-08-31.21:59:29.297</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-31.21:59:29.297</ModifiedTimestamp>
@@ -603,55 +608,55 @@
       <UnderlyingIndexName>PK_OperationLog</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="115" parent="31" name="Id">
+    <column id="116" parent="31" name="Id">
       <Position>1</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="116" parent="31" name="ApiUrl">
+    <column id="117" parent="31" name="ApiUrl">
       <Position>2</Position>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="117" parent="31" name="AppKey">
+    <column id="118" parent="31" name="AppKey">
       <Position>3</Position>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="118" parent="31" name="Secret">
+    <column id="119" parent="31" name="Secret">
       <Position>4</Position>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="119" parent="31" name="FaceApiIP">
+    <column id="120" parent="31" name="FaceApiIP">
       <Position>5</Position>
       <Comment>人脸识别</Comment>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="120" parent="31" name="FaceApiPort">
+    <column id="121" parent="31" name="FaceApiPort">
       <Position>6</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="121" parent="31" name="FacialMakeupIP">
+    <column id="122" parent="31" name="FacialMakeupIP">
       <Position>7</Position>
       <Comment>脸谱</Comment>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="122" parent="31" name="FacialMakeupPort">
+    <column id="123" parent="31" name="FacialMakeupPort">
       <Position>8</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="123" parent="31" name="PK_Params">
+    <index id="124" parent="31" name="PK_Params">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="124" parent="31" name="PK_Params">
+    <key id="125" parent="31" name="PK_Params">
       <ObjectId>2018106230</ObjectId>
       <CreatedTimestamp>2018-12-06.17:09:17.963</CreatedTimestamp>
       <ModifiedTimestamp>2018-12-06.17:09:17.963</ModifiedTimestamp>
@@ -659,79 +664,79 @@
       <UnderlyingIndexName>PK_Params</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="125" parent="32" name="Id">
+    <column id="126" parent="32" name="Id">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="126" parent="32" name="CapturePhoto">
+    <column id="127" parent="32" name="CapturePhoto">
       <Position>2</Position>
       <DataType>image|0</DataType>
     </column>
-    <column id="127" parent="32" name="CardNumber">
+    <column id="128" parent="32" name="CardNumber">
       <Position>3</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="128" parent="32" name="StaffName">
+    <column id="129" parent="32" name="StaffName">
       <Position>4</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="129" parent="32" name="EquipmentName">
+    <column id="130" parent="32" name="EquipmentName">
       <Position>5</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="130" parent="32" name="Date">
+    <column id="131" parent="32" name="Date">
       <Position>6</Position>
       <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="131" parent="32" name="Similarity">
+    <column id="132" parent="32" name="Similarity">
       <Position>7</Position>
       <DataType>int|0</DataType>
     </column>
-    <column id="132" parent="32" name="IsPass">
+    <column id="133" parent="32" name="IsPass">
       <Position>8</Position>
       <DataType>bit|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="133" parent="32" name="EventTypeId">
+    <column id="134" parent="32" name="EventTypeId">
       <Position>9</Position>
       <Comment>dwMinor</Comment>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="134" parent="32" name="IP">
+    <column id="135" parent="32" name="IP">
       <Position>10</Position>
       <DataType>varchar(50)|0</DataType>
     </column>
-    <column id="135" parent="32" name="Audit">
+    <column id="136" parent="32" name="Audit">
       <Position>11</Position>
       <DataType>bit|0</DataType>
     </column>
-    <column id="136" parent="32" name="AuditReason">
+    <column id="137" parent="32" name="AuditReason">
       <Position>12</Position>
       <DataType>nvarchar(max)|0</DataType>
     </column>
-    <index id="137" parent="32" name="PK__PassReco__3214EC073003DA7A">
+    <index id="138" parent="32" name="PK__PassReco__3214EC073003DA7A">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <index id="138" parent="32" name="IX_PassRecord_IsPass">
+    <index id="139" parent="32" name="IX_PassRecord_IsPass">
       <Position>2</Position>
       <ColNames>IsPass</ColNames>
     </index>
-    <index id="139" parent="32" name="IX_PassRecord_Date">
+    <index id="140" parent="32" name="IX_PassRecord_Date">
       <Position>3</Position>
       <ColNames>Date</ColNames>
     </index>
-    <index id="140" parent="32" name="IX_PassRecord_Audit">
+    <index id="141" parent="32" name="IX_PassRecord_Audit">
       <Position>4</Position>
       <ColNames>Audit</ColNames>
     </index>
-    <key id="141" parent="32" name="PK__PassReco__3214EC073003DA7A">
+    <key id="142" parent="32" name="PK__PassReco__3214EC073003DA7A">
       <ObjectId>798625888</ObjectId>
       <CreatedTimestamp>2019-01-12.19:26:28.463</CreatedTimestamp>
       <ModifiedTimestamp>2019-01-12.19:26:28.463</ModifiedTimestamp>
@@ -739,24 +744,24 @@
       <UnderlyingIndexName>PK__PassReco__3214EC073003DA7A</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="142" parent="33" name="IP">
+    <column id="143" parent="33" name="IP">
       <Position>1</Position>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="143" parent="33" name="RoleId">
+    <column id="144" parent="33" name="RoleId">
       <Position>2</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="144" parent="33" name="PK_RoleIPs">
+    <index id="145" parent="33" name="PK_RoleIPs">
       <Position>1</Position>
       <ColNames>IP
 RoleId</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="145" parent="33" name="PK_RoleIPs">
+    <key id="146" parent="33" name="PK_RoleIPs">
       <ObjectId>66099276</ObjectId>
       <CreatedTimestamp>2018-09-06.20:48:50.923</CreatedTimestamp>
       <ModifiedTimestamp>2018-09-06.20:48:50.923</ModifiedTimestamp>
@@ -765,7 +770,7 @@ RoleId</ColNames>
       <UnderlyingIndexName>PK_RoleIPs</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="146" parent="33" name="FK_RoleIPs_IP">
+    <foreign-key id="147" parent="33" name="FK_RoleIPs_IP">
       <ObjectId>98099390</ObjectId>
       <CreatedTimestamp>2018-09-06.20:49:18.370</CreatedTimestamp>
       <ModifiedTimestamp>2018-09-06.20:49:18.370</ModifiedTimestamp>
@@ -776,7 +781,7 @@ RoleId</ColNames>
       <RefKeyName>PK_IP</RefKeyName>
       <RefColNames>IP</RefColNames>
     </foreign-key>
-    <foreign-key id="147" parent="33" name="FK_RoleIPs_Roles">
+    <foreign-key id="148" parent="33" name="FK_RoleIPs_Roles">
       <ObjectId>114099447</ObjectId>
       <CreatedTimestamp>2018-09-06.22:32:10.810</CreatedTimestamp>
       <ModifiedTimestamp>2018-09-06.22:32:10.810</ModifiedTimestamp>
@@ -787,43 +792,43 @@ RoleId</ColNames>
       <RefKeyName>PK_dbo.Roles</RefKeyName>
       <RefColNames>Id</RefColNames>
     </foreign-key>
-    <column id="148" parent="34" name="Id">
+    <column id="149" parent="34" name="Id">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="149" parent="34" name="RoleName">
+    <column id="150" parent="34" name="RoleName">
       <Position>2</Position>
       <Comment>角色</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="150" parent="34" name="Description">
+    <column id="151" parent="34" name="Description">
       <Position>3</Position>
       <Comment>描述</Comment>
       <DataType>nvarchar(max)|0</DataType>
     </column>
-    <column id="151" parent="34" name="IsSys">
+    <column id="152" parent="34" name="IsSys">
       <Position>4</Position>
       <Comment>是否系统内置，内置不可删除</Comment>
       <DefaultExpression>0</DefaultExpression>
       <DataType>bit|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="152" parent="34" name="Permissions">
+    <column id="153" parent="34" name="Permissions">
       <Position>6</Position>
       <DefaultExpression>&apos;&apos;</DefaultExpression>
       <DataType>varchar(max)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="153" parent="34" name="PK_dbo.Roles">
+    <index id="154" parent="34" name="PK_dbo.Roles">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="154" parent="34" name="PK_dbo.Roles">
+    <key id="155" parent="34" name="PK_dbo.Roles">
       <ObjectId>1493580359</ObjectId>
       <CreatedTimestamp>2018-08-31.18:39:43.593</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-31.18:39:43.593</ModifiedTimestamp>
@@ -831,64 +836,64 @@ RoleId</ColNames>
       <UnderlyingIndexName>PK_dbo.Roles</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="155" parent="35" name="StaffId">
+    <column id="156" parent="35" name="StaffId">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="156" parent="35" name="Name">
+    <column id="157" parent="35" name="Name">
       <Position>2</Position>
       <Comment>姓名</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="157" parent="35" name="NameEn">
+    <column id="158" parent="35" name="NameEn">
       <Position>3</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="158" parent="35" name="CardId">
+    <column id="159" parent="35" name="CardId">
       <Position>4</Position>
       <Comment>卡号</Comment>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="159" parent="35" name="CardNumber">
+    <column id="160" parent="35" name="CardNumber">
       <Position>5</Position>
       <Comment>通行卡号</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="160" parent="35" name="Birthday">
+    <column id="161" parent="35" name="Birthday">
       <Position>6</Position>
       <DataType>date|0</DataType>
     </column>
-    <column id="161" parent="35" name="Sex">
+    <column id="162" parent="35" name="Sex">
       <Position>7</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="162" parent="35" name="Company">
+    <column id="163" parent="35" name="Company">
       <Position>8</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="163" parent="35" name="Photo">
+    <column id="164" parent="35" name="Photo">
       <Position>9</Position>
       <Comment>头像</Comment>
       <DataType>image|0</DataType>
     </column>
-    <column id="164" parent="35" name="CreatedDate">
+    <column id="165" parent="35" name="CreatedDate">
       <Position>10</Position>
       <Comment>创建时间</Comment>
       <DefaultExpression>getdate()</DefaultExpression>
       <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="165" parent="35" name="PK_Staff">
+    <index id="166" parent="35" name="PK_Staff">
       <Position>1</Position>
       <ColNames>StaffId</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="166" parent="35" name="PK_Staff">
+    <key id="167" parent="35" name="PK_Staff">
       <ObjectId>398624463</ObjectId>
       <CreatedTimestamp>2019-01-08.01:19:03.240</CreatedTimestamp>
       <ModifiedTimestamp>2019-01-08.01:19:03.240</ModifiedTimestamp>
@@ -896,7 +901,7 @@ RoleId</ColNames>
       <UnderlyingIndexName>PK_Staff</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="167" parent="35" name="FK_Staff_Staff_CardId">
+    <foreign-key id="168" parent="35" name="FK_Staff_Staff_CardId">
       <ObjectId>414624520</ObjectId>
       <CreatedTimestamp>2019-01-08.01:19:03.243</CreatedTimestamp>
       <ModifiedTimestamp>2019-01-08.01:19:03.247</ModifiedTimestamp>
@@ -907,54 +912,54 @@ RoleId</ColNames>
       <RefKeyName>PK_Staff_CardId</RefKeyName>
       <RefColNames>CardId</RefColNames>
     </foreign-key>
-    <column id="168" parent="36" name="CardId">
+    <column id="169" parent="36" name="CardId">
       <Position>1</Position>
       <Comment>卡号</Comment>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="169" parent="36" name="CardId_Name">
+    <column id="170" parent="36" name="CardId_Name">
       <Position>2</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="170" parent="36" name="CardId_Nation">
+    <column id="171" parent="36" name="CardId_Nation">
       <Position>3</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="171" parent="36" name="CardId_Sex">
+    <column id="172" parent="36" name="CardId_Sex">
       <Position>4</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="172" parent="36" name="CardId_Birthday">
+    <column id="173" parent="36" name="CardId_Birthday">
       <Position>5</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="173" parent="36" name="CardId_Validity">
+    <column id="174" parent="36" name="CardId_Validity">
       <Position>6</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="174" parent="36" name="CardId_IssuingAuthority">
+    <column id="175" parent="36" name="CardId_IssuingAuthority">
       <Position>7</Position>
       <DataType>nvarchar(500)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="175" parent="36" name="CardId_Photo">
+    <column id="176" parent="36" name="CardId_Photo">
       <Position>8</Position>
       <DataType>image|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="176" parent="36" name="PK_Staff_CardId">
+    <index id="177" parent="36" name="PK_Staff_CardId">
       <Position>1</Position>
       <ColNames>CardId</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="177" parent="36" name="PK_Staff_CardId">
+    <key id="178" parent="36" name="PK_Staff_CardId">
       <ObjectId>222623836</ObjectId>
       <CreatedTimestamp>2019-01-08.00:55:51.390</CreatedTimestamp>
       <ModifiedTimestamp>2019-01-08.00:55:51.390</ModifiedTimestamp>
@@ -962,60 +967,64 @@ RoleId</ColNames>
       <UnderlyingIndexName>PK_Staff_CardId</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="178" parent="37" name="EID">
+    <column id="179" parent="37" name="processIdentification">
+      <Position>1</Position>
+      <DataType>int|0</DataType>
+    </column>
+    <column id="180" parent="38" name="EID">
       <Position>1</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="179" parent="37" name="CardId">
+    <column id="181" parent="38" name="CardId">
       <Position>2</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="180" parent="37" name="CardNumber">
+    <column id="182" parent="38" name="CardNumber">
       <Position>3</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="181" parent="37" name="UserId">
+    <column id="183" parent="38" name="UserId">
       <Position>4</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="182" parent="37" name="Name">
+    <column id="184" parent="38" name="Name">
       <Position>5</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="183" parent="37" name="NameEn">
+    <column id="185" parent="38" name="NameEn">
       <Position>6</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="184" parent="37" name="Company">
+    <column id="186" parent="38" name="Company">
       <Position>7</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="185" parent="37" name="Sex">
+    <column id="187" parent="38" name="Sex">
       <Position>8</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="186" parent="37" name="Birthday">
+    <column id="188" parent="38" name="Birthday">
       <Position>9</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="187" parent="38" name="UserId">
+    <column id="189" parent="39" name="UserId">
       <Position>1</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="188" parent="38" name="RoleId">
+    <column id="190" parent="39" name="RoleId">
       <Position>2</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="189" parent="38" name="PK_dbo.UserRoles">
+    <index id="191" parent="39" name="PK_dbo.UserRoles">
       <Position>1</Position>
       <ColNames>UserId
 RoleId</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="190" parent="38" name="PK_dbo.UserRoles">
+    <key id="192" parent="39" name="PK_dbo.UserRoles">
       <ObjectId>1573580644</ObjectId>
       <CreatedTimestamp>2018-08-31.19:03:26.293</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-31.19:03:26.293</ModifiedTimestamp>
@@ -1024,7 +1033,7 @@ RoleId</ColNames>
       <UnderlyingIndexName>PK_dbo.UserRoles</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="191" parent="38" name="FK_dbo.UserRoles_dbo.Users_UserId">
+    <foreign-key id="193" parent="39" name="FK_dbo.UserRoles_dbo.Users_UserId">
       <ObjectId>1797581442</ObjectId>
       <CreatedTimestamp>2018-09-04.01:03:19.013</CreatedTimestamp>
       <ModifiedTimestamp>2018-09-04.01:03:19.013</ModifiedTimestamp>
@@ -1035,7 +1044,7 @@ RoleId</ColNames>
       <RefKeyName>PK_dbo.Users</RefKeyName>
       <RefColNames>Id</RefColNames>
     </foreign-key>
-    <foreign-key id="192" parent="38" name="FK_dbo.UserRoles_dbo.Roles_RoleId">
+    <foreign-key id="194" parent="39" name="FK_dbo.UserRoles_dbo.Roles_RoleId">
       <ObjectId>1605580758</ObjectId>
       <CreatedTimestamp>2018-08-31.19:03:26.357</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-31.19:03:26.357</ModifiedTimestamp>
@@ -1046,64 +1055,64 @@ RoleId</ColNames>
       <RefKeyName>PK_dbo.Roles</RefKeyName>
       <RefColNames>Id</RefColNames>
     </foreign-key>
-    <column id="193" parent="39" name="Id">
+    <column id="195" parent="40" name="Id">
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="194" parent="39" name="Username">
+    <column id="196" parent="40" name="Username">
       <Position>2</Position>
       <DataType>nvarchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="195" parent="39" name="PasswordHash">
+    <column id="197" parent="40" name="PasswordHash">
       <Position>3</Position>
       <DataType>nvarchar(100)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="196" parent="39" name="RealName">
+    <column id="198" parent="40" name="RealName">
       <Position>4</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="197" parent="39" name="Email">
+    <column id="199" parent="40" name="Email">
       <Position>5</Position>
       <DataType>nvarchar(150)|0</DataType>
     </column>
-    <column id="198" parent="39" name="Mobile">
+    <column id="200" parent="40" name="Mobile">
       <Position>6</Position>
       <DataType>nvarchar(max)|0</DataType>
     </column>
-    <column id="199" parent="39" name="Group">
+    <column id="201" parent="40" name="Group">
       <Position>7</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="200" parent="39" name="IsActive">
+    <column id="202" parent="40" name="IsActive">
       <Position>8</Position>
       <DataType>bit|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="201" parent="39" name="Remark">
+    <column id="203" parent="40" name="Remark">
       <Position>9</Position>
       <DataType>nvarchar(max)|0</DataType>
     </column>
-    <column id="202" parent="39" name="WindowsUsername">
+    <column id="204" parent="40" name="WindowsUsername">
       <Position>10</Position>
       <DataType>nvarchar(50)|0</DataType>
     </column>
-    <column id="203" parent="39" name="CreateDate">
+    <column id="205" parent="40" name="CreateDate">
       <Position>11</Position>
       <DefaultExpression>getdate()</DefaultExpression>
       <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="204" parent="39" name="PK_dbo.Users">
+    <index id="206" parent="40" name="PK_dbo.Users">
       <Position>1</Position>
       <ColNames>Id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="205" parent="39" name="PK_dbo.Users">
+    <key id="207" parent="40" name="PK_dbo.Users">
       <ObjectId>1781581385</ObjectId>
       <CreatedTimestamp>2018-09-04.01:03:18.657</CreatedTimestamp>
       <ModifiedTimestamp>2018-09-04.01:03:18.657</ModifiedTimestamp>
@@ -1111,44 +1120,44 @@ RoleId</ColNames>
       <UnderlyingIndexName>PK_dbo.Users</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="206" parent="40" name="name">
+    <column id="208" parent="41" name="name">
       <Position>1</Position>
       <DataType>sysname|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="207" parent="40" name="principal_id">
+    <column id="209" parent="41" name="principal_id">
       <Position>2</Position>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="208" parent="40" name="diagram_id">
+    <column id="210" parent="41" name="diagram_id">
       <Position>3</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <DataType>int|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="209" parent="40" name="version">
+    <column id="211" parent="41" name="version">
       <Position>4</Position>
       <DataType>int|0</DataType>
     </column>
-    <column id="210" parent="40" name="definition">
+    <column id="212" parent="41" name="definition">
       <Position>5</Position>
       <DataType>varbinary(max)|0</DataType>
     </column>
-    <index id="211" parent="40" name="PK__sysdiagr__C2B05B611381C274">
+    <index id="213" parent="41" name="PK__sysdiagr__C2B05B611381C274">
       <Position>1</Position>
       <NameSurrogate>1</NameSurrogate>
       <ColNames>diagram_id</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <index id="212" parent="40" name="UK_principal_name">
+    <index id="214" parent="41" name="UK_principal_name">
       <Position>2</Position>
       <ColNames>principal_id
 name</ColNames>
       <Unique>1</Unique>
     </index>
-    <key id="213" parent="40" name="PK__sysdiagr__C2B05B611381C274">
+    <key id="215" parent="41" name="PK__sysdiagr__C2B05B611381C274">
       <ObjectId>965578478</ObjectId>
       <NameSurrogate>1</NameSurrogate>
       <CreatedTimestamp>2018-08-30.22:02:16.580</CreatedTimestamp>
@@ -1157,7 +1166,7 @@ name</ColNames>
       <UnderlyingIndexName>PK__sysdiagr__C2B05B611381C274</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <key id="214" parent="40" name="UK_principal_name">
+    <key id="216" parent="41" name="UK_principal_name">
       <ObjectId>981578535</ObjectId>
       <CreatedTimestamp>2018-08-30.22:02:16.580</CreatedTimestamp>
       <ModifiedTimestamp>2018-08-30.22:02:16.580</ModifiedTimestamp>
@@ -1165,49 +1174,41 @@ name</ColNames>
 name</ColNames>
       <UnderlyingIndexName>UK_principal_name</UnderlyingIndexName>
     </key>
-    <argument id="215" parent="41">
+    <argument id="217" parent="42">
       <ArgumentDirection>R</ArgumentDirection>
       <DataType>int|0</DataType>
     </argument>
-    <argument id="216" parent="42" name="@diagramname">
+    <argument id="218" parent="43" name="@diagramname">
       <Position>1</Position>
       <DataType>sysname|0</DataType>
     </argument>
-    <argument id="217" parent="42" name="@owner_id">
+    <argument id="219" parent="43" name="@owner_id">
       <Position>2</Position>
       <DataType>int|0</DataType>
     </argument>
-    <argument id="218" parent="42" name="@version">
+    <argument id="220" parent="43" name="@version">
       <Position>3</Position>
       <DataType>int|0</DataType>
     </argument>
-    <argument id="219" parent="42" name="@definition">
+    <argument id="221" parent="43" name="@definition">
       <Position>4</Position>
       <DataType>varbinary(max)|0</DataType>
     </argument>
-    <argument id="220" parent="43" name="@diagramname">
+    <argument id="222" parent="44" name="@diagramname">
       <Position>1</Position>
       <DataType>sysname|0</DataType>
     </argument>
-    <argument id="221" parent="43" name="@owner_id">
+    <argument id="223" parent="44" name="@owner_id">
       <Position>2</Position>
       <DataType>int|0</DataType>
     </argument>
-    <argument id="222" parent="43" name="@version">
+    <argument id="224" parent="44" name="@version">
       <Position>3</Position>
       <DataType>int|0</DataType>
     </argument>
-    <argument id="223" parent="43" name="@definition">
+    <argument id="225" parent="44" name="@definition">
       <Position>4</Position>
       <DataType>varbinary(max)|0</DataType>
-    </argument>
-    <argument id="224" parent="44" name="@diagramname">
-      <Position>1</Position>
-      <DataType>sysname|0</DataType>
-    </argument>
-    <argument id="225" parent="44" name="@owner_id">
-      <Position>2</Position>
-      <DataType>int|0</DataType>
     </argument>
     <argument id="226" parent="45" name="@diagramname">
       <Position>1</Position>
@@ -1233,7 +1234,15 @@ name</ColNames>
       <Position>2</Position>
       <DataType>int|0</DataType>
     </argument>
-    <argument id="232" parent="47" name="@new_diagramname">
+    <argument id="232" parent="48" name="@diagramname">
+      <Position>1</Position>
+      <DataType>sysname|0</DataType>
+    </argument>
+    <argument id="233" parent="48" name="@owner_id">
+      <Position>2</Position>
+      <DataType>int|0</DataType>
+    </argument>
+    <argument id="234" parent="48" name="@new_diagramname">
       <Position>3</Position>
       <DataType>sysname|0</DataType>
     </argument>

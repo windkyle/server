@@ -11,6 +11,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -106,6 +108,30 @@ public class Tool {
                         }
                         if (attrName.equals("callBackTime")) {
                             configEntity.setCallBackTime(Long.parseLong(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("exitTimeStatus1")) {
+                            configEntity.setExitTimeStatus1(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("exitTimeStatus2")) {
+                            configEntity.setExitTimeStatus2(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("exitTimeHour1")) {
+                            configEntity.setExitTimeHour1(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("exitTimeHour2")) {
+                            configEntity.setExitTimeHour2(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("exitTimeMinute1")) {
+                            configEntity.setExitTimeMinute1(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("exitTimeMinute2")) {
+                            configEntity.setExitTimeMinute2(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("exitTimeSecond1")) {
+                            configEntity.setExitTimeSecond1(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
+                        }
+                        if (attrName.equals("exitTimeSecond2")) {
+                            configEntity.setExitTimeSecond2(Integer.parseInt(childNodes.item(j).getFirstChild().getNodeValue()));
                         }
                     }
                 }
@@ -259,4 +285,12 @@ public class Tool {
 //    public static byte[] ByteBufferToBytes(ByteBuffer byteBuffer, int bufferLength) {
 //
 //    }
+    /*
+     * 获取当前进程pid
+     * */
+    public static int getProcessID() {
+        RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+        System.out.println(runtimeMXBean.getName());
+        return Integer.valueOf(runtimeMXBean.getName().split("@")[0]).intValue();
+    }
 }

@@ -32,4 +32,14 @@
     <pushTime>800</pushTime>
     //报警回调函数延迟时间，防止回调函数返回的数据量过大导致程序出错
     <callBackTime>500</callBackTime>
+    //服务程序关闭时间1
+    <exitTimeStatus1>0</exitTimeStatus1>
+    <exitTimeHour1>0</exitTimeHour1>
+    <exitTimeMinute1>0</exitTimeMinute1>
+    <exitTimeSecond1>0</exitTimeSecond1>
+    //服务程序关闭时间2
+    <exitTimeStatus2>0</exitTimeStatus2>
+    <exitTimeHour2>0</exitTimeHour2>
+    <exitTimeMinute2>0</exitTimeMinute2>
+    <exitTimeSecond2>0</exitTimeSecond2>
 </config>
