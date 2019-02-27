@@ -27,8 +27,7 @@ public class ProcessTimer {
         }
         Timer timer = new Timer();
         ProcessTaskService synchronizationTaskService = new ProcessTaskService();
-        logger.info("用来测试同步的ip是：" + Egci.configEntity.getTestIp());
-        logger.info("程序关闭时刻：" + calendar.getTime());
+        logger.info("程序关闭时刻1：" + calendar.getTime());
         //安排指定的任务在指定的时间开始进行重复的固定延迟执行。
         timer.schedule(synchronizationTaskService, date, PERIOD_DAY);
     }
@@ -46,7 +45,7 @@ public class ProcessTimer {
         }
         Timer timer = new Timer();
         ProcessTaskService synchronizationTaskService = new ProcessTaskService();
-        logger.info("程序关闭时刻：" + calendar.getTime());
+        logger.info("程序关闭时刻2：" + calendar.getTime());
         //安排指定的任务在指定的时间开始进行重复的固定延迟执行。
         timer.schedule(synchronizationTaskService, date, PERIOD_DAY);
     }
