@@ -62,20 +62,20 @@ public class FaceService {
         if (!result) {
             logger.error("人脸下发失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
             stopRemoteConfig(lHandle);
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                logger.error("error：", e);
+            }
             return false;
         } else {
             logger.info("人脸下发成功");
             stopRemoteConfig(lHandle);
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                logger.error("error：", e);
+            }
             return true;
         }
     }

@@ -39,8 +39,12 @@ public class ProducerService {
         }
     }
 
-    public void sendToQueue(String body) throws Exception {
-        channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, body.trim().getBytes("GBK"));
+    public void sendToQueue(String body) {
+        try {
+            channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, body.trim().getBytes("GBK"));
+        } catch (Exception e) {
+            logger.error("error", e);
+        }
     }
 
     public void deleteQueue() {

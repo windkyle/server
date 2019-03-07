@@ -163,6 +163,8 @@ public class SocketService extends Thread {
                 //对采集设备布防
                 LoginService loginService = new LoginService();
                 loginService.login(info[1], Egci.devicePort, Egci.deviceName, Egci.devicePass);
+                //每次连接恢复刷身份证的模式
+                modeService.changeMode(loginService.getlUserID(), (byte) 13);
                 AlarmService alarmService = new AlarmService();
                 alarmService.setupAlarmChan(loginService.getlUserID());
                 Egci.deviceIpsFaceCollection.add(info[1]);
@@ -208,7 +210,7 @@ public class SocketService extends Thread {
     private void sendToClient(Socket socket, BufferedReader br, String message) {
         try {
             OutputStream os = socket.getOutputStream();
-            os.write(message.getBytes());
+            os.write((message + "\r\n").getBytes());
             os.flush();
             br.close();
             os.close();

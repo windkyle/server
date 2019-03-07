@@ -197,7 +197,7 @@ public class Egci {
             ServerSocket serverSocket = new ServerSocket(configEntity.getSocketPort());
             serverSocket.setSoTimeout(0);
             serverSocket.setReuseAddress(true);
-            Elogger.info("等待客户端连接......");
+            Elogger.info("等待客户端连接..............................................................................");
             while (true) {
                 Socket socket = serverSocket.accept();
                 socket.setReuseAddress(true);
@@ -219,7 +219,6 @@ public class Egci {
             Elogger.error("错误：", e);
         } finally {
             Elogger.error("人脸通行服务程序出现严重错误,需要被关闭");
-            while (true) ;
         }
     }
 }
