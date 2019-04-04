@@ -6,6 +6,8 @@ import com.dyw.queue.handler.AlarmHandler;
 import com.dyw.queue.service.*;
 import com.dyw.queue.timer.*;
 import com.dyw.queue.tool.Tool;
+import com.sun.jna.NativeLong;
+import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +16,11 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
 public class Egci {
+    public static SqlSession session;
     //mybatis框架
 //    private SqlSession session;
     //配置文件
@@ -29,7 +31,6 @@ public class Egci {
     public static String devicePass;
     //全局变量
     private static Logger Elogger;
-    public static Statement stmt;
     public static List<String> deviceIps0;//所有设备，不带“#”
     public static List<String> deviceIps1;//一核设备，不带“#”
     public static List<String> deviceIps2;//二核设备，不带“#”
@@ -73,6 +74,14 @@ public class Egci {
         System.out.println("进程id：" + Tool.getProcessID());
         //初始化日志对象
         Elogger = LoggerFactory.getLogger(Egci.class);
+        //初始化session对象
+        try {
+            SessionService sessionService = new SessionService();
+            session = sessionService.createSession();
+        } catch (Exception e) {
+            Elogger.error("创建session对象失败", e);
+        }
+
         //初始化SDK静态对象
         try {
             hcNetSDK = HCNetSDK.INSTANCE;
@@ -91,20 +100,9 @@ public class Egci {
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();
         devicePass = configEntity.getDevicePass();
-        //连接数据库
-        DatabaseService databaseService = new DatabaseService(Egci.configEntity.getDataBaseIp(), Egci.configEntity.getDataBasePort(), Egci.configEntity.getDataBaseName(), Egci.configEntity.getDataBasePass(), Egci.configEntity.getDataBaseLib());
-        try {
-            Egci.stmt = databaseService.connection().createStatement();
-        } catch (SQLException e) {
-            Elogger.error("连接数据库失败", e);
-        }
         //将pid写入数据库
-        try {
-            Egci.stmt.executeUpdate("UPDATE SystemStatus SET processIdentification = " + Tool.getProcessID());
-            Elogger.info("将pid写入数据库成功");
-        } catch (SQLException e) {
-            Elogger.error("将pid写入数据库失败", e);
-        }
+        session.update("mapping.processMapper.setProcessId", Tool.getProcessID());
+        session.commit();
         //启用onGuard数据接收服务
         OnguardService onguardService = new OnguardService();
         onguardService.start();
@@ -164,7 +162,7 @@ public class Egci {
             try {
                 Elogger.info("队列名称：" + i + "：" + deviceIps0WithOctothorpe.get(i) + "  数量：" + producerService.getChannel().consumerCount(i + "：" + deviceIps0WithOctothorpe.get(i)));
             } catch (IOException e) {
-                e.printStackTrace();
+                Elogger.error("获取消费者的数量出错", e);
             }
         }
         //启用队列重连功能
@@ -219,6 +217,7 @@ public class Egci {
             Elogger.error("错误：", e);
         } finally {
             Elogger.error("人脸通行服务程序出现严重错误,需要被关闭");
+            System.exit(0);//出现任何错误，关闭程序
         }
     }
 }

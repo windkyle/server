@@ -44,7 +44,7 @@ public class CustomerMonitorService implements Runnable {
                     } catch (SocketException e) {
                         //这里出现错误说明客户端已经断开
                         channel.basicReject(envelope.getDeliveryTag(), false);
-                        logger.error("客户端：" + socket.getInetAddress().getHostAddress() + " 已断开");
+//                        logger.error("客户端：" + socket.getInetAddress().getHostAddress() + " 已断开");
                     }
                 }
             };

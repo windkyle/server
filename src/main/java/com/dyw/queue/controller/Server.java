@@ -16,10 +16,10 @@ public class Server {
             System.out.println("接收到的消息为:" + br.readLine());
             int i = 0;
             while (true) {
-                i++;
                 bw.write(i + "\n");
                 bw.flush();
-                Thread.sleep(5000);
+                Thread.sleep(3000);
+                i++;
             }
         } catch (IOException e) {
             System.out.println("客户端关闭连接");

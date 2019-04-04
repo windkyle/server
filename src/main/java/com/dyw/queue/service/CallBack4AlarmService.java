@@ -34,15 +34,12 @@ public class CallBack4AlarmService {
 //                entity = COMM_ALARM_V30_info(pAlarmInfo);
 //                break;
                 case HCNetSDK.COMM_ALARM_ACS: //门禁主机报警信息
-                    logger.info("HCNetSDK.COMM_ALARM_ACS");
                     COMM_ALARM_ACS_info(pAlarmer, pAlarmInfo, session);
                     break;
                 case HCNetSDK.COMM_ID_INFO_ALARM: //身份证信息
-                    logger.info("HCNetSDK.COMM_ID_INFO_ALARM");
                     COMM_ID_INFO_ALARM_info(pAlarmer, pAlarmInfo, session);
                     break;
                 default:
-                    logger.info("go default");
                     break;
             }
         } catch (Exception e) {
@@ -198,52 +195,4 @@ public class CallBack4AlarmService {
             Egci.deviceIpsAlarmFail.remove(alarmEntity.getIP());
         }
     }
-//    private AlarmDesc COMM_ALARM_V30_info(Pointer pAlarmInfo) {
-//        HCNetSDK.NET_DVR_ALARMINFO_V30 strAlarmInfoV30 = new HCNetSDK.NET_DVR_ALARMINFO_V30();
-//        strAlarmInfoV30.write();
-//        Pointer pInfoV30 = strAlarmInfoV30.getPointer();
-//        pInfoV30.write(0, pAlarmInfo.getByteArray(0, strAlarmInfoV30.size()), 0, strAlarmInfoV30.size());
-//        strAlarmInfoV30.read();
-//        int dwAlarmType = strAlarmInfoV30.dwAlarmType;
-//        AlarmDesc alarmDesc = new AlarmDesc();
-//        alarmDesc.setTypeCode(dwAlarmType);
-//        switch (dwAlarmType) {
-//            case 0:
-//                alarmDesc.setCodeDesc("信号报警");
-//                alarmDesc.setMessage(String.format("报警入口： %d", strAlarmInfoV30.dwAlarmInputNumber + 1));
-//                break;
-//            case 1:
-//                alarmDesc.setCodeDesc("硬盘满");
-//                break;
-//            case 2:
-//                alarmDesc.setCodeDesc("信号丢失");
-//                break;
-//            case 3:
-//                alarmDesc.setCodeDesc("移动侦测");
-//                StringBuilder chNo = new StringBuilder();
-//                for (int i = 0; i < 64; i++) {
-//                    if (strAlarmInfoV30.byChannel[i] == 1) {
-//                        chNo.append("ch").append(i + 1).append(" ");
-//                    }
-//                }
-//                alarmDesc.setMessage("报警通道：" + chNo.toString());
-//                break;
-//            case 4:
-//                alarmDesc.setCodeDesc("硬盘未格式化");
-//                break;
-//            case 5:
-//                alarmDesc.setCodeDesc("读写硬盘出错");
-//                break;
-//            case 6:
-//                alarmDesc.setCodeDesc("遮挡报警");
-//                break;
-//            case 7:
-//                alarmDesc.setCodeDesc("制式不匹配");
-//                break;
-//            case 8:
-//                alarmDesc.setCodeDesc("非法访问");
-//                break;
-//        }
-//        return alarmDesc;
-//    }
 }

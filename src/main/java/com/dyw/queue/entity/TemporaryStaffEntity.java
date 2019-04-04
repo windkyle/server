@@ -3,7 +3,7 @@ package com.dyw.queue.entity;
 public class TemporaryStaffEntity {
     private String CardId;//证件号
     private String CardNumber;//卡号
-    private String UserId;//
+    private String UserId;//员工号
     private String Name;//
     private String NameEn;//
     private String Company;

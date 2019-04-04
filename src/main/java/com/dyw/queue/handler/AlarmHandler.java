@@ -35,6 +35,7 @@ public class AlarmHandler implements HCNetSDK.FMSGCallBack_V31 {
             SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(reader);
             //创建能执行映射文件中sql的sqlSession
             session = sessionFactory.openSession();
+            Egci.session = session;//全局共享
             if (session == null) {
                 logger.error("session对象创建失败");
             } else {

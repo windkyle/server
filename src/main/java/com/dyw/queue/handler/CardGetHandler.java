@@ -22,7 +22,6 @@ public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
 
     @Override
     public void invoke(int dwType, Pointer lpBuffer, int dwBufLen, Pointer pUserData) {
-        logger.info("长连接回调获取卡号数据:" + dwType);
         switch (dwType) {
             case 0: //NET_SDK_CALLBACK_TYPE_STATUS
                 HCNetSDK.REMOTECONFIGSTATUS_CARD struCfgStatus = new HCNetSDK.REMOTECONFIGSTATUS_CARD();
@@ -50,7 +49,6 @@ public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
                             int iByte = struCfgStatus.byErrorCode[i] & 0xff;
                             iErrorCode = iErrorCode + (iByte << ioffset);
                         }
-                        logger.info("查询卡号失败，错误码：" + iErrorCode);
                         cardNumber = "none";
                         break;
                 }
@@ -62,14 +60,7 @@ public class CardGetHandler implements HCNetSDK.FRemoteConfigCallback {
                 pInfoV30.write(0, lpBuffer.getByteArray(0, m_struCardInfo.size()), 0, m_struCardInfo.size());
                 m_struCardInfo.read();
                 String str = new String(m_struCardInfo.byCardNo).trim();
-                try {
-                    String srtName = new String(m_struCardInfo.byName, "GBK").trim(); //姓名
-                    logger.info("查询到的卡号: {} ,姓名: {}" + str + srtName);
-                    cardNumber = str;
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    logger.error("查询卡号出错" + e);
-                }
+                cardNumber = str;
                 break;
             default:
                 break;

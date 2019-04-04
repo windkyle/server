@@ -1,6 +1,7 @@
 package com.dyw.queue.service;
 
 import com.dyw.queue.controller.Egci;
+import com.dyw.queue.entity.EquipmentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +9,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class EquipmentService {
     private static Logger logger = LoggerFactory.getLogger(EquipmentService.class);
@@ -15,7 +17,7 @@ public class EquipmentService {
     public static void initEquipmentInfo() {
         try {
             //获取设备ip列表
-            ResultSet resultSet = Egci.stmt.executeQuery("select Name,GroupId,IP from Equipment");
+            List<EquipmentEntity> equipmentEntityList = Egci.session.selectList("mapping.equipmentMapper.getAllEquipment");
             Egci.deviceIps0 = new ArrayList<String>();
             Egci.deviceIps1 = new ArrayList<String>();
             Egci.deviceIps2 = new ArrayList<String>();
@@ -26,21 +28,20 @@ public class EquipmentService {
             Egci.deviceIps3WithOctothorpe = new ArrayList<String>();
             Egci.deviceIps0Map = new HashMap<String, String>();
             Egci.deviceIpsAlarmFail = new HashSet<String>();
-
-            while (resultSet.next()) {
+            for (EquipmentEntity equipmentEntity : equipmentEntityList) {
                 //如果对象中有数据，就会循环打印出来
-                Egci.deviceIps0Map.put(resultSet.getString("IP"), resultSet.getString("Name"));
-                Egci.deviceIps0.add(resultSet.getString("IP"));
-                Egci.deviceIps0WithOctothorpe.add("#" + resultSet.getString("IP"));
-                if (resultSet.getInt("GroupId") == 2) {
-                    Egci.deviceIps1.add(resultSet.getString("IP"));
-                    Egci.deviceIps1WithOctothorpe.add("#" + resultSet.getString("IP"));
-                } else if (resultSet.getInt("GroupId") == 3) {
-                    Egci.deviceIps2.add(resultSet.getString("IP"));
-                    Egci.deviceIps2WithOctothorpe.add("#" + resultSet.getString("IP"));
-                } else if (resultSet.getInt("GroupId") == 4) {
-                    Egci.deviceIps3.add(resultSet.getString("IP"));
-                    Egci.deviceIps3WithOctothorpe.add("#" + resultSet.getString("IP"));
+                Egci.deviceIps0Map.put(equipmentEntity.getIP(), equipmentEntity.getName());
+                Egci.deviceIps0.add(equipmentEntity.getIP());
+                Egci.deviceIps0WithOctothorpe.add("#" + equipmentEntity.getIP());
+                if (equipmentEntity.getGroupId() == 2) {
+                    Egci.deviceIps1.add(equipmentEntity.getIP());
+                    Egci.deviceIps1WithOctothorpe.add("#" + equipmentEntity.getIP());
+                } else if (equipmentEntity.getGroupId() == 3) {
+                    Egci.deviceIps2.add(equipmentEntity.getIP());
+                    Egci.deviceIps2WithOctothorpe.add("#" + equipmentEntity.getIP());
+                } else if (equipmentEntity.getGroupId() == 4) {
+                    Egci.deviceIps3.add(equipmentEntity.getIP());
+                    Egci.deviceIps3WithOctothorpe.add("#" + equipmentEntity.getIP());
                 }
             }
             logger.info("所有设备ip：" + String.valueOf(Egci.deviceIps0WithOctothorpe));

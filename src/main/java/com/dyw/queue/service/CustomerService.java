@@ -16,6 +16,7 @@ public class CustomerService implements Runnable {
     private CardService cardService = new CardService();
     private FaceService faceService = new FaceService();
     private Thread t;
+    private LoginService loginService = new LoginService();
 
     public CustomerService(String queueName, Channel channel) {
         this.queueName = queueName;
@@ -28,50 +29,44 @@ public class CustomerService implements Runnable {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String[] personInfo = new String(body).split("#");//人员信息：卡号、名称、人脸
-                String operationCode = personInfo[0];
-                String cardNo = personInfo[1];//卡号
-                String cardName = personInfo[2];//姓名
-                String picInfo = personInfo[3];//人脸信息
-                String ip = personInfo[4];//ip地址
-                logger.info("正在执行操作的IP:" + ip + ",卡号：" + cardNo);
-                if (!Egci.deviceIpsOn.contains(ip)) {
-                    try {
-                        Thread.sleep(20000);
-                    } catch (InterruptedException e) {
-                        logger.error("下发延迟失败", e);
-                    }
-                    logger.info("设备:" + ip + "不在线");
+//                String operationCode = personInfo[0];//操作码
+//                String cardNo = personInfo[1];//卡号
+//                String cardName = personInfo[2];//姓名
+//                String picInfo = personInfo[3];//人脸信息
+//                String ip = personInfo[4];//ip地址
+                if (!Egci.deviceIpsOn.contains(personInfo[4])) {
                     channel.basicReject(envelope.getDeliveryTag(), true);
                     return;
                 }
-                //登陆
-                LoginService loginService = new LoginService();
-                loginService.login(ip, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());
                 try {
+                    //登陆
+                    loginService.login(personInfo[4], Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());
                     if (loginService.getlUserID().longValue() > -1) {
                         //判断卡号是否存在，存在卡号则先删除和人脸;如果命令是2，则正好只执行删除操作
-                        if (cardService.getCardInfo(cardNo, loginService.getlUserID(), queueName)) {
-                            logger.info(ip + ":卡号已存在，先删除卡号和人脸");
+                        if (cardService.getCardInfo(personInfo[1], loginService.getlUserID(), queueName)) {
                             //删除卡号
-                            if (cardService.delCardInfo(cardNo, loginService.getlUserID(), queueName)) {
-                                logger.info(ip + ":卡号删除成功");
+                            if (cardService.delCardInfo(personInfo[1], loginService.getlUserID(), queueName)) {
                                 //删除人脸，删除失败不需要操作
-                                if (faceService.delFace(cardNo, loginService.getlUserID())) {
-                                    logger.info(ip + ":人脸删除成功");
+                                if (!faceService.delFace(personInfo[1], loginService.getlUserID())) {
+                                    logger.info(personInfo[4] + ":人脸删除失败,错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
+                                    channel.basicReject(envelope.getDeliveryTag(), true);
+                                    return;
                                 }
                             } else {
                                 channel.basicReject(envelope.getDeliveryTag(), true);
+                                return;
                             }
                         }
-                        if (operationCode.equals("2")) {
+                        if (personInfo[0].equals("2")) {
                             channel.basicReject(envelope.getDeliveryTag(), false);
+                            return;
                         }
                         //判断操作码
-                        if (operationCode.equals("1")) {
+                        if (personInfo[0].equals("1")) {
                             //卡号姓名下发
-                            if (cardService.setCardInfo(loginService.getlUserID(), cardNo, cardName, "666666", queueName)) {
+                            if (cardService.setCardInfo(loginService.getlUserID(), personInfo[1], personInfo[2], "666666", queueName)) {
                                 //人脸图片下发
-                                if (faceService.setFaceInfo(cardNo, Base64.decode(picInfo), loginService.getlUserID())) {
+                                if (faceService.setFaceInfo(personInfo[1], Base64.decode(personInfo[3]), loginService.getlUserID())) {
                                     channel.basicReject(envelope.getDeliveryTag(), false);
                                 } else {
                                     channel.basicReject(envelope.getDeliveryTag(), true);
@@ -84,10 +79,10 @@ public class CustomerService implements Runnable {
                         channel.basicReject(envelope.getDeliveryTag(), true);
                     }
                 } catch (Exception e) {
-                    logger.error(ip + ":删除卡号和人脸出错：" + e);
+                    logger.error(personInfo[4] + ":卡号和人脸操作出错：" + e);
+                    channel.basicReject(envelope.getDeliveryTag(), true);
                 } finally {
                     //不管有没有执行成功都执行资源释放操作
-                    logger.info("执行资源释放操作");
                     loginService.logout();
                 }
             }

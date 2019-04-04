@@ -13,7 +13,7 @@
     <dataBaseTime>30000</dataBaseTime>//防止同步时同时操作数据库，造成堵塞
     //队列配置
     <queueIp>localhost</queueIp>
-    //socket配置
+    //socket端口配置
     <socketPort>12345</socketPort>
     //测试配置单台同步
     <testIp>192.168.40.32</testIp>

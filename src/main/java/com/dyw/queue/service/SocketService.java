@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +36,6 @@ public class SocketService extends Thread {
      * */
     @Override
     public void run() {
-        //初始化人员信息
-        StaffEntity staff = new StaffEntity();
-        //查看客户端
-        logger.info("客户端:" + socketInfo.getInetAddress().getHostAddress() + "已连接到服务器");
         //读取客户端发送来的信息
         BufferedReader br = null;
         try {
@@ -50,154 +45,151 @@ public class SocketService extends Thread {
         }
         try {
             String mess = br.readLine();
-            logger.info("客户端发来的消息：" + mess);
+//            logger.info("客户端发来的消息：" + mess);
             String staffInfo = "";//结构体信息
             String operationCode = mess.substring(0, 1);
-            //下发卡号人脸
-            if (operationCode.equals("1")) {
-                //读取数据库获取人员信息
-                String sql = "select CardNumber,Name,Photo from Staff WHERE CardNumber = '" + mess.substring(2) + "'";
-                ResultSet rs = Egci.stmt.executeQuery(sql);
-                while (rs.next()) {//如果对象中有数据，就会循环打印出来
-                    staff.setName(rs.getString("Name"));
-                    staff.setCardNumber(rs.getString("CardNumber"));
-                    staff.setPhoto(rs.getBytes("Photo"));
-                }
-                //重新组织人员信息:操作码+卡号+名称+图片
-                staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
-                //发送消息到队列中
-                for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
-                    Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
-                }
-                //删除临时表中的人员信息
-                TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
-                temporaryStaffEntity.setCardNumber(staff.getCardNumber());
-                OnguardService onguardService = new OnguardService();
-                onguardService.deleteTemporary(temporaryStaffEntity);
-                //返回正确消息给客户端
-                sendToClient(socketInfo, br, "success");
-            }
-            //删除卡号和人脸
-            if (operationCode.equals("2")) {
-                staffInfo = "2#" + mess.substring(2) + "#test#none";
-                //发送消息到队列中
-                for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
-                    Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
-                }
-                //返回消息给客户端
-                sendToClient(socketInfo, br, "success");
-            }
-            //获取设备状态
-            if (operationCode.equals("3")) {
-                List<StatusEntity> deviceStatus = new ArrayList<StatusEntity>();
-                if (mess.substring(2).equals("0")) {
-                    deviceStatus = getStatus(Egci.deviceIps0WithOctothorpe);
-                } else if (mess.substring(2).equals("1")) {
-                    deviceStatus = getStatus(Egci.deviceIps1WithOctothorpe);
-                } else if (mess.substring(2).equals("2")) {
-                    deviceStatus = getStatus(Egci.deviceIps2WithOctothorpe);
-                } else if (mess.substring(2).equals("3")) {
-                    deviceStatus = getStatus(Egci.deviceIps3WithOctothorpe);
-                }
-                //返回消息给客户端
-                sendToClient(socketInfo, br, JSON.toJSONString(deviceStatus));
-            }
-            //设置一体机的通行模式
-            if (operationCode.equals("4")) {
-                LoginService loginService = new LoginService();
-                String[] info = mess.split("#");
-                loginService.login(info[1], Egci.devicePort, Egci.deviceName, Egci.devicePass);
-                //卡+人脸
-                if (info[2].equals("0")) {
-                    modeService.changeMode(loginService.getlUserID(), (byte) 13);
+            switch (Integer.parseInt(operationCode)) {
+                case 1://下发卡号人脸
+                    //读取数据库获取人员信息
+                    StaffEntity staff = Egci.session.selectOne("mapping.staffMapper.getSingleStaff", mess.substring(2));
+                    //重新组织人员信息:操作码+卡号+名称+图片
+                    staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
+                    //发送消息到队列中
+                    for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
+                        Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
+                    }
+                    //删除临时表中的人员信息，暂时不用
+//                    TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
+//                    temporaryStaffEntity.setCardNumber(staff.getCardNumber());
+//                    OnguardService onguardService = new OnguardService();
+//                    onguardService.deleteTemporary(temporaryStaffEntity);
+                    //返回正确消息给客户端
+                    sendToClient(socketInfo, br, "success");
+                    break;
+                case 2://删除卡号和人脸
+                    staffInfo = "2#" + mess.substring(2) + "#test#none";
+                    //发送消息到队列中
+                    for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
+                        Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
+                    }
                     //返回消息给客户端
                     sendToClient(socketInfo, br, "success");
-                }
-                //人脸
-                if (info[2].equals("1")) {
-                    modeService.changeMode(loginService.getlUserID(), (byte) 14);
+                    break;
+                case 3://获取设备状态
+                    List<StatusEntity> deviceStatus = new ArrayList<StatusEntity>();
+                    if (mess.substring(2).equals("0")) {
+                        deviceStatus = getStatus(Egci.deviceIps0WithOctothorpe);
+                    } else if (mess.substring(2).equals("1")) {
+                        deviceStatus = getStatus(Egci.deviceIps1WithOctothorpe);
+                    } else if (mess.substring(2).equals("2")) {
+                        deviceStatus = getStatus(Egci.deviceIps2WithOctothorpe);
+                    } else if (mess.substring(2).equals("3")) {
+                        deviceStatus = getStatus(Egci.deviceIps3WithOctothorpe);
+                    }
+                    //返回消息给客户端
+                    sendToClient(socketInfo, br, JSON.toJSONString(deviceStatus));
+                    break;
+                case 4://设置一体机的通行模式
+                    LoginService loginService = new LoginService();
+                    String[] info = mess.split("#");
+                    loginService.login(info[1], Egci.devicePort, Egci.deviceName, Egci.devicePass);
+                    //卡+人脸
+                    if (info[2].equals("0")) {
+                        modeService.changeMode(loginService.getlUserID(), (byte) 13);
+                        //返回消息给客户端
+                        sendToClient(socketInfo, br, "success");
+                    }
+                    //人脸
+                    if (info[2].equals("1")) {
+                        modeService.changeMode(loginService.getlUserID(), (byte) 14);
+                        //返回消息给客户端
+                        sendToClient(socketInfo, br, "success");
+                    }
+                    loginService.logout();
+                    break;
+                case 5://设置切换器模式:0是关闭人脸识别，1是开启人脸识别
+                    sendToClient(socketInfo, br, "error");
+                    break;
+                case 6://设置采集采集人脸方式：0是身份证+人脸，1是不刷身份证
+                    LoginService loginServiceFace = new LoginService();
+                    String[] infoFace = mess.split("#");
+                    loginServiceFace.login(infoFace[1], Egci.devicePort, Egci.deviceName, Egci.devicePass);
+                    //身份证+人脸
+                    if (infoFace[2].equals("0")) {
+                        modeService.changeMode(loginServiceFace.getlUserID(), (byte) 13);
+                    }
+                    //人脸
+                    if (infoFace[2].equals("1")) {
+                        modeService.changeMode(loginServiceFace.getlUserID(), (byte) 14);
+                    }
                     //返回消息给客户端
                     sendToClient(socketInfo, br, "success");
-                }
-                loginService.logout();
+                    loginServiceFace.logout();
+                    break;
+                case 7://获取采集设备的图片和身份证信息
+                    String[] info7 = mess.split("#");
+                    if (Egci.deviceIpsFaceCollection.contains(info7[1])) {
+                        Egci.deviceIpsFaceCollection.remove(info7[1]);
+                    }
+                    if (Egci.faceCollectionIpWithLogin.containsKey(info7[1])) {
+                        Egci.faceCollectionIpWithLogin.get(info7[1]).logout();
+                    }
+                    //先删除采集设备推送的队列
+                    if (Egci.faceCollectionIpWithProducer.containsKey(info7[1])) {
+                        Egci.faceCollectionIpWithProducer.get(info7[1]).deleteQueue();
+                    }
+                    Thread.sleep(2000);
+                    //创建采集设备推送的队列
+                    ProducerService producerService = new ProducerService("face:" + info7[1], Egci.queueIp);
+                    CustomerMonitorService customerMonitorService = new CustomerMonitorService("face:" + info7[1], producerService.getChannel(), socketInfo);
+                    customerMonitorService.start();
+                    //对采集设备布防
+                    LoginService loginService7 = new LoginService();
+                    loginService7.login(info7[1], Egci.devicePort, Egci.deviceName, Egci.devicePass);
+                    //每次连接恢复刷身份证的模式
+                    modeService.changeMode(loginService7.getlUserID(), (byte) 13);
+                    AlarmService alarmService = new AlarmService();
+                    alarmService.setupAlarmChan(loginService7.getlUserID());
+                    Egci.deviceIpsFaceCollection.add(info7[1]);
+                    Egci.faceCollectionIpWithProducer.put(info7[1], producerService);
+                    Egci.faceCollectionIpWithLogin.put(info7[1], loginService7);
+                    break;
+                case 8://实时监控消息推送
+                    String[] info8 = mess.split("#");
+                    //判断客户端IP地址是否布防过：如果有，则先清除布防信息，防止多次推送消息
+                    if (Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()) != null) {
+                        Egci.producerMonitorOneServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
+                        Egci.producerMonitorTwoServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
+                        Egci.producerMonitorThreeServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
+                        Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()).deleteQueue();
+                        Thread.sleep(3000);
+                    }
+                    ProducerService producerService8 = new ProducerService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp);
+                    CustomerMonitorService customerMonitorService8 = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), producerService8.getChannel(), socketInfo);
+                    customerMonitorService8.start();
+                    if (info8[1].equals("1")) {
+                        Egci.producerMonitorOneServices.add(producerService8);
+                    }
+                    if (info8[2].equals("1")) {
+                        Egci.producerMonitorTwoServices.add(producerService8);
+                    }
+                    if (info8[3].equals("1")) {
+                        Egci.producerMonitorThreeServices.add(producerService8);
+                    }
+                    Egci.producerServiceMap.put(socketInfo.getInetAddress().getHostAddress(), producerService8);
+                    break;
+                case 9://同步单台设备
+                    List<StaffEntity> staffEntityList = new ArrayList<StaffEntity>();
+                    staffEntityList = Egci.session.selectList("mapping.staffMapper.getAllStaff");
+                    System.out.println("数量：" + staffEntityList.size());
+                    String[] info9 = mess.split("#");
+                    Thread thread = new ImportStaffToSingleEquipmentService(info9[1]);
+                    thread.start();
+                    sendToClient(socketInfo, br, "success");
+                    break;
+                default:
+                    break;
             }
-            //设置切换器模式:0是关闭人脸识别，1是开启人脸识别
-            if (operationCode.equals("5")) {
-                sendToClient(socketInfo, br, "error");
-            }
-            //设置采集采集人脸方式：0是身份证+人脸，1是不刷身份证
-            if (operationCode.equals("6")) {
-                LoginService loginService = new LoginService();
-                String[] info = mess.split("#");
-                loginService.login(info[1], Egci.devicePort, Egci.deviceName, Egci.devicePass);
-                //身份证+人脸
-                if (info[2].equals("0")) {
-                    modeService.changeMode(loginService.getlUserID(), (byte) 13);
-                }
-                //人脸
-                if (info[2].equals("1")) {
-                    modeService.changeMode(loginService.getlUserID(), (byte) 14);
-                }
-                //返回消息给客户端
-                sendToClient(socketInfo, br, "success");
-                loginService.logout();
-            }
-            //获取采集设备的图片和身份证信息
-            if (operationCode.equals("7")) {
-                String[] info = mess.split("#");
-                if (Egci.deviceIpsFaceCollection.contains(info[1])) {
-                    Egci.deviceIpsFaceCollection.remove(info[1]);
-                }
-                if (Egci.faceCollectionIpWithLogin.containsKey(info[1])) {
-                    Egci.faceCollectionIpWithLogin.get(info[1]).logout();
-                }
-                //先删除采集设备推送的队列
-                if (Egci.faceCollectionIpWithProducer.containsKey(info[1])) {
-                    Egci.faceCollectionIpWithProducer.get(info[1]).deleteQueue();
-                }
-                Thread.sleep(2000);
-                //创建采集设备推送的队列
-                ProducerService producerService = new ProducerService("face:" + info[1], Egci.queueIp);
-                CustomerMonitorService customerMonitorService = new CustomerMonitorService("face:" + info[1], producerService.getChannel(), socketInfo);
-                customerMonitorService.start();
-                //对采集设备布防
-                LoginService loginService = new LoginService();
-                loginService.login(info[1], Egci.devicePort, Egci.deviceName, Egci.devicePass);
-                //每次连接恢复刷身份证的模式
-                modeService.changeMode(loginService.getlUserID(), (byte) 13);
-                AlarmService alarmService = new AlarmService();
-                alarmService.setupAlarmChan(loginService.getlUserID());
-                Egci.deviceIpsFaceCollection.add(info[1]);
-                Egci.faceCollectionIpWithProducer.put(info[1], producerService);
-                Egci.faceCollectionIpWithLogin.put(info[1], loginService);
-            }
-            //实时监控消息推送
-            if (operationCode.equals("8")) {
-                String[] info = mess.split("#");
-                //判断客户端IP地址是否布防过：如果有，则先清除布防信息，防止多次推送消息
-                if (Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()) != null) {
-                    Egci.producerMonitorOneServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
-                    Egci.producerMonitorTwoServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
-                    Egci.producerMonitorThreeServices.remove(Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()));
-                    Egci.producerServiceMap.get(socketInfo.getInetAddress().getHostAddress()).deleteQueue();
-                    Thread.sleep(3000);
-                }
-                ProducerService producerService = new ProducerService("push:" + socketInfo.getInetAddress().getHostAddress(), Egci.queueIp);
-                CustomerMonitorService customerMonitorService = new CustomerMonitorService("push:" + socketInfo.getInetAddress().getHostAddress(), producerService.getChannel(), socketInfo);
-                customerMonitorService.start();
-                if (info[1].equals("1")) {
-                    Egci.producerMonitorOneServices.add(producerService);
-                }
-                if (info[2].equals("1")) {
-                    Egci.producerMonitorTwoServices.add(producerService);
-                }
-                if (info[3].equals("1")) {
-                    Egci.producerMonitorThreeServices.add(producerService);
-                }
-                Egci.producerServiceMap.put(socketInfo.getInetAddress().getHostAddress(), producerService);
-            }
-        } catch (IOException e) {
-            logger.error("socket断开");
         } catch (Exception e) {
             logger.error("socket数据处理出错：", e);
             sendToClient(socketInfo, br, "error");
@@ -223,7 +215,7 @@ public class SocketService extends Thread {
     /*
      * 获取设备状态
      * */
-    public List<StatusEntity> getStatus(List<String> deviceIps) {
+    private List<StatusEntity> getStatus(List<String> deviceIps) {
         List<StatusEntity> deviceStatus = new ArrayList<StatusEntity>();
         LoginService loginService = new LoginService();
         for (String deviceIp : deviceIps) {

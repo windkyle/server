@@ -21,89 +21,70 @@ public class CardService {
     public Boolean setCardInfo(NativeLong lUserID, String cardNo, String cardName, String password, String queueName) {
         NativeLong cardSendFtpFlag = buildSendCardTcpCon(lUserID);
         if (cardSendFtpFlag.intValue() < 0) {
-            logger.error("建立设置卡号数据长连接失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError() + "；设备队列：" + queueName);
+            logger.info("建立设置卡号数据长连接失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError() + "；设备队列：" + queueName);
             return false;
         }
-        logger.info("建立设置卡号数据长连接成功");
-        // 设置卡参数
-        HCNetSDK.NET_DVR_CARD_CFG_V50 struCardInfo = new HCNetSDK.NET_DVR_CARD_CFG_V50();
-        struCardInfo.read();
-        struCardInfo.dwSize = struCardInfo.size();
-        struCardInfo.dwModifyParamType = 0x00000001 + 0x00000002 + 0x00000004 + 0x00000008 +
-                0x00000010 + 0x00000020 + 0x00000080 + 0x00000100 + 0x00000200 + 0x00000400 + 0x00000800;
-
-        struCardInfo.byCardValid = 1;
-        struCardInfo.wRoomNumber = 302;
-        struCardInfo.byCardType = 1;
-        struCardInfo.byLeaderCard = 0;
-        struCardInfo.byDoorRight[0] = 1; //门1有权限
-//        struCardInfo.wCardRightPlan[0].wRightPlan[0] = 1; //门1关联卡参数计划模板1
-        //卡有效期
-        struCardInfo.struValid.byEnable = 0;
-        struCardInfo.dwMaxSwipeTime = 0; //无次数限制
-        struCardInfo.dwSwipeTime = 0; //已刷卡次数
-        struCardInfo.byCardPassword = password.getBytes();//密码；固定
-        //设置卡号
         try {
-            for (int i = 0; i < HCNetSDK.ACS_CARD_NO_LEN; i++) {
-                struCardInfo.byCardNo[i] = 0;
+            // 设置卡参数
+            HCNetSDK.NET_DVR_CARD_CFG_V50 struCardInfo = new HCNetSDK.NET_DVR_CARD_CFG_V50();
+            struCardInfo.read();
+            struCardInfo.dwSize = struCardInfo.size();
+            struCardInfo.dwModifyParamType = 0x00000001 + 0x00000002 + 0x00000004 + 0x00000008 +
+                    0x00000010 + 0x00000020 + 0x00000080 + 0x00000100 + 0x00000200 + 0x00000400 + 0x00000800;
+            struCardInfo.byCardValid = 1;
+            struCardInfo.wRoomNumber = 302;
+            struCardInfo.byCardType = 1;
+            struCardInfo.byLeaderCard = 0;
+            struCardInfo.byDoorRight[0] = 1; //门1有权限
+            //卡有效期
+            struCardInfo.struValid.byEnable = 0;
+            struCardInfo.dwMaxSwipeTime = 0; //无次数限制
+            struCardInfo.dwSwipeTime = 0; //已刷卡次数
+            struCardInfo.byCardPassword = password.getBytes();//密码；固定
+            //设置卡号
+            try {
+                for (int i = 0; i < HCNetSDK.ACS_CARD_NO_LEN; i++) {
+                    struCardInfo.byCardNo[i] = 0;
+                }
+                byte[] cardNoBytes = cardNo.getBytes(); //卡号
+                System.arraycopy(cardNoBytes, 0, struCardInfo.byCardNo, 0, cardNo.length());
+            } catch (Exception e) {
+                logger.error("设置卡号出错：", e);
+                stopRemoteConfig(cardSendFtpFlag);
+                Thread.sleep(500);
+                return false;
             }
-            byte[] cardNoBytes = cardNo.getBytes(); //卡号
-            System.arraycopy(cardNoBytes, 0, struCardInfo.byCardNo, 0, cardNo.length());
+            // 设置卡片名称
+            try {
+                for (int i = 0; i < HCNetSDK.NAME_LEN; i++) {
+                    struCardInfo.byName[i] = 0;
+                }
+                byte[] nameBytes = cardName.trim().getBytes("GBK");
+                System.arraycopy(nameBytes, 0, struCardInfo.byName, 0, nameBytes.length);
+            } catch (Exception e) {
+                logger.error("设置卡片名称出错 :" + e);
+                stopRemoteConfig(cardSendFtpFlag);
+                Thread.sleep(500);
+                return false;
+            }
+            struCardInfo.write();
+            Pointer pSendBufSet = struCardInfo.getPointer();
+            // 发送卡信息
+            if (!Egci.hcNetSDK.NET_DVR_SendRemoteConfig(cardSendFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
+                logger.error("卡号下发失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
+                stopRemoteConfig(cardSendFtpFlag);
+                Thread.sleep(500);
+                stopRemoteConfig(cardSendFtpFlag);
+                Thread.sleep(500);
+                return false;
+            } else {
+                stopRemoteConfig(cardSendFtpFlag);
+                Thread.sleep(500);
+                return true;
+            }
         } catch (Exception e) {
-            logger.error("设置卡号出错：", e);
-            stopRemoteConfig(cardSendFtpFlag);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e1) {
-                logger.error("error：", e1);
-            }
+            logger.error("卡号下发出错", e);
             return false;
-        }
-        // 设置卡片名称
-        try {
-            for (int i = 0; i < HCNetSDK.NAME_LEN; i++) {
-                struCardInfo.byName[i] = 0;
-            }
-            byte[] nameBytes = cardName.trim().getBytes("GBK");
-            System.arraycopy(nameBytes, 0, struCardInfo.byName, 0, nameBytes.length);
-        } catch (Exception e) {
-            logger.error("设置卡片名称出错 :" + e);
-            stopRemoteConfig(cardSendFtpFlag);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e1) {
-                logger.error("error：", e1);
-            }
-            return false;
-        }
-        struCardInfo.write();
-        Pointer pSendBufSet = struCardInfo.getPointer();
-        // 发送卡信息
-        if (!Egci.hcNetSDK.NET_DVR_SendRemoteConfig(cardSendFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
-            logger.error("卡号下发失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
-            stopRemoteConfig(cardSendFtpFlag);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                logger.error("卡号下发错误：", e);
-            }
-            stopRemoteConfig(cardSendFtpFlag);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                logger.error("error：", e);
-            }
-            return false;
-        } else {
-            logger.info("卡号下发成功");
-            stopRemoteConfig(cardSendFtpFlag);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                logger.error("error：", e);
-            }
-            return true;
         }
     }
 
@@ -111,19 +92,21 @@ public class CardService {
      * 卡号下发的长连接
      * */
     private NativeLong buildSendCardTcpCon(NativeLong lUserID) {
-        HCNetSDK.NET_DVR_CARD_CFG_COND m_struCardInputParamSet = new HCNetSDK.NET_DVR_CARD_CFG_COND();
-        m_struCardInputParamSet.read();
-        m_struCardInputParamSet.dwSize = m_struCardInputParamSet.size();
-        m_struCardInputParamSet.dwCardNum = 1;
-        m_struCardInputParamSet.byCheckCardNo = 1;
-        Pointer lpInBuffer = m_struCardInputParamSet.getPointer();
-        m_struCardInputParamSet.write();
-        Pointer pUserData = null;
-//        AlarmJavaDemoApp.CardSendHandler cardSendHandler = new AlarmJavaDemoApp.CardSendHandler();
-        NativeLong conFlag = Egci.hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_CARD_CFG_V50, lpInBuffer, m_struCardInputParamSet.size(), cardSendHandler, pUserData);
-        logger.info("卡号下发：" + Egci.hcNetSDK.NET_DVR_GetLastError());
-        logger.info("conFlag的值：" + conFlag.longValue());
-        return conFlag;
+        try {
+            HCNetSDK.NET_DVR_CARD_CFG_COND m_struCardInputParamSet = new HCNetSDK.NET_DVR_CARD_CFG_COND();
+            m_struCardInputParamSet.read();
+            m_struCardInputParamSet.dwSize = m_struCardInputParamSet.size();
+            m_struCardInputParamSet.dwCardNum = 1;
+            m_struCardInputParamSet.byCheckCardNo = 1;
+            Pointer lpInBuffer = m_struCardInputParamSet.getPointer();
+            m_struCardInputParamSet.write();
+            Pointer pUserData = null;
+            NativeLong conFlag = Egci.hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_SET_CARD_CFG_V50, lpInBuffer, m_struCardInputParamSet.size(), cardSendHandler, pUserData);
+            return conFlag;
+        } catch (Exception e) {
+            logger.error("获取卡号下发长连接失败", e);
+            return new NativeLong(-1);
+        }
     }
 
     /*
@@ -179,59 +162,40 @@ public class CardService {
      */
     public Boolean getCardInfo(String cardNo, NativeLong lUserID, String queueName) {
         NativeLong cardGetFtpFlag = buildGetCardTcpCon(Egci.hcNetSDK, lUserID);
-        logger.info(cardGetFtpFlag.longValue() + "");
         if (cardGetFtpFlag.intValue() < 0) {
-            logger.error("建立获取卡号数据长连接失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError() + "；设备队列：" + queueName);
+            logger.info("建立获取卡号长连接失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError() + "；设备队列：" + queueName);
             return false;
         }
-        logger.info("建立获取卡号数据长连接成功!");
-        //查找指定卡号
-        HCNetSDK.NET_DVR_CARD_CFG_SEND_DATA m_struCardSendInputParam = new HCNetSDK.NET_DVR_CARD_CFG_SEND_DATA();
-        m_struCardSendInputParam.read();
-        m_struCardSendInputParam.dwSize = m_struCardSendInputParam.size();
-        m_struCardSendInputParam.byCardNo = cardNo.getBytes();
-        m_struCardSendInputParam.byRes = "0".getBytes();
-        Pointer pSendBuf = m_struCardSendInputParam.getPointer();
-        m_struCardSendInputParam.write();
-        if (!Egci.hcNetSDK.NET_DVR_SendRemoteConfig(cardGetFtpFlag, 0x3, pSendBuf, m_struCardSendInputParam.size())) {
-            try {
+        try {
+            //查找指定卡号
+            HCNetSDK.NET_DVR_CARD_CFG_SEND_DATA m_struCardSendInputParam = new HCNetSDK.NET_DVR_CARD_CFG_SEND_DATA();
+            m_struCardSendInputParam.read();
+            m_struCardSendInputParam.dwSize = m_struCardSendInputParam.size();
+            m_struCardSendInputParam.byCardNo = cardNo.getBytes();
+            m_struCardSendInputParam.byRes = "0".getBytes();
+            Pointer pSendBuf = m_struCardSendInputParam.getPointer();
+            m_struCardSendInputParam.write();
+            if (!Egci.hcNetSDK.NET_DVR_SendRemoteConfig(cardGetFtpFlag, 0x3, pSendBuf, m_struCardSendInputParam.size())) {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.error("error：", e);
-            }
-            logger.error("查询卡号失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError());
-            stopRemoteConfig(cardGetFtpFlag);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e1) {
-                logger.error("error：", e1);
-            }
-            return false;
-        } else {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.error("error：", e);
-            }
-            if (cardGetHandler.getCardNumber().equals("none")) {
-                logger.info("卡号不存在");
+                logger.error("查询卡号失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError());
                 stopRemoteConfig(cardGetFtpFlag);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e1) {
-                    logger.error("error：", e1);
-                }
+                Thread.sleep(500);
                 return false;
             } else {
-                logger.info("查询卡号成功，卡号为:" + cardGetHandler.getCardNumber());
-                stopRemoteConfig(cardGetFtpFlag);
-                try {
+                Thread.sleep(1000);
+                if (cardGetHandler.getCardNumber().equals("none")) {
+                    stopRemoteConfig(cardGetFtpFlag);
                     Thread.sleep(500);
-                } catch (InterruptedException e1) {
-                    logger.error("error：", e1);
+                    return false;
+                } else {
+                    stopRemoteConfig(cardGetFtpFlag);
+                    Thread.sleep(500);
+                    return true;
                 }
-                return true;
             }
+        } catch (Exception e) {
+            logger.error("查找卡号失败", e);
+            return false;
         }
     }
 
@@ -242,80 +206,69 @@ public class CardService {
      * @return
      */
     private NativeLong buildGetCardTcpCon(HCNetSDK hcNetSDK, NativeLong lUserID) {
-        HCNetSDK.NET_DVR_CARD_CFG_COND m_struCardInputParam = new HCNetSDK.NET_DVR_CARD_CFG_COND();
-        m_struCardInputParam.dwSize = m_struCardInputParam.size();
-        m_struCardInputParam.dwCardNum = 1; //查找全部
-        m_struCardInputParam.byCheckCardNo = 1;
-        Pointer lpInBuffer = m_struCardInputParam.getPointer();
-        m_struCardInputParam.write();
-        Pointer pUserData = null;
         try {
+            HCNetSDK.NET_DVR_CARD_CFG_COND m_struCardInputParam = new HCNetSDK.NET_DVR_CARD_CFG_COND();
+            m_struCardInputParam.dwSize = m_struCardInputParam.size();
+            m_struCardInputParam.dwCardNum = 1; //查找全部
+            m_struCardInputParam.byCheckCardNo = 1;
+            Pointer lpInBuffer = m_struCardInputParam.getPointer();
+            m_struCardInputParam.write();
+            Pointer pUserData = null;
             Thread.sleep(500);
-        } catch (InterruptedException e) {
-            logger.error("error：", e);
-        }
-        NativeLong nativeLong = hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_GET_CARD_CFG_V50, lpInBuffer, m_struCardInputParam.size(), cardGetHandler, pUserData);
-        try {
+            NativeLong nativeLong = hcNetSDK.NET_DVR_StartRemoteConfig(lUserID, HCNetSDK.NET_DVR_GET_CARD_CFG_V50, lpInBuffer, m_struCardInputParam.size(), cardGetHandler, pUserData);
             Thread.sleep(500);
-        } catch (InterruptedException e) {
-            logger.error("error：", e);
+            return nativeLong;
+        } catch (Exception e) {
+            logger.error("设置获取卡号长连接失败", e);
+            return new NativeLong(-1);
         }
-        return nativeLong;
     }
 
     /*
      * 删除卡号
      * */
     public Boolean delCardInfo(String cardNo, NativeLong lUserID, String queueName) {
-
         NativeLong cardDelFtpFlag = buildSendCardTcpCon(lUserID);
         if (cardDelFtpFlag.intValue() < 0) {
             logger.error("建立删除卡号的长连接失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError() + "；设备队列：" + queueName);
             return false;
         }
-        logger.info("建立删除卡号的长连接建立成功！");
-        // 设置卡参数
-        HCNetSDK.NET_DVR_CARD_CFG_V50 struCardInfo = new HCNetSDK.NET_DVR_CARD_CFG_V50(); //卡参数
-        struCardInfo.read();
-        struCardInfo.dwSize = struCardInfo.size();
-        struCardInfo.dwModifyParamType = 0x00000001;
-        System.arraycopy(cardNo.getBytes(), 0, struCardInfo.byCardNo, 0, cardNo.length());
-        struCardInfo.byCardValid = 0;//设置为0，进行删除
-        struCardInfo.write();
-        Pointer pSendBufSet = struCardInfo.getPointer();
-        // 发送卡信息
-        if (!Egci.hcNetSDK.NET_DVR_SendRemoteConfig(cardDelFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
-            logger.error("卡号信息删除请求下发失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError());
-            try {
+        try {
+            // 设置卡参数
+            HCNetSDK.NET_DVR_CARD_CFG_V50 struCardInfo = new HCNetSDK.NET_DVR_CARD_CFG_V50(); //卡参数
+            struCardInfo.read();
+            struCardInfo.dwSize = struCardInfo.size();
+            struCardInfo.dwModifyParamType = 0x00000001;
+            System.arraycopy(cardNo.getBytes(), 0, struCardInfo.byCardNo, 0, cardNo.length());
+            struCardInfo.byCardValid = 0;//设置为0，进行删除
+            struCardInfo.write();
+            Pointer pSendBufSet = struCardInfo.getPointer();
+            // 发送卡信息
+            if (!Egci.hcNetSDK.NET_DVR_SendRemoteConfig(cardDelFtpFlag, 0x3, pSendBufSet, struCardInfo.size())) {
+                logger.error("卡号信息删除请求下发失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError());
                 Thread.sleep(500);
-            } catch (InterruptedException e) {
-                logger.error("error：", e);
+                stopRemoteConfig(cardDelFtpFlag);
+                return false;
+            } else {
+                Thread.sleep(500);
+                stopRemoteConfig(cardDelFtpFlag);
+                return true;
             }
-            stopRemoteConfig(cardDelFtpFlag);
+        } catch (Exception e) {
+            logger.error("删除卡号出错", e);
             return false;
-        } else {
-            logger.info("卡号信息删除请求下发成功！");
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                logger.error("error：", e);
-            }
-            stopRemoteConfig(cardDelFtpFlag);
-            return true;
         }
-
     }
 
     /*
      *
      * 断开长连接
      * */
-    public Boolean stopRemoteConfig(NativeLong conFlag) {
+    private Boolean stopRemoteConfig(NativeLong conFlag) {
         if (!Egci.hcNetSDK.NET_DVR_StopRemoteConfig(conFlag)) {
             logger.info("断开卡号操作的长连接失败，错误号：" + Egci.hcNetSDK.NET_DVR_GetLastError());
             return false;
         } else {
-            logger.info("断开卡号操作的长连接断开成功！");
             return true;
         }
     }

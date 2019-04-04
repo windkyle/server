@@ -12,20 +12,24 @@ public class LoginService {
 
     public Boolean login(String ip, short port, String name, String pass) {
         Boolean status = false;
-        //注册之前先注销已注册的用户,预览情况下不可注销
-        if (lUserID.longValue() > -1) {
-            //先注销
-            HCNetSDK.INSTANCE.NET_DVR_Logout(lUserID);
-            lUserID = new NativeLong(-1);
-        }
-        HCNetSDK.NET_DVR_DEVICEINFO_V30 m_strDeviceInfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
-        lUserID = HCNetSDK.INSTANCE.NET_DVR_Login_V30(ip, port, name, pass, m_strDeviceInfo);
-        if (lUserID.longValue() < 0) {
-            logger.info(ip + ":设备登陆失败，错误码：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+        try {
+            //注册之前先注销已注册的用户
+            if (lUserID.longValue() > -1) {
+                //先注销
+                HCNetSDK.INSTANCE.NET_DVR_Logout(lUserID);
+                lUserID = new NativeLong(-1);
+            }
+            HCNetSDK.NET_DVR_DEVICEINFO_V30 m_strDeviceInfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
+            lUserID = HCNetSDK.INSTANCE.NET_DVR_Login_V30(ip, port, name, pass, m_strDeviceInfo);
+            if (lUserID.longValue() < 0) {
+                logger.info(ip + ":设备登陆失败，错误码：" + HCNetSDK.INSTANCE.NET_DVR_GetLastError());
+                status = false;
+            } else {
+                status = true;
+            }
+        } catch (Exception e) {
+            logger.error("设备登陆出错", e);
             status = false;
-        } else {
-            logger.info(ip + ":设备登陆成功");
-            status = true;
         }
         return status;
     }
@@ -37,7 +41,6 @@ public class LoginService {
     public boolean logout() {
         // 注销和清空资源
         if (HCNetSDK.INSTANCE.NET_DVR_Logout(lUserID)) {
-            logger.info("设备资源释放成功");
             return true;
         } else {
             logger.info("设备资源释放失败：" + Egci.hcNetSDK.NET_DVR_GetLastError());
