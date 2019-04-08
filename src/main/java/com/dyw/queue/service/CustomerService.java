@@ -27,7 +27,7 @@ public class CustomerService implements Runnable {
     public void run() {
         Consumer consumer = new DefaultConsumer(channel) {
             @Override
-            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                 String[] personInfo = new String(body).split("#");//人员信息：卡号、名称、人脸
 //                String operationCode = personInfo[0];//操作码
 //                String cardNo = personInfo[1];//卡号
@@ -35,7 +35,11 @@ public class CustomerService implements Runnable {
 //                String picInfo = personInfo[3];//人脸信息
 //                String ip = personInfo[4];//ip地址
                 if (!Egci.deviceIpsOn.contains(personInfo[4])) {
-                    channel.basicReject(envelope.getDeliveryTag(), true);
+                    try {
+                        channel.basicReject(envelope.getDeliveryTag(), true);
+                    } catch (IOException e) {
+                        logger.error("重新加入队列出错", e);
+                    }
                     return;
                 }
                 try {
@@ -80,7 +84,11 @@ public class CustomerService implements Runnable {
                     }
                 } catch (Exception e) {
                     logger.error(personInfo[4] + ":卡号和人脸操作出错：" + e);
-                    channel.basicReject(envelope.getDeliveryTag(), true);
+                    try {
+                        channel.basicReject(envelope.getDeliveryTag(), true);
+                    } catch (IOException e1) {
+                        logger.error("重新加入队列出错", e1);
+                    }
                 } finally {
                     //不管有没有执行成功都执行资源释放操作
                     loginService.logout();

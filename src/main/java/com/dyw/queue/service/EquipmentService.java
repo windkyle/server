@@ -53,8 +53,10 @@ public class EquipmentService {
         }
     }
 
+    /*
+     * 对所有一体机设备进行布防
+     * */
     public static void initEquipmentAlarm() {
-        //对所有一体机设备进行布防
         for (String deviceIp : Egci.deviceIpsOn) {
             LoginService loginService = new LoginService();
             loginService.login(deviceIp, Egci.configEntity.getDevicePort(), Egci.configEntity.getDeviceName(), Egci.configEntity.getDevicePass());
@@ -68,7 +70,7 @@ public class EquipmentService {
                 //每布防一台设备后暂停时间，用来防止数据量瞬间过大导致程序出错
                 Thread.sleep(Egci.configEntity.getAlarmTime());
             } catch (InterruptedException e) {
-                logger.error("单台一体机设备布防延迟失败", e);
+                logger.error(deviceIp + "布防延迟失败", e);
             }
         }
     }

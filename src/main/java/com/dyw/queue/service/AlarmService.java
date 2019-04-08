@@ -36,14 +36,19 @@ public class AlarmService {
             strAlarmInfo.write();
             lAlarmHandleFlag = Egci.hcNetSDK.NET_DVR_SetupAlarmChan_V41(lUserID, strAlarmInfo);
             if (lAlarmHandleFlag.intValue() == -1) {
-                logger.info("布防失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
-                status = false;
+                if (Egci.hcNetSDK.NET_DVR_GetLastError() == 52) {
+                    status = true;
+                } else {
+                    logger.info("布防失败，错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
+                    status = false;
+                }
             } else {
                 logger.info("布防成功!");
                 status = true;
             }
         } catch (Exception e) {
             logger.error("error", e);
+            status = false;
         }
         return status;
     }

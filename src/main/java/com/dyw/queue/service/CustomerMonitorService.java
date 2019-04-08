@@ -29,28 +29,29 @@ public class CustomerMonitorService implements Runnable {
         try {
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
-                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                     try {
                         OutputStream os = socket.getOutputStream();
                         os.write((new String(body) + "\n").getBytes());
                         os.flush();
                         channel.basicReject(envelope.getDeliveryTag(), false);
-                        try {
-                            //服务端推送消息到客户端的延迟时间，防止客户端数据接收出错
-                            Thread.sleep(Egci.configEntity.getPushTime());
-                        } catch (InterruptedException e) {
-                            logger.error("延迟出现错误", e);
-                        }
+                        //服务端推送消息到客户端的延迟时间，防止客户端数据接收出错
+                        Thread.sleep(Egci.configEntity.getPushTime());
                     } catch (SocketException e) {
                         //这里出现错误说明客户端已经断开
-                        channel.basicReject(envelope.getDeliveryTag(), false);
-//                        logger.error("客户端：" + socket.getInetAddress().getHostAddress() + " 已断开");
+                        try {
+                            channel.basicReject(envelope.getDeliveryTag(), false);
+                        } catch (IOException e1) {
+                            logger.error("重新加入队列出错", e1);
+                        }
+                    } catch (Exception e) {
+                        logger.error("推送消息到客户端出错", e);
                     }
                 }
             };
             channel.basicConsume(queueName, false, consumer);
         } catch (IOException e) {
-            logger.error("消费者错误位置1：", e);
+            logger.error("消费者出错：", e);
         }
     }
 

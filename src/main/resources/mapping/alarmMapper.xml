@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "config/mybatis-3-mapper.dtd">
 <mapper namespace="mapping.alarmMapper">
-    <!-- 插入一个商品 -->
+    <!-- 插入一个报警 -->
     <insert id="insertAlarm" parameterType="com.dyw.queue.entity.AlarmEntity" useGeneratedKeys="true" keyProperty="Id">
         INSERT INTO
         PassRecord

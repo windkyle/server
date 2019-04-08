@@ -156,9 +156,6 @@ public class CardService {
 
     /**
      * 卡号信息获取
-     *
-     * @param cardNo
-     * @return
      */
     public Boolean getCardInfo(String cardNo, NativeLong lUserID, String queueName) {
         NativeLong cardGetFtpFlag = buildGetCardTcpCon(Egci.hcNetSDK, lUserID);
@@ -201,9 +198,6 @@ public class CardService {
 
     /**
      * 创建卡号查询的长连接
-     *
-     * @param hcNetSDK
-     * @return
      */
     private NativeLong buildGetCardTcpCon(HCNetSDK hcNetSDK, NativeLong lUserID) {
         try {

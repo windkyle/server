@@ -7,28 +7,23 @@ import org.apache.ibatis.session.SqlSession;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 判断网络连接状况.
- */
 public class Test {
     public static void main(String[] args) {
+//        SessionService sessionService = new SessionService();
+//        SqlSession session = sessionService.createSession();
+//        List<String> strings = session.selectList("mapping.staffMapper.getAllStaffCard");
+//        System.out.println(strings.get(100));
+        List<String> list = new ArrayList<String>();
+        list.add("one");
+        list.add("two");
+        list.add("three");
         try {
-            List<String> list = new ArrayList<String>();
-            list.add("one");
-            list.add("two");
-
-            try {
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                System.out.println("four");
-            }
-
+            System.out.println(list.get(0));
+            return;
         } catch (Exception e) {
-            System.out.println("one");
-            e.printStackTrace();
+            System.out.println(list.get(1));
         } finally {
-            System.out.println("three");
+            System.out.println(list.get(2));
         }
     }
 }

@@ -18,10 +18,8 @@ public class ImportStaffToSingleEquipmentService extends Thread {
     public void run() {
         int result = 0;
         //第一步：获取全部人员信息
-        System.out.println("EGCISESSION:" + Egci.session.toString());
         List<StaffEntity> staffEntityList;
         staffEntityList = Egci.session.selectList("mapping.staffMapper.getAllStaff");
-        System.out.println("数量：" + staffEntityList.size());
         //登陆设备
         LoginService loginService = new LoginService();
         loginService.login(equipmentIp, (short) 8000, "admin", "hik12345");
@@ -32,7 +30,6 @@ public class ImportStaffToSingleEquipmentService extends Thread {
                 if (cardService.setCardInfo(loginService.getlUserID(), staffEntity.getCardNumber(), staffEntity.getName(), "666666", null)) {
                     faceService.setFaceInfo(staffEntity.getCardNumber(), staffEntity.getPhoto(), loginService.getlUserID());
                     result++;
-                    System.out.println("下发状态" + result);
                 }
             } catch (Exception e) {
 

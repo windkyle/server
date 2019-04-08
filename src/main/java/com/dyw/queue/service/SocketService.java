@@ -45,7 +45,7 @@ public class SocketService extends Thread {
         }
         try {
             String mess = br.readLine();
-//            logger.info("客户端发来的消息：" + mess);
+            logger.info("客户端发来的消息：" + mess);
             String staffInfo = "";//结构体信息
             String operationCode = mess.substring(0, 1);
             switch (Integer.parseInt(operationCode)) {
@@ -179,9 +179,6 @@ public class SocketService extends Thread {
                     Egci.producerServiceMap.put(socketInfo.getInetAddress().getHostAddress(), producerService8);
                     break;
                 case 9://同步单台设备
-                    List<StaffEntity> staffEntityList = new ArrayList<StaffEntity>();
-                    staffEntityList = Egci.session.selectList("mapping.staffMapper.getAllStaff");
-                    System.out.println("数量：" + staffEntityList.size());
                     String[] info9 = mess.split("#");
                     Thread thread = new ImportStaffToSingleEquipmentService(info9[1]);
                     thread.start();

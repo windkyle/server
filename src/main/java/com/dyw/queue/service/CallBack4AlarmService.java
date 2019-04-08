@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 
 public class CallBack4AlarmService {
     private Logger logger = LoggerFactory.getLogger(CallBack4AlarmService.class);
+    private StaffEntity staffEntity;
 
     public Boolean alarmNotice(NativeLong lCommand,
                                HCNetSDK.NET_DVR_ALARMER pAlarmer,
@@ -155,9 +156,10 @@ public class CallBack4AlarmService {
         }
         //读取人员姓名
         try {
-            StaffEntity staffEntity = session.selectOne("mapping.staffMapper.getStaff", alarmEntity);
+            staffEntity = session.selectOne("mapping.staffMapper.getSingleStaff", alarmEntity);
             alarmEntity.setStaffName(staffEntity.getName());
         } catch (Exception e) {
+            logger.error("读取人员姓名出错", e);
             alarmEntity.setStaffName(null);
         }
         //提交数据

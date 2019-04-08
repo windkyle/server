@@ -81,7 +81,6 @@ public class Egci {
         } catch (Exception e) {
             Elogger.error("创建session对象失败", e);
         }
-
         //初始化SDK静态对象
         try {
             hcNetSDK = HCNetSDK.INSTANCE;
@@ -95,7 +94,6 @@ public class Egci {
         }
         //读取配置文件
         configEntity = Tool.getConfig(System.getProperty("user.dir") + "/config/config.xml");
-//        configEntity = Tool.getConfig("C:\\software\\server\\config\\config.xml");
         //一体机参数配置
         devicePort = configEntity.getDevicePort();
         deviceName = configEntity.getDeviceName();
@@ -130,7 +128,6 @@ public class Egci {
         producerMonitorTwoServices = new ArrayList<ProducerService>();
         producerMonitorThreeServices = new ArrayList<ProducerService>();
         //初始化采集设备相关信息
-//        producerFaceCollectionServices = new ArrayList<ProducerService>();
         deviceIpsFaceCollection = new HashSet<String>();
         faceCollectionIpWithProducer = new HashMap<String, ProducerService>();
         faceCollectionIpWithLogin = new HashMap<String, LoginService>();
@@ -177,7 +174,7 @@ public class Egci {
         //启用程序定时关闭功能
         if (configEntity.getExitTimeStatus1() == 1) {
             ProcessTimer.exit1();
-            Elogger.info("启用程序定时关闭1");
+            Elogger.info("启用程序定时关闭");
         }
         if (configEntity.getExitTimeStatus2() == 1) {
             ProcessTimer.exit2();
@@ -191,7 +188,7 @@ public class Egci {
         Elogger.info("系统默认语言：" + System.getProperty("user.language")); //查询结果zh
         //启用socket服务
         try {
-            System.out.println("本机IP地址" + InetAddress.getLocalHost());
+            Elogger.info("本机IP地址" + InetAddress.getLocalHost());
             ServerSocket serverSocket = new ServerSocket(configEntity.getSocketPort());
             serverSocket.setSoTimeout(0);
             serverSocket.setReuseAddress(true);
