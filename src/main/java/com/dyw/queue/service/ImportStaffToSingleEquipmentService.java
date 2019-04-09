@@ -3,11 +3,14 @@ package com.dyw.queue.service;
 
 import com.dyw.queue.controller.Egci;
 import com.dyw.queue.entity.StaffEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ImportStaffToSingleEquipmentService extends Thread {
+    private Logger logger = LoggerFactory.getLogger(ImportStaffToSingleEquipmentService.class);
     private String equipmentIp;//一体机ip
 
     public ImportStaffToSingleEquipmentService(String equipmentIp) {
@@ -29,11 +32,12 @@ public class ImportStaffToSingleEquipmentService extends Thread {
             try {
                 if (cardService.setCardInfo(loginService.getlUserID(), staffEntity.getCardNumber(), staffEntity.getName(), "666666", null)) {
                     faceService.setFaceInfo(staffEntity.getCardNumber(), staffEntity.getPhoto(), loginService.getlUserID());
-                    result++;
                 }
             } catch (Exception e) {
-
+                logger.error("单台设备下发出错", e);
             }
         }
+        logger.info("单台设备：" + equipmentIp + "：下发完成");
+        loginService.logout();
     }
 }
