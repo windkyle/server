@@ -53,7 +53,7 @@ public class CustomerService implements Runnable {
                                 //删除人脸，删除失败不需要操作
                                 if (!faceService.delFace(personInfo[1], loginService.getlUserID())) {
                                     logger.info(personInfo[4] + ":人脸删除失败,错误码：" + Egci.hcNetSDK.NET_DVR_GetLastError());
-                                    channel.basicReject(envelope.getDeliveryTag(), true);
+                                    channel.basicReject(envelope.getDeliveryTag(), false);//人脸删除失败不必重回队列
                                     return;
                                 }
                             } else {
