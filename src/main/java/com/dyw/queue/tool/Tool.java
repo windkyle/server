@@ -285,7 +285,6 @@ public class Tool {
      * */
     public static int getProcessID() {
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-        System.out.println(runtimeMXBean.getName());
         return Integer.valueOf(runtimeMXBean.getName().split("@")[0]).intValue();
     }
 }
