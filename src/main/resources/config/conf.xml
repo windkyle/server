@@ -24,6 +24,7 @@
         <mapper resource="mapping/faceCollectionMapper.xml"/>
         <mapper resource="mapping/equipmentMapper.xml"/>
         <mapper resource="mapping/processMapper.xml"/>
+        <mapper resource="mapping/temporaryStaffMapper.xml"/>
     </mappers>
 
 </configuration>

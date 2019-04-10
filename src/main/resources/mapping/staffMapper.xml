@@ -22,4 +22,21 @@
     <select id="getAllStaffCard" resultType="String" flushCache="true">
         select CardNumber from Staff where CardNumber!='0';
     </select>
+    <!--更新人员表信息,通过临时人员信息-->
+    <update id="updateStaff" parameterType="com.dyw.queue.entity.TemporaryStaffEntity">
+        UPDATE TemporaryStaff SET
+        Name=#{Name},
+        NameEn=#{NameEn},
+        CardId=#{CardId},
+        CardNumber=#{CardNumber},
+        Birthday=#{Birthday},
+        Sex=#{Sex},
+        Company=#{Company}
+        WHERE CardNumber = #{CardNumber}
+    </update>
+    <!--删除人员信息:将人员卡号在数据库中设为0-->
+    <delete id="deleteStaff" parameterType="com.dyw.queue.entity.TemporaryStaffEntity">
+        <!--DELETE FROM Staff WHERE CardNumber=#{CardNumber};-->
+        UPDATE Staff SET CardNumber='0' WHERE CardNumber=#{CardNumber};
+    </delete>
 </mapper>
