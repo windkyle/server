@@ -27,24 +27,28 @@ public class OnguardService extends Thread {
             //接口服务端信息
             logger.info("连接onGuard服务器成功，等待接收数据...");
             while (true) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                String info = br.readLine();
-                TemporaryStaffEntity temporaryStaffEntity = JSON.parseObject(info, new TypeReference<TemporaryStaffEntity>() {
-                });
-                assert temporaryStaffEntity != null;
-                switch (temporaryStaffEntity.getType()) {
-                    case 1:
-                        insert(temporaryStaffEntity);
-                        break;
-                    case 2:
-                        update(temporaryStaffEntity);
-                        break;
-                    case 3:
-                        deleteStaff(temporaryStaffEntity);
-                        deleteTemporary(temporaryStaffEntity);
-                        break;
-                    default:
-                        break;
+                try {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String info = br.readLine();
+                    TemporaryStaffEntity temporaryStaffEntity = JSON.parseObject(info, new TypeReference<TemporaryStaffEntity>() {
+                    });
+                    assert temporaryStaffEntity != null;
+                    switch (temporaryStaffEntity.getType()) {
+                        case 1:
+                            insert(temporaryStaffEntity);
+                            break;
+                        case 2:
+                            update(temporaryStaffEntity);
+                            break;
+                        case 3:
+                            deleteStaff(temporaryStaffEntity);
+                            deleteTemporary(temporaryStaffEntity);
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (Exception e) {
+                    logger.error("onGuard数据处理出错", e);
                 }
             }
         } catch (Exception e) {
@@ -87,8 +91,8 @@ public class OnguardService extends Thread {
             logger.error("更新临时表信息出错", e);
         }
         //更新设备信息
-        //读取数据库获取人员信息
         try {
+            //读取数据库获取人员信息
             StaffEntity staff = Egci.session.selectOne("mapping.staffMapper.getSingleStaff", temporaryStaffEntity.getCardNumber());
             //重新组织人员信息:操作码+卡号+名称+图片
             String staffInfo = "1#" + staff.getCardNumber() + "#" + staff.getName() + "#" + Base64.encodeBytes(staff.getPhoto());
@@ -107,8 +111,10 @@ public class OnguardService extends Thread {
     private void deleteStaff(TemporaryStaffEntity temporaryStaffEntity) {
         //删除人员表数据
         try {
-            Egci.session.delete("mapping.staffMapper.deleteStaff", temporaryStaffEntity);
-            Egci.session.commit();
+            if (Egci.session.selectList("mapping.staffMapper.getSingleStaff", temporaryStaffEntity.getCardNumber()).size() > 0) {
+                Egci.session.update("mapping.staffMapper.deleteStaff", temporaryStaffEntity);
+                Egci.session.commit();
+            }
         } catch (Exception e) {
             logger.error("删除人员表数据出错", e);
         }

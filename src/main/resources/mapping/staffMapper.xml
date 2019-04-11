@@ -4,8 +4,9 @@
         "config/mybatis-3-mapper.dtd">
 <mapper namespace="mapping.staffMapper">
     <!--卡号查询单个人员-->
-    <select id="getSingleStaff" resultType="com.dyw.queue.entity.StaffEntity" flushCache="true">
-        select * from Staff where CardNumber=#{_parameter}
+    <select id="getSingleStaff" parameterType="com.dyw.queue.entity.AlarmEntity"
+            resultType="com.dyw.queue.entity.StaffEntity" flushCache="true">
+        select * from Staff where CardNumber=#{CardNumber}
     </select>
     <!--获取全部人员信息（卡号不为0）-->
     <select id="getAllStaff" resultType="com.dyw.queue.entity.StaffEntity" flushCache="true">
@@ -35,8 +36,8 @@
         WHERE CardNumber = #{CardNumber}
     </update>
     <!--删除人员信息:将人员卡号在数据库中设为0-->
-    <delete id="deleteStaff" parameterType="com.dyw.queue.entity.TemporaryStaffEntity">
+    <update id="deleteStaff" parameterType="com.dyw.queue.entity.TemporaryStaffEntity">
         <!--DELETE FROM Staff WHERE CardNumber=#{CardNumber};-->
         UPDATE Staff SET CardNumber='0' WHERE CardNumber=#{CardNumber};
-    </delete>
+    </update>
 </mapper>

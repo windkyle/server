@@ -58,11 +58,6 @@ public class SocketService extends Thread {
                     for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
                         Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
                     }
-                    //删除临时表中的人员信息，暂时不用
-//                    TemporaryStaffEntity temporaryStaffEntity = new TemporaryStaffEntity();
-//                    temporaryStaffEntity.setCardNumber(staff.getCardNumber());
-//                    OnguardService onguardService = new OnguardService();
-//                    onguardService.deleteTemporary(temporaryStaffEntity);
                     //返回正确消息给客户端
                     sendToClient(socketInfo, br, "success");
                     break;
