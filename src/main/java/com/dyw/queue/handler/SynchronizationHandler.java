@@ -47,7 +47,7 @@ public class SynchronizationHandler implements HCNetSDK.FRemoteConfigCallback {
                             int iByte = struCfgStatus.byErrorCode[i] & 0xff;
                             iErrorCode = iErrorCode + (iByte << ioffset);
                         }
-                        logger.error("查询卡号失败，错误码：" + iErrorCode);
+//                        logger.error("查询卡号失败，错误码：" + iErrorCode);
                         break;
                 }
                 break;

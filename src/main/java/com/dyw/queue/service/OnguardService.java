@@ -90,7 +90,7 @@ public class OnguardService extends Thread {
         } catch (Exception e) {
             logger.error("更新临时表信息出错", e);
         }
-        //更新设备信息
+        //更新设备人员信息
         try {
             //读取数据库获取人员信息
             StaffEntity staff = Egci.session.selectOne("mapping.staffMapper.getSingleStaff", temporaryStaffEntity.getCardNumber());
@@ -101,7 +101,7 @@ public class OnguardService extends Thread {
                 Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
             }
         } catch (Exception e) {
-            logger.error("更新设备信息出错", e);
+            logger.error("更新设备人员信息出错", e);
         }
     }
 
@@ -118,14 +118,14 @@ public class OnguardService extends Thread {
         } catch (Exception e) {
             logger.error("删除人员表数据出错", e);
         }
-        //删除设备信息
+        //删除设备人员信息
         try {
             String staffInfo = "2#" + temporaryStaffEntity.getCardNumber() + "#test#none";
             for (int i = 0; i < Egci.deviceIps0WithOctothorpe.size(); i++) {
                 Egci.producerServiceList.get(i).sendToQueue(staffInfo.concat(Egci.deviceIps0WithOctothorpe.get(i)));
             }
         } catch (Exception e) {
-            logger.error("删除设备信息出错", e);
+            logger.error("删除设备人员信息出错", e);
         }
     }
 

@@ -16,12 +16,12 @@
     //socket端口配置
     <socketPort>12345</socketPort>
     //测试配置单台同步
-    <testIp>192.168.40.32</testIp>
+    <testIp>192.168.1.112</testIp>
     //是否开启同步
-    <synchronization>0</synchronization>0：不开启，1：开启单台，2：代表全部开启
-    <synchronizationHour>0</synchronizationHour>
-    <synchronizationMinute>0</synchronizationMinute>
-    <synchronizationSecond>0</synchronizationSecond>
+    <synchronization>1</synchronization>0：不开启，1：开启单台，2：代表全部开启
+    <synchronizationHour>00</synchronizationHour>
+    <synchronizationMinute>29</synchronizationMinute>
+    <synchronizationSecond>00</synchronizationSecond>
     <synchronizationTime>100000</synchronizationTime>//查找全部卡号时，线程暂停时间
     //onGuard配置
     <onGuardIp>127.0.0.1</onGuardIp>

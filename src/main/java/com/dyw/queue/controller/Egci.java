@@ -21,8 +21,6 @@ import java.util.*;
 
 public class Egci {
     public static SqlSession session;
-    //mybatis框架
-//    private SqlSession session;
     //配置文件
     public static ConfigEntity configEntity;
     //一体机变量

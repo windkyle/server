@@ -258,8 +258,10 @@ public class SynchronizationService implements Runnable {
             if (!result) {
                 logger.info("人脸下发失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
                 stopRemoteConfig(lHandle);
+                Thread.sleep(500);
             } else {
                 stopRemoteConfig(lHandle);
+                Thread.sleep(500);
             }
         } catch (Exception e) {
             logger.error("人脸下发出错", e);
@@ -315,14 +317,20 @@ public class SynchronizationService implements Runnable {
                 }
             }
             //添加一体机指定卡号信息
-            List<StaffEntity> staffEntities = Egci.session.selectList("mapping.staffMapper.getStaffByCard", adds);
-            for (StaffEntity staffEntity : staffEntities) {
-                //下发卡号
-                if (setCardInfo(loginService.getlUserID(), staffEntity.getCardNumber().trim(), staffEntity.getName().trim(), "666666")) {
-                    //下发人脸
-                    setFaceInfo(staffEntity.getCardNumber().trim(), staffEntity.getPhoto(), loginService.getlUserID());
+            if (adds.size() > 1000) {
+                List<List<String>> result = Tool.fixedGrouping(adds, 500);
+                for (List<String> list : result) {
+                    List<StaffEntity> staffEntities = Egci.session.selectList("mapping.staffMapper.getStaffByCard", list);
+                    for (StaffEntity staffEntity : staffEntities) {
+                        //下发卡号
+                        if (setCardInfo(loginService.getlUserID(), staffEntity.getCardNumber().trim(), staffEntity.getName().trim(), "666666")) {
+                            //下发人脸
+                            setFaceInfo(staffEntity.getCardNumber().trim(), staffEntity.getPhoto(), loginService.getlUserID());
+                        }
+                    }
                 }
             }
+
         } catch (Exception e) {
             logger.error("同步出现错误", e);
         } finally {
