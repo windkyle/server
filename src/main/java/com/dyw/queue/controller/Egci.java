@@ -191,6 +191,7 @@ public class Egci {
             serverSocket.setSoTimeout(0);
             serverSocket.setReuseAddress(true);
             Elogger.info("等待客户端连接..............................................................................");
+            System.out.println("等待客户端连接..............................................................................");
             while (true) {
                 Socket socket = serverSocket.accept();
                 socket.setReuseAddress(true);
