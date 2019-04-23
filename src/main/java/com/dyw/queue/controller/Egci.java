@@ -11,6 +11,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -190,8 +191,15 @@ public class Egci {
             ServerSocket serverSocket = new ServerSocket(configEntity.getSocketPort());
             serverSocket.setSoTimeout(0);
             serverSocket.setReuseAddress(true);
+            //启动成功提示
+            Thread messageThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    JOptionPane.showMessageDialog(null, "服务启动成功", "提示", 1);
+                }
+            });
+            messageThread.start();
             Elogger.info("等待客户端连接..............................................................................");
-            System.out.println("等待客户端连接..............................................................................");
             while (true) {
                 Socket socket = serverSocket.accept();
                 socket.setReuseAddress(true);
